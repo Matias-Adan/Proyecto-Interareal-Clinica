@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plan de Cableado y Distribución - Dirección Médica</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 30px; }
+h1, h2 { color: #003366; border-bottom: 2px solid #003366; padding-bottom: 5px; }
+.croquis { background: #f4f4f4; border: 2px dashed #666; padding: 20px; font-family: monospace; white-space: pre; font-size: 14px; overflow-x: auto; margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+th { background-color: #003366; color: white; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+.alert { background: #e6f2ff; border-left: 5px solid #003366; padding: 15px; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<h1>📋 Plan de Cableado Estructurado y Plano Físico</h1>
+<p><strong>Proyecto:</strong> Red de Telecomunicaciones - Clínica Privada</p>
+<p><strong>Sector:</strong> 1 - Dirección Médica (18.9m x 9.5m)</p>
+<p><strong>Responsables (5to Año):</strong> Fernandez, Montiel, Perreault, Adan, Tamburelli</p>
+
+<h2>📐 1. Croquis Esquemático Acotado</h2>
+<div class="croquis">
+&lt;------------------------------------------- 18.9 metros -------------------------------------------&gt;
++-----------------------+-----------------------------------------------+---------------------------+ ^
+
+| OFICINA DIRECTOR | ÁREA DE TRABAJO PRINCIPAL | OFICINA SUB-DIRECTOR | |
+| (4.5m x 4.5m) | (9.9m x 6.0m) | (4.5m x 4.5m) | |
+| | | | |
+| [C1] (Esquina) | [AP1] (Techo) | (Esquina) [C2] | |
+| | | | |
+| [P1] [P2] (Escrit.) | [P5] a [P10] (Islas de Trabajo) | [P11] [P12] (Escrit)| 9.5
+| | [P13] [P14] (Mesa Impresoras) | | m
++-----------------------+ +---------------------------+ |
+
+| SALA DE REUNIONES | | SALA DE RACKS / TI | |
+| (4.5m x 5.0m) | [AP2] (Techo) | (4.5m x 5.0m) | |
+| | | ============= | |
+| | | || [RACK 1] || | |
+| [P3] [P4] (Mesa) | | ============= | |
+| [C3] (Esquina) | | | v
++-----------------------+-----------------------------------------------+---------------------------+</div>
+
+<h2>🧮 2. Memoria de Cálculo de Cableado (UTP Cat6 LSZH)</h2>
+<table>
+<thead>
+<tr>
+<th>ID Punto</th>
+<th>Destino / Dispositivo</th>
+<th>Cant.</th>
+<th>Distancia Promedio</th>
+<th>Holgura Técnica</th>
+<th>Total por Punto</th>
+<th>Total Grupo</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>P1 - P2</td><td>Oficina Director</td><td>2</td><td>16.0 m</td><td>3.0 m</td><td>19.0 m</td><td>38 m</td></tr>
+<tr><td>P3 - P4</td><td>Sala de Reuniones</td><td>2</td><td>12.0 m</td><td>3.0 m</td><td>15.0 m</td><td>30 m</td></tr>
+<tr><td>P5 - P10</td><td>Islas de Trabajo (Pool PCs)</td><td>6</td><td>8.0 m</td><td>3.0 m</td><td>11.0 m</td><td>66 m</td></tr>
+<tr><td>P11 - P12</td><td>Oficina Sub-Director</td><td>2</td><td>6.0 m</td><td>3.0 m</td><td>9.0 m</td><td>18 m</td></tr>
+<tr><td>P13</td><td>Impresora de Red (IMP1)</td><td>1</td><td>9.0 m</td><td>3.0 m</td><td>12.0 m</td><td>12 m</td></tr>
+<tr><td>P14</td><td>Impresora 3D (3D1)</td><td>1</td><td>9.0 m</td><td>3.0 m</td><td>12.0 m</td><td>12 m</td></tr>
+<tr><td>AP1 - AP2</td><td>Puntos de Acceso Wi-Fi</td><td>2</td><td>10.0 m</td><td>3.0 m</td><td>13.0 m</td><td>26 m</td></tr>
+<tr><td>C1 - C3</td><td>Cámaras IP de Seguridad</td><td>3</td><td>14.0 m</td><td>3.0 m</td><td>17.0 m</td><td>51 m</td></tr>
+</tbody>
+</table>
+
+<div class="alert">
+<strong>📊 Resumen de Materiales Requeridos:</strong><br>
+• Total de cable estimado: <strong>253 metros</strong> (Equivale a 1 caja de 305m Cat6).<br>
+• Puertos ocupados en Rack: <strong>19 bocas</strong> (Se requiere 1 Patch Panel de 24 puertos).
+</div>
+
+</body>
+</html>
