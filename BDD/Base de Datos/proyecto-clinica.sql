@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-09-2026 a las 14:53:46
+-- Tiempo de generación: 14-09-2026 a las 15:09:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,51 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `clinica`
 --
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `actualizar` (IN `nombre_tabla` VARCHAR(64), IN `nombre_columna_id` VARCHAR(64), IN `cambios_set` TEXT, IN `id_actualizar` INT)   BEGIN
+    SET @sql = CONCAT('UPDATE `', REPLACE(nombre_tabla, '`',''), '` SET ', cambios_set, ' WHERE `', REPLACE(nombre_columna_id, '`',''), '` = ?');
+    PREPARE stmt FROM @sql;
+    SET @id = id_actualizar;
+    EXECUTE stmt USING @id;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `borrar` (IN `nombre_tabla` VARCHAR(64), IN `nombre_columna_id` VARCHAR(64), IN `id_borrar` INT)   BEGIN
+    SET @sql = CONCAT('DELETE FROM `', REPLACE(nombre_tabla, '`',''), '` WHERE `', REPLACE(nombre_columna_id, '`',''), '` = ?');
+    PREPARE stmt FROM @sql;
+    SET @id = id_borrar;
+    EXECUTE stmt USING @id;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Insertar` (IN `nombre_tabla` VARCHAR(64), IN `columnas_lista` TEXT, IN `valores_lista` TEXT)   BEGIN
+    -- Ejemplo final: INSERT INTO tabla (col1, col2) VALUES (val1, val2)
+    SET @sql = CONCAT('INSERT INTO `', REPLACE(nombre_tabla, '`',''), '` (', columnas_lista, ') VALUES (', valores_lista, ')');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `seleccionar` (IN `nombre_tabla` VARCHAR(64))   BEGIN
+	SET @sql = CONCAT('SELECT * FROM `', REPLACE(nombre_tabla, '`',''), '`');
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `seleccionarPorId` (IN `nombre_tabla` VARCHAR(64), IN `nombre_columna_id` VARCHAR(64), IN `id_buscar` INT)   BEGIN
+    SET @sql = CONCAT('SELECT * FROM `', REPLACE(nombre_tabla, '`',''), '` WHERE `', REPLACE(nombre_columna_id, '`',''), '` = ?');
+    PREPARE stmt FROM @sql;
+    SET @id = id_buscar;
+    EXECUTE stmt USING @id;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
