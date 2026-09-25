@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-09-2026 a las 15:09:40
+-- Tiempo de generación: 25-09-2026 a las 23:03:59
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -47,6 +47,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `Insertar` (IN `nombre_tabla` VARCHA
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `registro` (IN `nombre_U` VARCHAR(40), IN `apellido_U` VARCHAR(40), IN `dni_U` VARCHAR(20), IN `fechaNacimiento_U` DATE, IN `telefono_U` VARCHAR(40), IN `email_U` VARCHAR(50), IN `obraSocialId_U` INT)   BEGIN
+	INSERT INTO usuarios(nombre, apellido, dni, fechaNacimiento, telefono, email, obraSocialId)
+    	VALUES(nombre_U, apellido_U, dni_U, fechaNacimiento_U, telefono_U, email_U, obraScocialId_U);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `seleccionar` (IN `nombre_tabla` VARCHAR(64))   BEGIN
