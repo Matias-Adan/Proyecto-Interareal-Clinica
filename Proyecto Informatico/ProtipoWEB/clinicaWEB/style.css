@@ -1,0 +1,172 @@
+/* ===== Colores (cambiá solo estos) ===== */
+:root {
+  --principal: #0e7490;
+  --oscuro: #0a566b;
+  --suave: #e4f2f6;
+  --texto: #12303d;
+  --gris: #5b7684;
+  --borde: #d3e5ec;
+}
+
+/* ===== Base ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Atkinson Hyperlegible", Arial, sans-serif;
+  color: var(--texto);
+  line-height: 1.5;
+  background: #e8f4f8 url("imagenes/fondo.jpg") center / cover no-repeat fixed;
+}
+a { color: var(--principal); }
+h1 { margin: 0; font-size: 1.7rem; }
+h2 { margin: 0 0 14px; font-size: 1.15rem; }
+.muted { color: var(--gris); margin: 4px 0 0; }
+
+/* ===== Botones ===== */
+.btn {
+  display: inline-block;
+  padding: 11px 20px;
+  border: 2px solid var(--principal);
+  border-radius: 999px;
+  background: var(--principal);
+  color: white;
+  font: inherit;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover { background: var(--oscuro); border-color: var(--oscuro); }
+.btn.sec { background: transparent; color: var(--principal); }
+.btn.sec:hover { background: var(--suave); }
+
+/* ===== Formularios ===== */
+label { display: block; margin: 16px 0 6px; font-weight: bold; }
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--borde);
+  border-radius: 10px;
+  font: inherit;
+  background: white;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--principal); }
+
+/* ===== Login ===== */
+.login { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+.login-box {
+  width: 400px;
+  max-width: 100%;
+  padding: 36px;
+  background: rgba(255, 255, 255, .7);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(14, 116, 144, .15);
+}
+.login .btn { width: 100%; margin-top: 24px; }
+.logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }
+.logo i {
+  display: grid; place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: var(--principal);
+  color: white;
+  font-style: normal;
+}
+.roles { display: flex; gap: 10px; margin-top: 16px; }
+.roles input { display: none; }
+.roles label { flex: 1; margin: 0; padding: 12px; text-align: center; border: 2px solid var(--borde); border-radius: 10px; background: white; cursor: pointer; }
+.roles input:checked + label { border-color: var(--principal); background: var(--suave); color: var(--oscuro); }
+
+/* ===== Panel: menú a la izquierda, contenido a la derecha ===== */
+.app { display: flex; min-height: 100vh; }
+.side {
+  width: 240px;
+  padding: 24px 18px;
+  background: rgba(255, 255, 255, .7);
+  border-right: 1px solid var(--borde);
+}
+.side nav { margin: 20px 0; }
+.side nav a {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: var(--texto);
+  text-decoration: none;
+}
+.side nav a:hover { background: var(--suave); color: var(--oscuro); }
+.out { width: 100%; text-align: center; }
+main { flex: 1; max-width: 1000px; padding: 32px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; }
+
+/* ===== Cajas ===== */
+.panel {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: rgba(255, 255, 255, .7);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(14, 116, 144, .08);
+}
+.grid { display: flex; gap: 24px; flex-wrap: wrap; }
+.grid .panel { flex: 1; min-width: 280px; }
+.list { margin: 0; padding: 0; list-style: none; }
+.list li { padding: 10px 0; border-bottom: 1px solid var(--borde); }
+.list li:last-child { border: none; }
+
+/* ===== Tablas ===== */
+.tw { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--borde); }
+th { color: var(--gris); font-size: .9rem; }
+tr:hover td { background: var(--suave); }
+
+/* ===== Etiquetas de estado ===== */
+.tag { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: .85rem; font-weight: bold; background: var(--suave); color: var(--oscuro); }
+.tag.ok { background: #d8f0e0; color: #1f6b41; }
+.tag.warn { background: #fbefd2; color: #8a5d00; }
+.tag.alert { background: #f8dedb; color: #9b2f27; }
+
+/* ===== Celular ===== */
+@media (max-width: 800px) {
+  .app { flex-direction: column; }
+  .side { width: 100%; border-right: none; border-bottom: 1px solid var(--borde); }
+  .side nav { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0; }
+  main { padding: 18px; }
+}
+
+
+/* ===== Páginas con varias secciones ===== */
+.side nav a.activa { background: var(--suave); color: var(--oscuro); font-weight: bold; }
+.side .muted { margin: 0; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 16px; }
+.form .full { grid-column: 1 / -1; }
+.form .btn { margin-top: 16px; }
+.buscar { margin-bottom: 12px; }
+textarea { resize: vertical; }
+.stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat { flex: 1; min-width: 150px; padding: 18px; background: rgba(255, 255, 255, .7); border: 1px solid var(--borde); border-radius: 16px; }
+.stat b { display: block; font-size: 1.8rem; color: var(--principal); }
+td a { margin-right: 10px; }
+
+/* ===== Una sección visible a la vez ===== */
+.vista { display: none; }
+.vista.activa { display: block; }
+.vista .top { margin-bottom: 24px; }
+
+/* ===== Formularios ocultos detrás de un botón ===== */
+.nuevo { padding: 14px 24px; }
+.nuevo summary { list-style: none; width: fit-content; }
+.nuevo summary::-webkit-details-marker { display: none; }
+.nuevo summary::before { content: "+ "; }
+.nuevo[open] summary { margin-bottom: 16px; }
+
+/* ===== Bloques que se abren al tocar el título ===== */
+.plegable { padding: 18px 24px; }
+.plegable summary { font-size: 1.15rem; font-weight: bold; cursor: pointer; }
+.plegable[open] summary { margin-bottom: 14px; }
+
+/* ===== Ingreso: que los 3 roles entren en el cuadro ===== */
+.login-box { width: 440px; }
+.login-box .logo { justify-content: center; }
+.login-box h1, .login-box > .muted { text-align: center; }
+.roles { gap: 8px; margin: 20px 0 4px; }
+.roles label { min-width: 0; padding: 12px 4px; font-size: .92rem; }

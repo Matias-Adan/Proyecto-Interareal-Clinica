@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clínica | Ingresar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css"></head><body><div class="login">
+<form class="login-box" id="f"><div class="logo"><i>+</i> Clínica Salud</div>
+<h1>Ingresá a tu cuenta</h1><p class="muted">Elegí cómo querés entrar.</p>
+<div class="roles">
+<input type="radio" name="rol" id="r1" value="paciente.html" checked><label for="r1">Paciente</label>
+<input type="radio" name="rol" id="r2" value="medico.html"><label for="r2">Profesional</label>
+<input type="radio" name="rol" id="r3" value="admin.html"><label for="r3">Administración</label></div>
+<label for="dni">DNI</label><input id="dni" inputmode="numeric" required>
+<label for="pw">Contraseña</label><input id="pw" type="password" required>
+<button class="btn" type="submit">Ingresar</button></form></div>
+<script>
+// Provisorio: sin base de datos, solo redirige según el rol elegido.
+document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();location.href=document.querySelector('input[name=rol]:checked').value})
+</script></body></html>
