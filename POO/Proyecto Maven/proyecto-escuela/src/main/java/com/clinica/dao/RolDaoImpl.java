@@ -12,7 +12,7 @@ public class RolDaoImpl implements IRolDao {
     public List<Rol> listar() {
         List<Rol> lista = new ArrayList<>();
         String sql = "SELECT * FROM rol";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class RolDaoImpl implements IRolDao {
     @Override
     public boolean insertar(Rol r) {
         String sql = "INSERT INTO rol (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class RolDaoImpl implements IRolDao {
     @Override
     public boolean actualizar(Rol r) {
         String sql = "UPDATE rol SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class RolDaoImpl implements IRolDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM rol WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

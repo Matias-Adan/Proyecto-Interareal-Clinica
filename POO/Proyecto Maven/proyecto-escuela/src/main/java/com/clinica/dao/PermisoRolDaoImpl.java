@@ -12,7 +12,7 @@ public class PermisoRolDaoImpl implements IPermisoRolDao {
     public List<PermisoRol> listar() {
         List<PermisoRol> lista = new ArrayList<>();
         String sql = "SELECT * FROM permiso_rol";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class PermisoRolDaoImpl implements IPermisoRolDao {
     @Override
     public boolean insertar(PermisoRol p) {
         String sql = "INSERT INTO permiso_rol (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class PermisoRolDaoImpl implements IPermisoRolDao {
     @Override
     public boolean actualizar(PermisoRol p) {
         String sql = "UPDATE permiso_rol SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class PermisoRolDaoImpl implements IPermisoRolDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM permiso_rol WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

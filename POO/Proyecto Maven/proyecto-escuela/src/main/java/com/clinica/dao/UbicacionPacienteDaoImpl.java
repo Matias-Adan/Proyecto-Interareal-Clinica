@@ -12,7 +12,7 @@ public class UbicacionPacienteDaoImpl implements IUbicacionPacienteDao {
     public List<UbicacionPaciente> listar() {
         List<UbicacionPaciente> lista = new ArrayList<>();
         String sql = "SELECT * FROM ubicacion_paciente";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class UbicacionPacienteDaoImpl implements IUbicacionPacienteDao {
     @Override
     public boolean insertar(UbicacionPaciente u) {
         String sql = "INSERT INTO ubicacion_paciente (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class UbicacionPacienteDaoImpl implements IUbicacionPacienteDao {
     @Override
     public boolean actualizar(UbicacionPaciente u) {
         String sql = "UPDATE ubicacion_paciente SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class UbicacionPacienteDaoImpl implements IUbicacionPacienteDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM ubicacion_paciente WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

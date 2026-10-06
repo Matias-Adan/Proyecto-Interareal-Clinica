@@ -12,7 +12,7 @@ public class ConsultaDaoImpl implements IConsultaDao {
     public List<Consulta> listar() {
         List<Consulta> lista = new ArrayList<>();
         String sql = "SELECT * FROM consulta";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class ConsultaDaoImpl implements IConsultaDao {
     @Override
     public boolean insertar(Consulta c) {
         String sql = "INSERT INTO consulta (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class ConsultaDaoImpl implements IConsultaDao {
     @Override
     public boolean actualizar(Consulta c) {
         String sql = "UPDATE consulta SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class ConsultaDaoImpl implements IConsultaDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM consulta WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

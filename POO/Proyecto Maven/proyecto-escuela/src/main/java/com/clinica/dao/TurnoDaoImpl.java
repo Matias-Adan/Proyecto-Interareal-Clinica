@@ -12,7 +12,7 @@ public class TurnoDaoImpl implements ITurnoDao {
     public List<Turno> listar() {
         List<Turno> lista = new ArrayList<>();
         String sql = "SELECT * FROM turno";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class TurnoDaoImpl implements ITurnoDao {
     @Override
     public boolean insertar(Turno t) {
         String sql = "INSERT INTO turno (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class TurnoDaoImpl implements ITurnoDao {
     @Override
     public boolean actualizar(Turno t) {
         String sql = "UPDATE turno SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class TurnoDaoImpl implements ITurnoDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM turno WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

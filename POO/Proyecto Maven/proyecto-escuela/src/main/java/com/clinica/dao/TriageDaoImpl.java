@@ -12,7 +12,7 @@ public class TriageDaoImpl implements ITriageDao {
     public List<Triage> listar() {
         List<Triage> lista = new ArrayList<>();
         String sql = "SELECT * FROM triage";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class TriageDaoImpl implements ITriageDao {
     @Override
     public boolean insertar(Triage t) {
         String sql = "INSERT INTO triage (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class TriageDaoImpl implements ITriageDao {
     @Override
     public boolean actualizar(Triage t) {
         String sql = "UPDATE triage SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class TriageDaoImpl implements ITriageDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM triage WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

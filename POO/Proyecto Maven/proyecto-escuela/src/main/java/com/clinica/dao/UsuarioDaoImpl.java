@@ -12,7 +12,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     public List<Usuario> listar() {
         List<Usuario> lista = new ArrayList<>();
         String sql = "SELECT * FROM usuario";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     @Override
     public boolean insertar(Usuario u) {
         String sql = "INSERT INTO usuario (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     @Override
     public boolean actualizar(Usuario u) {
         String sql = "UPDATE usuario SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM usuario WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

@@ -12,7 +12,7 @@ public class EstudioDaoImpl implements IEstudioDao {
     public List<Estudio> listar() {
         List<Estudio> lista = new ArrayList<>();
         String sql = "SELECT * FROM estudio";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class EstudioDaoImpl implements IEstudioDao {
     @Override
     public boolean insertar(Estudio e) {
         String sql = "INSERT INTO estudio (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
@@ -39,7 +39,7 @@ public class EstudioDaoImpl implements IEstudioDao {
     @Override
     public boolean actualizar(Estudio e) {
         String sql = "UPDATE estudio SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
@@ -51,7 +51,7 @@ public class EstudioDaoImpl implements IEstudioDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM estudio WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

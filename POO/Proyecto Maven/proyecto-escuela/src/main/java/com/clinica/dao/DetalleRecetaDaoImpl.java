@@ -12,7 +12,7 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
     public List<DetalleReceta> listar() {
         List<DetalleReceta> lista = new ArrayList<>();
         String sql = "SELECT * FROM detalle_receta";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
     @Override
     public boolean insertar(DetalleReceta d) {
         String sql = "INSERT INTO detalle_receta (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
     @Override
     public boolean actualizar(DetalleReceta d) {
         String sql = "UPDATE detalle_receta SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM detalle_receta WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

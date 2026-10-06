@@ -12,7 +12,7 @@ public class FacturaDaoImpl implements IFacturaDao {
     public List<Factura> listar() {
         List<Factura> lista = new ArrayList<>();
         String sql = "SELECT * FROM factura";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class FacturaDaoImpl implements IFacturaDao {
     @Override
     public boolean insertar(Factura f) {
         String sql = "INSERT INTO factura (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class FacturaDaoImpl implements IFacturaDao {
     @Override
     public boolean actualizar(Factura f) {
         String sql = "UPDATE factura SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class FacturaDaoImpl implements IFacturaDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM factura WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

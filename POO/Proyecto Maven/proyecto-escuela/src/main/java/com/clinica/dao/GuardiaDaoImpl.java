@@ -12,7 +12,7 @@ public class GuardiaDaoImpl implements IGuardiaDao {
     public List<Guardia> listar() {
         List<Guardia> lista = new ArrayList<>();
         String sql = "SELECT * FROM guardia";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class GuardiaDaoImpl implements IGuardiaDao {
     @Override
     public boolean insertar(Guardia g) {
         String sql = "INSERT INTO guardia (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class GuardiaDaoImpl implements IGuardiaDao {
     @Override
     public boolean actualizar(Guardia g) {
         String sql = "UPDATE guardia SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class GuardiaDaoImpl implements IGuardiaDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM guardia WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

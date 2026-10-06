@@ -12,7 +12,7 @@ public class HabitacionDaoImpl implements IHabitacionDao {
     public List<Habitacion> listar() {
         List<Habitacion> lista = new ArrayList<>();
         String sql = "SELECT * FROM habitacion";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class HabitacionDaoImpl implements IHabitacionDao {
     @Override
     public boolean insertar(Habitacion h) {
         String sql = "INSERT INTO habitacion (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class HabitacionDaoImpl implements IHabitacionDao {
     @Override
     public boolean actualizar(Habitacion h) {
         String sql = "UPDATE habitacion SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class HabitacionDaoImpl implements IHabitacionDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM habitacion WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

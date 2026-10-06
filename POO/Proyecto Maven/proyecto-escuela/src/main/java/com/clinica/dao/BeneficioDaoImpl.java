@@ -12,7 +12,7 @@ public class BeneficioDaoImpl implements IBeneficioDao {
     public List<Beneficio> listar() {
         List<Beneficio> lista = new ArrayList<>();
         String sql = "SELECT * FROM beneficio";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class BeneficioDaoImpl implements IBeneficioDao {
     @Override
     public boolean insertar(Beneficio b) {
         String sql = "INSERT INTO beneficio (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
        
             return ps.executeUpdate() > 0;
@@ -40,7 +40,7 @@ public class BeneficioDaoImpl implements IBeneficioDao {
     @Override
     public boolean actualizar(Beneficio b) {
         String sql = "UPDATE beneficio SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
            
             return ps.executeUpdate() > 0;
@@ -53,7 +53,7 @@ public class BeneficioDaoImpl implements IBeneficioDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM beneficio WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

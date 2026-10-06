@@ -18,7 +18,7 @@ public class testdb extends HttpServlet {
         Connection conn = null; 
         
         try {
-            conn = com.clinica.config.Conexion.getConnection();
+            conn = com.clinica.config.Conexion.getInstancia().getConexion();
             
             if (conn != null) {
                 resp.getWriter().println("¡Conexión con la DB exitosa!");

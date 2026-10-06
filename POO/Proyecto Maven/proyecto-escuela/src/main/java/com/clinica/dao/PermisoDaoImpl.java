@@ -12,7 +12,7 @@ public class PermisoDaoImpl implements IPermisoDao {
     public List<Permiso> listar() {
         List<Permiso> lista = new ArrayList<>();
         String sql = "SELECT * FROM permiso";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -27,7 +27,7 @@ public class PermisoDaoImpl implements IPermisoDao {
     @Override
     public boolean insertar(Permiso p) {
         String sql = "INSERT INTO permiso (...) VALUES (...)";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class PermisoDaoImpl implements IPermisoDao {
     @Override
     public boolean actualizar(Permiso p) {
         String sql = "UPDATE permiso SET ... WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class PermisoDaoImpl implements IPermisoDao {
     @Override
     public boolean eliminar(int id) {
         String sql = "DELETE FROM permiso WHERE id = ?";
-        try (Connection con = Conexion.conectar();
+        try (Connection con = Conexion.getInstancia().getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
