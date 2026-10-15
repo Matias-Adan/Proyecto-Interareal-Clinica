@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 05-10-2026 a las 21:05:20
+-- Servidor: 127.0.0.1:3307
+-- Tiempo de generación: 15-10-2026 a las 19:27:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -59,10 +59,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_insertar` (IN `p_nombr
     SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_listar` (IN `p_id` INT, IN `p_soloBajoStock` TINYINT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `articulos`
-    WHERE (p_id IS NULL OR `idArticulo` = p_id)
-      AND (p_soloBajoStock IS NULL OR p_soloBajoStock = 0 OR `stockActual` <= `stockMinimo`);
+    WHERE `idArticulo` = p_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_actualizar` (IN `p_id` INT, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT)   BEGIN
@@ -555,6 +554,38 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `alergiapaciente`
+--
+
+CREATE TABLE `alergiapaciente` (
+  `idAlergiaPaciente` int(11) NOT NULL,
+  `pacienteId` int(11) NOT NULL,
+  `alergiaId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `alergias`
+--
+
+CREATE TABLE `alergias` (
+  `idAlergia` int(11) NOT NULL,
+  `nombre` varchar(40) NOT NULL,
+  `descripcion` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `alergias`
+--
+
+INSERT INTO `alergias` (`idAlergia`, `nombre`, `descripcion`) VALUES
+(1, 'Alergia al mani', 'Es alérgico al maní y derivados. Provoca hinchazón y picazón'),
+(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `articulos`
 --
 
@@ -565,24 +596,25 @@ CREATE TABLE `articulos` (
   `presentacion` varchar(100) DEFAULT NULL,
   `tipoArticulo` enum('MEDICAMENTO','INSUMO') NOT NULL,
   `stockActual` int(11) DEFAULT 0,
-  `stockMinimo` int(11) DEFAULT 0
+  `stockMinimo` int(11) DEFAULT 0,
+  `temperaturaIdealEnCelcius` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `articulos`
 --
 
-INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, `tipoArticulo`, `stockActual`, `stockMinimo`) VALUES
-(1, 'Ibuprofeno 600mg', 'Analgésico y antiinflamatorio', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30),
-(2, 'Amoxicilina 500mg', 'Antibiótico de amplio espectro', 'Cápsulas x 16', 'MEDICAMENTO', 90, 20),
-(3, 'Paracetamol 1g', 'Antipirético y analgésico', 'Comprimidos x 40', 'MEDICAMENTO', 210, 45),
-(4, 'Losartán 50mg', 'Antihipertensivo crónico', 'Comprimidos x 30', 'MEDICAMENTO', 80, 25),
-(5, 'Clonazepam 0.5mg', 'Ansiolítico bajo receta archivada', 'Comprimidos x 30', 'MEDICAMENTO', 45, 15),
-(6, 'Gasa estéril 10x10', 'Paquetes de gasas hidrófilas', 'Descartable', 'INSUMO', 450, 100),
-(7, 'Jeringas 5ml', 'Jeringas con aguja descartable', 'Descartable', 'INSUMO', 320, 50),
-(8, 'Guantes de látex M', 'Cajas de 100 unidades', 'Protección', 'INSUMO', 85, 20),
-(9, 'Alcohol en gel 500ml', 'Dispensador desinfectante', 'Sanitizante', 'INSUMO', 40, 15),
-(10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30);
+INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, `tipoArticulo`, `stockActual`, `stockMinimo`, `temperaturaIdealEnCelcius`) VALUES
+(1, 'Ibuprofeno 600mg', 'Analgésico y antiinflamatorio', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10),
+(2, 'Amoxicilina 500mg', 'Antibiótico de amplio espectro', 'Cápsulas x 16', 'MEDICAMENTO', 90, 20, 7),
+(3, 'Paracetamol 1g', 'Antipirético y analgésico', 'Comprimidos x 40', 'MEDICAMENTO', 210, 45, 10),
+(4, 'Losartán 50mg', 'Antihipertensivo crónico', 'Comprimidos x 30', 'MEDICAMENTO', 80, 25, 0),
+(5, 'Clonazepam 0.5mg', 'Ansiolítico bajo receta archivada', 'Comprimidos x 30', 'MEDICAMENTO', 45, 15, -2),
+(6, 'Gasa estéril 10x10', 'Paquetes de gasas hidrófilas', 'Descartable', 'INSUMO', 450, 100, NULL),
+(7, 'Jeringas 5ml', 'Jeringas con aguja descartable', 'Descartable', 'INSUMO', 320, 50, NULL),
+(8, 'Guantes de látex M', 'Cajas de 100 unidades', 'Protección', 'INSUMO', 85, 20, NULL),
+(9, 'Alcohol en gel 500ml', 'Dispensador desinfectante', 'Sanitizante', 'INSUMO', 40, 15, NULL),
+(10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL);
 
 -- --------------------------------------------------------
 
@@ -927,6 +959,18 @@ CREATE TABLE `roldeusuario` (
   `rolId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `roldeusuario`
+--
+
+INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
+(1, 6, 6),
+(2, 4, 3),
+(3, 2, 2),
+(4, 3, 5),
+(5, 1, 5),
+(6, 5, 5);
+
 -- --------------------------------------------------------
 
 --
@@ -1222,24 +1266,37 @@ CREATE TABLE `usuarios` (
   `telefono` varchar(30) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `obraSocialId` int(11) DEFAULT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1
+  `flagBorrado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `obraSocialId`, `activo`) VALUES
-(1, 'Juan Carlos', 'Gómez', '25412874', '1976-05-12', '1145887412', 'juan.gomez@email.com', 1, 1),
-(2, 'María Paula', 'Rodríguez', '38451254', '1994-08-22', '1169854712', 'maria.medica@clinica.com', NULL, 1),
-(3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 4, 1),
-(4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', NULL, 1),
-(5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 5, 1),
-(6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', NULL, 1);
+INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `obraSocialId`, `flagBorrado`) VALUES
+(1, 'Juan Carlos', 'Gómez', '25412874', '1976-05-12', '1145887412', 'juan.gomez@email.com', 1, 0),
+(2, 'María Paula', 'Rodríguez', '38451254', '1994-08-22', '1169854712', 'maria.medica@clinica.com', NULL, 0),
+(3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 4, 0),
+(4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', NULL, 0),
+(5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 5, 0),
+(6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', NULL, 0);
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `alergiapaciente`
+--
+ALTER TABLE `alergiapaciente`
+  ADD PRIMARY KEY (`idAlergiaPaciente`),
+  ADD KEY `pacienteId` (`pacienteId`);
+
+--
+-- Indices de la tabla `alergias`
+--
+ALTER TABLE `alergias`
+  ADD PRIMARY KEY (`idAlergia`);
 
 --
 -- Indices de la tabla `articulos`
@@ -1412,6 +1469,18 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `alergiapaciente`
+--
+ALTER TABLE `alergiapaciente`
+  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `alergias`
+--
+ALTER TABLE `alergias`
+  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `articulos`
 --
 ALTER TABLE `articulos`
@@ -1511,7 +1580,7 @@ ALTER TABLE `recetas`
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1546,6 +1615,12 @@ ALTER TABLE `usuarios`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `alergiapaciente`
+--
+ALTER TABLE `alergiapaciente`
+  ADD CONSTRAINT `alergiapaciente_ibfk_1` FOREIGN KEY (`pacienteId`) REFERENCES `usuarios` (`idUsuario`);
 
 --
 -- Filtros para la tabla `consultas`
