@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-10-2026 a las 21:48:25
+-- Tiempo de generación: 18-10-2026 a las 00:15:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -558,11 +558,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT,
       AND (p_soloActivos IS NULL OR p_soloActivos = 0 OR `activo` = 1);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_login` (IN `p_usuario` VARCHAR(100))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_login` (IN `p_email` VARCHAR(100))   BEGIN
     SELECT idUsuario, nombre, apellido, dni, email, obraSocialId
     FROM usuarios
     WHERE 
-        (nombre = p_usuario OR email = p_usuario)
+        (email = p_email)
         AND flagBorrado = 0;
 END$$
 
@@ -709,44 +709,6 @@ INSERT INTO `detallesreceta` (`idDetalle`, `cantidad`, `dosis`, `frecuencia`, `d
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `especialidades`
---
-
-CREATE TABLE `especialidades` (
-  `idEspecialidad` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `especialidades`
---
-
-INSERT INTO `especialidades` (`idEspecialidad`, `nombre`, `descripcion`) VALUES
-(1, 'Cardiología', 'Especialista en alta complejidad cardíaca'),
-(2, 'Pediatría Clínica', 'Atención infantil y neonatal'),
-(3, 'Enfermería General', 'Asistencia en piso e internaciones'),
-(4, 'Enfermería de Triage', 'Clasificación de urgencia en guardia'),
-(5, 'Medicina General', 'Atención primaria y clínica médica');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `estudios`
---
-
-CREATE TABLE `estudios` (
-  `idEstudio` int(11) NOT NULL,
-  `tipo` varchar(100) DEFAULT NULL,
-  `fecha` datetime NOT NULL,
-  `resultado` text DEFAULT NULL,
-  `archivo` varchar(255) DEFAULT NULL,
-  `pacienteId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `facturas`
 --
 
@@ -762,27 +724,6 @@ CREATE TABLE `facturas` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `guardia`
---
-
-CREATE TABLE `guardia` (
-  `idGuardia` int(11) NOT NULL,
-  `fecha` date NOT NULL,
-  `horaInicio` time DEFAULT NULL,
-  `horaFin` time DEFAULT NULL,
-  `estado` enum('Activa','Finalizada','Suspendida') DEFAULT 'Activa'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `guardia`
---
-
-INSERT INTO `guardia` (`idGuardia`, `fecha`, `horaInicio`, `horaFin`, `estado`) VALUES
-(1, '2026-09-14', '08:00:00', '16:00:00', 'Activa');
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `historiasclinicas`
 --
 
@@ -791,7 +732,7 @@ CREATE TABLE `historiasclinicas` (
   `fechaApertura` date NOT NULL,
   `antecedentes` text DEFAULT NULL,
   `observacion` text DEFAULT NULL,
-  `usuarioId` int(11) NOT NULL,
+  `pacienteId` int(11) NOT NULL,
   `flagBorrado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -799,29 +740,10 @@ CREATE TABLE `historiasclinicas` (
 -- Volcado de datos para la tabla `historiasclinicas`
 --
 
-INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `observacion`, `usuarioId`, `flagBorrado`) VALUES
+INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `observacion`, `pacienteId`, `flagBorrado`) VALUES
 (1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 1, 0),
 (2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 3, 0),
 (3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `medico_especialidad`
---
-
-CREATE TABLE `medico_especialidad` (
-  `idMedicoEspecialidad` int(11) NOT NULL,
-  `medicoId` int(11) NOT NULL,
-  `especialidadId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `medico_especialidad`
---
-
-INSERT INTO `medico_especialidad` (`idMedicoEspecialidad`, `medicoId`, `especialidadId`) VALUES
-(1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -934,19 +856,6 @@ CREATE TABLE `permisos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `personal`
---
-
-CREATE TABLE `personal` (
-  `idPersonal` int(11) NOT NULL,
-  `trabajo` varchar(40) NOT NULL,
-  `descripcion` varchar(100) NOT NULL,
-  `rolId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `recetas`
 --
 
@@ -1026,7 +935,7 @@ CREATE TABLE `triage` (
   `estado` varchar(50) DEFAULT NULL,
   `observacion` text DEFAULT NULL,
   `pacienteId` int(11) NOT NULL,
-  `guardiaId` int(11) NOT NULL,
+  `consultorioId` int(11) NOT NULL,
   `enfermeroId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1282,7 +1191,7 @@ CREATE TABLE `usuarios` (
   `dni` varchar(20) NOT NULL,
   `fechaNacimiento` date DEFAULT NULL,
   `telefono` varchar(30) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
   `password` varchar(40) NOT NULL,
   `obraSocialId` int(11) DEFAULT NULL,
   `flagBorrado` tinyint(1) NOT NULL DEFAULT 0
@@ -1347,20 +1256,6 @@ ALTER TABLE `detallesreceta`
   ADD KEY `fk_detreceta_articulo` (`articuloId`);
 
 --
--- Indices de la tabla `especialidades`
---
-ALTER TABLE `especialidades`
-  ADD PRIMARY KEY (`idEspecialidad`),
-  ADD UNIQUE KEY `nombre` (`nombre`);
-
---
--- Indices de la tabla `estudios`
---
-ALTER TABLE `estudios`
-  ADD PRIMARY KEY (`idEstudio`),
-  ADD KEY `fk_estudios_paciente` (`pacienteId`);
-
---
 -- Indices de la tabla `facturas`
 --
 ALTER TABLE `facturas`
@@ -1369,25 +1264,11 @@ ALTER TABLE `facturas`
   ADD KEY `fk_facturas_obrasocial` (`obraSocialId`);
 
 --
--- Indices de la tabla `guardia`
---
-ALTER TABLE `guardia`
-  ADD PRIMARY KEY (`idGuardia`);
-
---
 -- Indices de la tabla `historiasclinicas`
 --
 ALTER TABLE `historiasclinicas`
   ADD PRIMARY KEY (`idHistoria`),
-  ADD UNIQUE KEY `usuarioId` (`usuarioId`);
-
---
--- Indices de la tabla `medico_especialidad`
---
-ALTER TABLE `medico_especialidad`
-  ADD PRIMARY KEY (`idMedicoEspecialidad`),
-  ADD UNIQUE KEY `uq_medico_especialidad` (`medicoId`,`especialidadId`),
-  ADD KEY `fk_medicoesp_especialidad` (`especialidadId`);
+  ADD UNIQUE KEY `usuarioId` (`pacienteId`);
 
 --
 -- Indices de la tabla `movimientos_stock`
@@ -1419,13 +1300,6 @@ ALTER TABLE `permisos`
   ADD PRIMARY KEY (`idPermiso`);
 
 --
--- Indices de la tabla `personal`
---
-ALTER TABLE `personal`
-  ADD PRIMARY KEY (`idPersonal`),
-  ADD KEY `rolId` (`rolId`);
-
---
 -- Indices de la tabla `recetas`
 --
 ALTER TABLE `recetas`
@@ -1453,7 +1327,7 @@ ALTER TABLE `roles`
 ALTER TABLE `triage`
   ADD PRIMARY KEY (`idTriage`),
   ADD KEY `fk_triage_paciente` (`pacienteId`),
-  ADD KEY `fk_triage_guardia` (`guardiaId`),
+  ADD KEY `fk_triage_guardia` (`consultorioId`),
   ADD KEY `fk_triage_enfermero` (`enfermeroId`);
 
 --
@@ -1481,6 +1355,7 @@ ALTER TABLE `ubicacionpaciente`
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`idUsuario`),
   ADD UNIQUE KEY `dni` (`dni`),
+  ADD UNIQUE KEY `uc_email` (`email`),
   ADD KEY `fk_usuarios_obrasocial` (`obraSocialId`);
 
 --
@@ -1524,40 +1399,16 @@ ALTER TABLE `detallesreceta`
   MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `especialidades`
---
-ALTER TABLE `especialidades`
-  MODIFY `idEspecialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT de la tabla `estudios`
---
-ALTER TABLE `estudios`
-  MODIFY `idEstudio` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
   MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `guardia`
---
-ALTER TABLE `guardia`
-  MODIFY `idGuardia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de la tabla `historiasclinicas`
 --
 ALTER TABLE `historiasclinicas`
   MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `medico_especialidad`
---
-ALTER TABLE `medico_especialidad`
-  MODIFY `idMedicoEspecialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos_stock`
@@ -1582,12 +1433,6 @@ ALTER TABLE `permisorol`
 --
 ALTER TABLE `permisos`
   MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `personal`
---
-ALTER TABLE `personal`
-  MODIFY `idPersonal` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `recetas`
@@ -1656,12 +1501,6 @@ ALTER TABLE `detallesreceta`
   ADD CONSTRAINT `fk_detreceta_receta` FOREIGN KEY (`recetaId`) REFERENCES `recetas` (`idReceta`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `estudios`
---
-ALTER TABLE `estudios`
-  ADD CONSTRAINT `fk_estudios_paciente` FOREIGN KEY (`pacienteId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
-
---
 -- Filtros para la tabla `facturas`
 --
 ALTER TABLE `facturas`
@@ -1672,14 +1511,7 @@ ALTER TABLE `facturas`
 -- Filtros para la tabla `historiasclinicas`
 --
 ALTER TABLE `historiasclinicas`
-  ADD CONSTRAINT `fk_hc_usuario` FOREIGN KEY (`usuarioId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `medico_especialidad`
---
-ALTER TABLE `medico_especialidad`
-  ADD CONSTRAINT `fk_medicoesp_especialidad` FOREIGN KEY (`especialidadId`) REFERENCES `especialidades` (`idEspecialidad`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_medicoesp_medico` FOREIGN KEY (`medicoId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_hc_usuario` FOREIGN KEY (`pacienteId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `movimientos_stock`
@@ -1694,12 +1526,6 @@ ALTER TABLE `movimientos_stock`
 ALTER TABLE `permisorol`
   ADD CONSTRAINT `permisorol_ibfk_1` FOREIGN KEY (`rolId`) REFERENCES `roles` (`idRol`),
   ADD CONSTRAINT `permisorol_ibfk_2` FOREIGN KEY (`permisoId`) REFERENCES `permisos` (`idPermiso`);
-
---
--- Filtros para la tabla `personal`
---
-ALTER TABLE `personal`
-  ADD CONSTRAINT `personal_ibfk_1` FOREIGN KEY (`rolId`) REFERENCES `roles` (`idRol`);
 
 --
 -- Filtros para la tabla `recetas`
@@ -1719,7 +1545,7 @@ ALTER TABLE `roldeusuario`
 --
 ALTER TABLE `triage`
   ADD CONSTRAINT `fk_triage_enfermero` FOREIGN KEY (`enfermeroId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_triage_guardia` FOREIGN KEY (`guardiaId`) REFERENCES `guardia` (`idGuardia`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_triage_guardia` FOREIGN KEY (`consultorioId`) REFERENCES `consultorio` (`idConsultorio`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_triage_paciente` FOREIGN KEY (`pacienteId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
 
 --
@@ -1727,7 +1553,7 @@ ALTER TABLE `triage`
 --
 ALTER TABLE `turnos`
   ADD CONSTRAINT `fk_turnos_consultorio` FOREIGN KEY (`consultorioId`) REFERENCES `consultorio` (`idConsultorio`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_turnos_especialidad` FOREIGN KEY (`especialidadId`) REFERENCES `especialidades` (`idEspecialidad`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_turnos_especialidad` FOREIGN KEY (`especialidadId`) REFERENCES `roles` (`idRol`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_turnos_medico` FOREIGN KEY (`medicoId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_turnos_paciente` FOREIGN KEY (`pacienteId`) REFERENCES `usuarios` (`idUsuario`) ON DELETE CASCADE;
 
