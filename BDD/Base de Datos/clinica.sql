@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1:3307
--- Tiempo de generación: 15-10-2026 a las 19:27:37
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 17-10-2026 a las 20:42:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -79,11 +79,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_insertar` (IN `p_fecha
     SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_listar` (IN `p_id` INT, IN `p_historiaId` INT, IN `p_medicoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `consultas`
-    WHERE (p_id IS NULL OR `idConsulta` = p_id)
-      AND (p_historiaId IS NULL OR `historiaId` = p_historiaId)
-      AND (p_medicoId IS NULL OR `medicoId` = p_medicoId)
+    WHERE (`idConsulta` = p_id)
     ORDER BY `fechaHora` DESC;
 END$$
 
@@ -115,10 +113,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_insertar` (IN `p_num
     SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_listar` (IN `p_id` INT, IN `p_estado` ENUM('Disponible','Ocupado','En mantenimiento'))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `consultorio`
-    WHERE (p_id IS NULL OR `idHabitacion` = p_id)
-      AND (p_estado IS NULL OR `estado` = p_estado);
+    WHERE (`idHabitacion` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_actualizar` (IN `p_id` INT, IN `p_dosis` VARCHAR(100), IN `p_frecuencia` VARCHAR(100), IN `p_duracion` VARCHAR(100))   BEGIN
@@ -163,10 +160,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_insertar` (IN `p_
     COMMIT;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_listar` (IN `p_id` INT, IN `p_recetaId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `detallesreceta`
-    WHERE (p_id IS NULL OR `idDetalle` = p_id)
-      AND (p_recetaId IS NULL OR `recetaId` = p_recetaId);
+    WHERE (`idDetalle` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_especialidades_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT)   BEGIN
@@ -207,10 +203,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_estudios_insertar` (IN `p_tipo` 
     SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_estudios_listar` (IN `p_id` INT, IN `p_pacienteId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_estudios_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `estudios`
-    WHERE (p_id IS NULL OR `idEstudio` = p_id)
-      AND (p_pacienteId IS NULL OR `pacienteId` = p_pacienteId)
+    WHERE (`idEstudio` = p_id)
     ORDER BY `fecha` DESC;
 END$$
 
@@ -417,6 +412,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_roles_listar` (IN `p_id` INT)   
     SELECT * FROM `roles` WHERE (p_id IS NULL OR `idRol` = p_id);
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_seleccionar` (IN `tabla` VARCHAR(64))   BEGIN
+    -- Construimos la sentencia SQL de forma dinámica
+    SET @sql = CONCAT('SELECT * FROM `', tabla, '`');
+    
+    -- Preparamos la consulta
+    PREPARE stmt FROM @sql;
+    
+    -- Ejecutamos la consulta
+    EXECUTE stmt;
+    
+    -- Liberamos la memoria de la sentencia preparada
+    DEALLOCATE PREPARE stmt;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_actualizar` (IN `p_id` INT, IN `p_prioridad` INT, IN `p_estado` VARCHAR(50), IN `p_observacion` TEXT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `triage` WHERE `idTriage` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El registro de triage indicado no existe.';
@@ -527,11 +536,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_actualizar` (IN `p_id` 
     WHERE `idUsuario` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_id` INT, IN `p_activo` TINYINT(1))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_id` INT, IN `p_estado` TINYINT(1))   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `usuarios` WHERE `idUsuario` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El usuario indicado no existe.';
     END IF;
-    UPDATE `usuarios` SET `activo` = p_activo WHERE `idUsuario` = p_id;
+    UPDATE `usuarios` SET `flagBorrado` = p_estado WHERE `idUsuario` = p_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_obraSocialId` INT, IN `p_rolId` INT, OUT `p_nuevoId` INT)   BEGIN
@@ -547,6 +556,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT,
     WHERE (p_id IS NULL OR `idUsuario` = p_id)
       AND (p_rolId IS NULL OR `rolId` = p_rolId)
       AND (p_soloActivos IS NULL OR p_soloActivos = 0 OR `activo` = 1);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_login` (IN `p_usuario` VARCHAR(100), IN `p_password` VARCHAR(255))   BEGIN
+    SELECT idUsuario, nombre, apellido, dni, email, obraSocialId
+    FROM usuarios
+    WHERE 
+        (nombre = p_usuario OR email = p_usuario)
+        AND flagBorrado = 0;
 END$$
 
 DELIMITER ;
@@ -773,19 +790,19 @@ CREATE TABLE `historiasclinicas` (
   `idHistoria` int(11) NOT NULL,
   `fechaApertura` date NOT NULL,
   `antecedentes` text DEFAULT NULL,
-  `alergia` text DEFAULT NULL,
   `observacion` text DEFAULT NULL,
-  `usuarioId` int(11) NOT NULL
+  `usuarioId` int(11) NOT NULL,
+  `flagBorrado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `historiasclinicas`
 --
 
-INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `alergia`, `observacion`, `usuarioId`) VALUES
-(1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Penicilina', 'Paciente regular', 1),
-(2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 'Ninguna', 3),
-(3, '2025-06-22', 'Asma infantil controlado.', 'Aspirina', 'Fumador social', 5);
+INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `observacion`, `usuarioId`, `flagBorrado`) VALUES
+(1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 1, 0),
+(2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 3, 0),
+(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0);
 
 -- --------------------------------------------------------
 
@@ -875,19 +892,20 @@ CREATE TABLE `obrassociales` (
   `nombre` varchar(100) NOT NULL,
   `numeroConvenio` varchar(50) DEFAULT NULL,
   `beneficios` text DEFAULT NULL,
-  `cobertura` varchar(100) DEFAULT NULL
+  `cobertura` varchar(100) DEFAULT NULL,
+  `flagBorrado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `obrassociales`
 --
 
-INSERT INTO `obrassociales` (`idObraSocial`, `nombre`, `numeroConvenio`, `beneficios`, `cobertura`) VALUES
-(1, 'OSDE 210', 'CO-88421', 'Consultas ilimitadas, 40% en medicamentos', '80%'),
-(2, 'Swiss Medical', 'CO-99312', 'Guardia libre, odontología preventiva', '100%'),
-(3, 'Galeno Silver', 'CO-55214', 'Kinesiología hasta 20 sesiones/año', '70%'),
-(4, 'PAMI', 'CO-11200', 'Medicamentos gratis crónicos, prótesis', '100%'),
-(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%');
+INSERT INTO `obrassociales` (`idObraSocial`, `nombre`, `numeroConvenio`, `beneficios`, `cobertura`, `flagBorrado`) VALUES
+(1, 'OSDE 210', 'CO-88421', 'Consultas ilimitadas, 40% en medicamentos', '80%', 0),
+(2, 'Swiss Medical', 'CO-99312', 'Guardia libre, odontología preventiva', '100%', 0),
+(3, 'Galeno Silver', 'CO-55214', 'Kinesiología hasta 20 sesiones/año', '70%', 0),
+(4, 'PAMI', 'CO-11200', 'Medicamentos gratis crónicos, prótesis', '100%', 0),
+(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0);
 
 -- --------------------------------------------------------
 
