@@ -6,18 +6,18 @@ public class HistoriaClinica {
 	private int idHistoria;
 	private LocalDate fechaApertura;
 	private String antecedentes;
-	private String alergia;
 	private String obvservacion;
 	private int pacienteId;
+	private boolean flagBorrado;
 	
-	public HistoriaClinica(int idHistoria, LocalDate fechaApertura, String antecedentes, String alergia,
-			String obvservacion, int pacienteId) {
+	public HistoriaClinica(int idHistoria, LocalDate fechaApertura, String antecedentes,
+	 String obvservacion, int pacienteId, boolean flagBorrado) {
 		this.idHistoria = idHistoria;
 		this.fechaApertura = fechaApertura;
 		this.antecedentes = antecedentes;
-		this.alergia = alergia;
 		this.obvservacion = obvservacion;
 		this.pacienteId = pacienteId;
+		this.flagBorrado = flagBorrado;
 	}
 
 	public int getIdHistoria() {
@@ -44,14 +44,6 @@ public class HistoriaClinica {
 		this.antecedentes = antecedentes;
 	}
 
-	public String getAlergia() {
-		return alergia;
-	}
-
-	public void setAlergia(String alergia) {
-		this.alergia = alergia;
-	}
-
 	public String getObvservacion() {
 		return obvservacion;
 	}
@@ -67,6 +59,15 @@ public class HistoriaClinica {
 	public void setPacienteId(int pacienteId) {
 		this.pacienteId = pacienteId;
 	}
+
+	public boolean getFlagBorrado() {
+		return flagBorrado;
+	}
+
+	public void setFlagBorrado(boolean flagBorrado) {
+		this.flagBorrado = flagBorrado;
+	}
+	
 	
 	
 }

@@ -9,17 +9,19 @@ public class Triage {
 	private String estado;
 	private String observacion;
 	private int pacienteId;
-	private int guardiaId;
+	private int consultorioId;
+	private int enfermeroId;
 	
 	public Triage(int idTriage, LocalDate fecha, String prioridad, String estado, String observacion, int pacienteId,
-			int guardiaId) {
+			int consultorioId, int enfermeroId) {
 		this.idTriage = idTriage;
 		this.fecha = fecha;
 		this.prioridad = prioridad;
 		this.estado = estado;
 		this.observacion = observacion;
 		this.pacienteId = pacienteId;
-		this.guardiaId = guardiaId;
+		this.consultorioId = consultorioId;
+		this.enfermeroId = enfermeroId;
 	}
 
 	public int getIdTriage() {
@@ -70,12 +72,28 @@ public class Triage {
 		this.pacienteId = pacienteId;
 	}
 
-	public int getGuardiaId() {
-		return guardiaId;
+	public int getconsultorioId() {
+		return consultorioId;
 	}
 
-	public void setGuardiaId(int guardiaId) {
-		this.guardiaId = guardiaId;
+	public void setconsultorioId(int consultorioId) {
+		this.consultorioId = consultorioId;
+	}
+
+	public int getConsultorioId() {
+		return consultorioId;
+	}
+
+	public void setConsultorioId(int consultorioId) {
+		this.consultorioId = consultorioId;
+	}
+
+	public int getEnfermeroId() {
+		return enfermeroId;
+	}
+
+	public void setEnfermeroId(int enfermeroId) {
+		this.enfermeroId = enfermeroId;
 	}
 	
 	

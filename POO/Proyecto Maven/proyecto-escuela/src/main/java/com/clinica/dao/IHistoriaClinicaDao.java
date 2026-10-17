@@ -6,6 +6,7 @@ import com.clinica.modelo.HistoriaClinica;
 
 public interface IHistoriaClinicaDao {
 	boolean insertar(HistoriaClinica h);
+	HistoriaClinica buscarPorId(int id);
 	List<HistoriaClinica> listar();
 	boolean actualizar(HistoriaClinica h);
 	boolean eliminar(int id);

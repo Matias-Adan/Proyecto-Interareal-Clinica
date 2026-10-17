@@ -5,7 +5,6 @@ import com.clinica.modelo.DetalleReceta;
 
 public interface IDetalleRecetaDao {
 	boolean insertar(DetalleReceta d);
+	DetalleReceta buscarPorId(int id);
 	List<DetalleReceta> listar();
-	boolean actualizar(DetalleReceta d);
-	boolean eliminar(int id);
 }

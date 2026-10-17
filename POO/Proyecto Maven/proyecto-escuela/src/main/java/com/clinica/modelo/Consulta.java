@@ -9,17 +9,17 @@ public class Consulta {
 	private String diagnostico;
 	private String obvservacion;
 	private int historialId;
-	private int empleadoId;
+	private int medicoId;
 	
 	public Consulta(int idConsulta, LocalDateTime fechaHora, String motivo, String diagnostico,
-			String obvservacion, int historialId, int empleadoId) {
+			String obvservacion, int historialId, int medicoId) {
 		this.idConsulta = idConsulta;
 		this.fechaHora = fechaHora;
 		this.motivo = motivo;
 		this.diagnostico = diagnostico;
 		this.obvservacion = obvservacion;
 		this.historialId = historialId;
-		this.empleadoId = empleadoId;
+		this.medicoId = medicoId;
 	}
 
 	public int getIdConsulta() {
@@ -70,12 +70,12 @@ public class Consulta {
 		this.historialId = historialId;
 	}
 
-	public int getEmpleadoId() {
-		return empleadoId;
+	public int getMedicoId() {
+		return medicoId;
 	}
 
-	public void setEmpleadoId(int empleadoId) {
-		this.empleadoId = empleadoId;
+	public void setMedicoId(int medicoId) {
+		this.medicoId = medicoId;
 	}
 	
 	

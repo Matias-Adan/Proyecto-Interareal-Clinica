@@ -4,20 +4,21 @@ import java.time.LocalDate;
 
 public class UbicacionPaciente {
 	private int idUbicacion;
-	private String tipo;
+	private String tipoAtencion;
 	private LocalDate fechaIngreso;
 	private LocalDate fechaSalida;
 	private int pacienteId;
-	private int habitacionId;
+	private int medicoId;
+	private int consultorioId;
 	
-	public UbicacionPaciente(int idUbicacion, String tipo, LocalDate fechaIngreso, LocalDate fechaSalida,
-			int pacienteId, int habitacionId) {
+	public UbicacionPaciente(int idUbicacion, String tipoAtencion, LocalDate fechaIngreso, LocalDate fechaSalida,
+			int pacienteId, int consultorioId) {
 		this.idUbicacion = idUbicacion;
-		this.tipo = tipo;
+		this.tipoAtencion = tipoAtencion;
 		this.fechaIngreso = fechaIngreso;
 		this.fechaSalida = fechaSalida;
 		this.pacienteId = pacienteId;
-		this.habitacionId = habitacionId;
+		this.consultorioId = consultorioId;
 	}
 
 	public int getIdUbicacion() {
@@ -28,12 +29,12 @@ public class UbicacionPaciente {
 		this.idUbicacion = idUbicacion;
 	}
 
-	public String getTipo() {
-		return tipo;
+	public String getTipoAtencion() {
+		return tipoAtencion;
 	}
 
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
+	public void setTipoAtencion(String tipoAtencion) {
+		this.tipoAtencion = tipoAtencion;
 	}
 
 	public LocalDate getFechaIngreso() {
@@ -59,13 +60,23 @@ public class UbicacionPaciente {
 	public void setPacienteId(int pacienteId) {
 		this.pacienteId = pacienteId;
 	}
+	
+	
 
-	public int getHabitacionId() {
-		return habitacionId;
+	public int getMedicoId() {
+		return medicoId;
 	}
 
-	public void setHabitacionId(int habitacionId) {
-		this.habitacionId = habitacionId;
+	public void setMedicoId(int medicoId) {
+		this.medicoId = medicoId;
+	}
+
+	public int getConsultorioId() {
+		return consultorioId;
+	}
+
+	public void setConsultorioId(int consultorioId) {
+		this.consultorioId = consultorioId;
 	}
 	
 	

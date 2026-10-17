@@ -1,8 +1,11 @@
 package com.clinica.dao;
 
-import com.clinica.modelo.Permiso;
 import com.clinica.config.Conexion;
-import java.sql.*;
+import com.clinica.modelo.Permiso;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,53 +14,84 @@ public class PermisoDaoImpl implements IPermisoDao {
     @Override
     public List<Permiso> listar() {
         List<Permiso> lista = new ArrayList<>();
-        String sql = "SELECT * FROM permiso";
+        String sql = "{CALL sp_seleccionar(\"permisos\")}";
+        
         try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = con.prepareCall(sql);
+             ResultSet rs = cs.executeQuery()) {
+
             while (rs.next()) {
-                
+                Permiso p = new Permiso(
+                        rs.getInt("idPermiso"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion")
+                );
+                lista.add(p);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("❌ Error al listar permisos: " + e.getMessage());
         }
         return lista;
     }
 
     @Override
-    public boolean insertar(Permiso p) {
-        String sql = "INSERT INTO permiso (...) VALUES (...)";
+    public Permiso buscarPorId(int id) {
+        Permiso p = null;
+        String sql = "{CALL sp_permisos_listar(?)}";
+
         try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            return ps.executeUpdate() > 0;
+             CallableStatement cs = con.prepareCall(sql)) {
+            
+            cs.setInt(1, id);
+            try (ResultSet rs = cs.executeQuery()) {
+                if (rs.next()) {
+                    p = new Permiso(
+                            rs.getInt("idPermiso"),
+                            rs.getString("nombre"),
+                            rs.getString("descripcion")
+                    );
+                }
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("❌ Error al buscar permiso: " + e.getMessage());
+        }
+        return p;
+    }
+
+    @Override
+    public boolean insertar(Permiso p) {
+        String sql = "{CALL sp_permisos_insertar(?, ?)}";
+
+        try (Connection con = Conexion.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall(sql)) {
+            
+            cs.setString(1, p.getNombre());
+            cs.setString(2, p.getDescripcion());
+
+            return cs.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("❌ Error al insertar permiso: " + e.getMessage());
             return false;
         }
     }
 
     @Override
     public boolean actualizar(Permiso p) {
-        String sql = "UPDATE permiso SET ... WHERE id = ?";
+        String sql = "{CALL sp_permisos_actualizar(?, ?, ?)}";
+
         try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            return ps.executeUpdate() > 0;
+             CallableStatement cs = con.prepareCall(sql)) {
+            
+            cs.setInt(1, p.getIdPermiso());
+            cs.setString(2, p.getNombre());
+            cs.setString(3, p.getDescripcion());
+
+            return cs.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("❌ Error al actualizar permiso: " + e.getMessage());
             return false;
         }
     }
 
-    @Override
-    public boolean eliminar(int id) {
-        String sql = "DELETE FROM permiso WHERE id = ?";
-        try (Connection con = Conexion.getInstancia().getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+
 }

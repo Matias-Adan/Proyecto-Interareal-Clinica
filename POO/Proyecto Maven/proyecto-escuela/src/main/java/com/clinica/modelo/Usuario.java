@@ -12,9 +12,10 @@ public class Usuario {
 	private String email;
 	private String password;
 	private int obraSocialId;
+	private boolean flagBorrado;
 
 	public Usuario(int idUsuario, String nombre, String apellido, int dni, LocalDate fechaNacimiento, int telefono,
-			String email, String password, int obraSocialId) {
+			String email, String password, int obraSocialId, boolean flagBorrado) {
 		this.idUsuario = idUsuario;
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -24,6 +25,7 @@ public class Usuario {
 		this.email = email;
 		this.password = password;
 		this.obraSocialId = obraSocialId;
+		this.flagBorrado = flagBorrado;
 	}
 
 	public int getIdUsuario() {
@@ -97,5 +99,15 @@ public class Usuario {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public boolean isFlagBorrado() {
+		return flagBorrado;
+	}
+
+	public void setFlagBorrado(boolean flagBorrado) {
+		this.flagBorrado = flagBorrado;
+	}
+	
+	
 	
 }

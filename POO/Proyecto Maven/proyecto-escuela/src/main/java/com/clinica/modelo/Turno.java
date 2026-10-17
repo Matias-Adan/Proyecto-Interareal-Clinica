@@ -6,18 +6,29 @@ import java.time.LocalTime;
 public class Turno {
 	private int idTurno;
 	private LocalDate fecha;
-	private LocalTime hora;
+	private LocalTime horaInicio;
+	private LocalTime horaFin;
 	private String estado;
+	private String motivo;
 	private int pacienteId;
 	private int personalId;
+	private int especialidadId;
+	private int consultorioId;
 	
-	public Turno(int idTurno, LocalDate fecha, LocalTime hora, String estado, int pacienteId, int personalId) {
+	
+
+	public Turno(int idTurno, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, String estado, String motivo,
+			int pacienteId, int personalId, int especialidadId, int consultorioId) {
 		this.idTurno = idTurno;
 		this.fecha = fecha;
-		this.hora = hora;
+		this.horaInicio = horaInicio;
+		this.horaFin = horaFin;
 		this.estado = estado;
+		this.motivo = motivo;
 		this.pacienteId = pacienteId;
 		this.personalId = personalId;
+		this.especialidadId = especialidadId;
+		this.consultorioId = consultorioId;
 	}
 
 	public int getIdTurno() {
@@ -36,13 +47,6 @@ public class Turno {
 		this.fecha = fecha;
 	}
 
-	public LocalTime getHora() {
-		return hora;
-	}
-
-	public void setHora(LocalTime hora) {
-		this.hora = hora;
-	}
 
 	public String getEstado() {
 		return estado;
@@ -66,6 +70,46 @@ public class Turno {
 
 	public void setPersonalId(int personalId) {
 		this.personalId = personalId;
+	}
+
+	public LocalTime getHoraInicio() {
+		return horaInicio;
+	}
+
+	public void setHoraInicio(LocalTime horaInicio) {
+		this.horaInicio = horaInicio;
+	}
+
+	public LocalTime getHoraFin() {
+		return horaFin;
+	}
+
+	public void setHoraFin(LocalTime horaFin) {
+		this.horaFin = horaFin;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
+	}
+
+	public int getEspecialidadId() {
+		return especialidadId;
+	}
+
+	public void setEspecialidadId(int especialidadId) {
+		this.especialidadId = especialidadId;
+	}
+
+	public int getConsultorioId() {
+		return consultorioId;
+	}
+
+	public void setConsultorioId(int consultorioId) {
+		this.consultorioId = consultorioId;
 	}
 
 	

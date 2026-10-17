@@ -6,13 +6,15 @@ public class ObraSocial {
 	private int numeroConvenio;
 	private String beneficios;
 	private String cobertura;
+	private boolean flagBorrado;
 
-	public ObraSocial(int idObraSocial,  String nombre,  int numeroConvenio,  String beneficios, String cobertura) {
+	public ObraSocial(int idObraSocial,  String nombre,  int numeroConvenio,  String beneficios, String cobertura, boolean flagBorrado) {
 		this.idObraSocial = idObraSocial;
 		this.nombre = nombre;
 		this.numeroConvenio = numeroConvenio;
 		this.beneficios = beneficios;
-		this.cobertura = cobertura;	
+		this.cobertura = cobertura;
+		this.flagBorrado = flagBorrado;
 	}
 	
 	public int getIdObraSocial() {
@@ -63,5 +65,15 @@ public class ObraSocial {
 	public void setCobertura(String cobertura) {
 		this.cobertura = cobertura;
 	}
+
+	public boolean isFlagBorrado() {
+		return flagBorrado;
+	}
+
+	public void setFlagBorrado(boolean flagBorrado) {
+		this.flagBorrado = flagBorrado;
+	}
+	
+	
 	
 }
