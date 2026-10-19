@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-10-2026 a las 16:32:06
+-- Tiempo de generación: 19-10-2026 a las 17:10:53
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -518,7 +518,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_listar` (IN `p
       AND (p_soloActivos IS NULL OR p_soloActivos = 0 OR `fechaSalida` IS NULL);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_obraSocialId` INT, IN `p_rolId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT, IN `p_flagBorrado` BOOLEAN)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `usuarios` WHERE `idUsuario` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El usuario indicado no existe.';
     END IF;
@@ -530,8 +530,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_actualizar` (IN `p_id` 
         `fechaNacimiento` = p_fechaNacimiento,
         `telefono` = p_telefono,
         `email` = p_email,
+        `password` = p_password,
         `obraSocialId` = p_obraSocialId,
-        `rolId` = p_rolId
+        `flagBorrado` = p_flagBorrado
     WHERE `idUsuario` = p_id;
 END$$
 
@@ -542,12 +543,16 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_
     UPDATE `usuarios` SET `flagBorrado` = p_estado WHERE `idUsuario` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_obraSocialId` INT, IN `p_rolId` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_eliminar` (IN `p_id` INT)   BEGIN
+	DELETE FROM usuarios
+    WHERE idUsuario = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT, IN `p_flagBorrado` BOOLEAN)   BEGIN
     INSERT INTO `usuarios`
-        (`nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `obraSocialId`, `rolId`)
+        (`nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `password`, `obraSocialId`, `flagBorrado`)
     VALUES
-        (p_nombre, p_apellido, p_dni, p_fechaNacimiento, p_telefono, p_email, p_obraSocialId, p_rolId);
-    SET p_nuevoId = LAST_INSERT_ID();
+        (p_nombre, p_apellido, p_dni, p_fechaNacimiento, p_telefono, p_email, p_password, p_obraSocialId, p_flagBorrado);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT)   BEGIN
@@ -1473,7 +1478,7 @@ ALTER TABLE `ubicacionpaciente`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restricciones para tablas volcadas
