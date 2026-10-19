@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-10-2026 a las 00:15:02
+-- Tiempo de generación: 19-10-2026 a las 16:32:06
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -51,12 +51,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_eliminar` (IN `p_id` I
     DELETE FROM `articulos` WHERE `idArticulo` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT, IN `p_presentacion` VARCHAR(100), IN `p_tipoArticulo` ENUM('MEDICAMENTO','INSUMO'), IN `p_stockInicial` INT, IN `p_stockMinimo` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT, IN `p_presentacion` VARCHAR(100), IN `p_tipoArticulo` ENUM('MEDICAMENTO','INSUMO'), IN `p_stockInicial` INT, IN `p_stockMinimo` INT, IN `p_temperaturaIdealEnCelcius` DOUBLE)   BEGIN
     INSERT INTO `articulos`
-        (`nombre`, `descripcion`, `presentacion`, `tipoArticulo`, `stockActual`, `stockMinimo`)
+        (`nombre`, `descripcion`, `presentacion`, `tipoArticulo`, `stockActual`, `stockMinimo`, `temperaturaIdealEnCelcius`)
     VALUES
-        (p_nombre, p_descripcion, p_presentacion, p_tipoArticulo, COALESCE(p_stockInicial, 0), COALESCE(p_stockMinimo, 0));
-    SET p_nuevoId = LAST_INSERT_ID();
+        (p_nombre, p_descripcion, p_presentacion, p_tipoArticulo, COALESCE(p_stockInicial, 0), COALESCE(p_stockMinimo, 0), p_temperaturaIdealEnCelcius);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_listar` (IN `p_id` INT)   BEGIN
@@ -551,15 +550,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre
     SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT, IN `p_rolId` INT, IN `p_soloActivos` TINYINT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `usuarios`
-    WHERE (p_id IS NULL OR `idUsuario` = p_id)
-      AND (p_rolId IS NULL OR `rolId` = p_rolId)
-      AND (p_soloActivos IS NULL OR p_soloActivos = 0 OR `activo` = 1);
+    WHERE (`idUsuario` = p_id)
+      AND (`flagBorrado` = 0);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_login` (IN `p_email` VARCHAR(100))   BEGIN
-    SELECT idUsuario, nombre, apellido, dni, email, obraSocialId
+    SELECT idUsuario, nombre, apellido, dni, fechaNacimiento, telefono, email, password, obraSocialId, flagBorrado
     FROM usuarios
     WHERE 
         (email = p_email)
@@ -631,7 +629,8 @@ INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, 
 (7, 'Jeringas 5ml', 'Jeringas con aguja descartable', 'Descartable', 'INSUMO', 320, 50, NULL),
 (8, 'Guantes de látex M', 'Cajas de 100 unidades', 'Protección', 'INSUMO', 85, 20, NULL),
 (9, 'Alcohol en gel 500ml', 'Dispensador desinfectante', 'Sanitizante', 'INSUMO', 40, 15, NULL),
-(10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL);
+(10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL),
+(11, 'micho', 'tito', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10);
 
 -- --------------------------------------------------------
 
@@ -1378,7 +1377,7 @@ ALTER TABLE `alergias`
 -- AUTO_INCREMENT de la tabla `articulos`
 --
 ALTER TABLE `articulos`
-  MODIFY `idArticulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `idArticulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `consultas`
