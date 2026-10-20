@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-10-2026 a las 03:59:12
+-- Tiempo de generación: 20-10-2026 a las 16:55:55
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -564,11 +564,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_actualizar` (IN `p_id` 
     WHERE `idUsuario` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_id` INT, IN `p_estado` TINYINT(1))   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `usuarios` WHERE `idUsuario` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El usuario indicado no existe.';
-    END IF;
-    UPDATE `usuarios` SET `flagBorrado` = p_estado WHERE `idUsuario` = p_id;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_id` INT, IN `p_flagBorrado` BOOLEAN)   BEGIN
+    UPDATE usuarios 
+    SET flagBorrado = p_flagBorrado 
+    WHERE idUsuario = p_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT)   BEGIN
@@ -1287,7 +1286,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `password`, `obraSocialId`, `flagBorrado`) VALUES
-(1, 'Juan Carlos', 'Gómez', '25412874', '1976-05-12', '1145887412', 'juan.gomez@email.com', '1233', 1, 0),
+(1, 'Juan Carlos', 'Gómez', '25412874', '1976-05-12', '1145887412', 'juan.gomez@email.com', '1233', 1, 1),
 (2, 'María Paula', 'Rodríguez', '38451254', '1994-08-22', '1169854712', 'maria.medica@clinica.com', '321', NULL, 0),
 (3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 'micho', 4, 0),
 (4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', 'hello', NULL, 0),
