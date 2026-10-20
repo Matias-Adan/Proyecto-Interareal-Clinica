@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-10-2026 a las 17:10:53
+-- Tiempo de generación: 20-10-2026 a las 03:59:12
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -25,7 +25,67 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT, IN `p_presentacion` VARCHAR(100), IN `p_tipoArticulo` ENUM('MEDICAMENTO','INSUMO'), IN `p_stockMinimo` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergiapaciente_actualizar` (IN `p_id` INT, IN `p_pacienteId` INT, IN `p_alergiaId` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `alergiapaciente` WHERE `idAlergiaPaciente` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de alergia de paciente indicada no existe.';
+    END IF;
+
+    UPDATE `alergiapaciente`
+    SET `pacienteId` = p_pacienteId,
+        `alergiaId` = p_alergiaId
+    WHERE `idAlergiaPaciente` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergiapaciente_eliminar` (IN `p_id` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `alergiapaciente` WHERE `idAlergiaPaciente` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de alergia de paciente indicada no existe.';
+    END IF;
+    DELETE FROM `alergiapaciente` WHERE `idAlergiaPaciente` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergiapaciente_insertar` (IN `p_pacienteId` INT, IN `p_alergiaId` INT)   BEGIN
+    INSERT INTO `alergiapaciente` (`pacienteId`, `alergiaId`)
+    VALUES (p_pacienteId , p_alergiaId);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergiapaciente_listar` (IN `p_id` INT)   BEGIN
+    SELECT * FROM `alergiapaciente`
+    WHERE (`idAlergiaPaciente` = p_id);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergias_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` VARCHAR(255))   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `alergias` WHERE `idAlergia` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La alergia indicada no existe.';
+    END IF;
+
+    UPDATE `alergias`
+    SET `nombre` = p_nombre,
+        `descripcion` = p_descripcion
+    WHERE `idAlergia` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergias_eliminar` (IN `p_id` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `alergias` WHERE `idAlergia` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La alergia indicada no existe.';
+    END IF;
+   
+    IF EXISTS (SELECT 1 FROM `alergiapaciente` WHERE `alergiaId` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede eliminar: la alergia está asignada a uno o más pacientes.';
+    END IF;
+    DELETE FROM `alergias` WHERE `idAlergia` = p_id;
+    END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergias_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` VARCHAR(255))   BEGIN
+    INSERT INTO `alergias` (`nombre`, `descripcion`)
+    VALUES (p_nombre , p_descripcion);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergias_listar` (IN `p_id` INT)   BEGIN
+    SELECT * FROM `alergias`
+    WHERE (`idAlergia` = p_id);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT, IN `p_presentacion` VARCHAR(100), IN `p_tipoArticulo` ENUM('MEDICAMENTO','INSUMO'), IN `p_stockMinimo` INT, IN `p_temperaturaIdealEnCelcius` DECIMAL)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `articulos` WHERE `idArticulo` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El articulo indicado no existe.';
     END IF;
@@ -34,7 +94,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_actualizar` (IN `p_id`
         `descripcion` = p_descripcion,
         `presentacion` = p_presentacion,
         `tipoArticulo` = p_tipoArticulo,
-        `stockMinimo` = p_stockMinimo
+        `stockMinimo` = p_stockMinimo,
+        `temperaturaIdealEnCelcius` = p_temperaturaIdealEnCelcius
     WHERE `idArticulo` = p_id;
 END$$
 
@@ -63,34 +124,39 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_listar` (IN `p_id` INT
     WHERE `idArticulo` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_actualizar` (IN `p_id` INT, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_actualizar` (IN `p_id` INT, IN `p_fechaHora` DATETIME, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT, IN `p_pacienteId` INT, IN `p_medicoId` INT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `consultas` WHERE `idConsulta` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La consulta indicada no existe.';
     END IF;
+    
     UPDATE `consultas`
-    SET `motivo` = p_motivo, `diagnostico` = p_diagnostico, `observacion` = p_observacion
+    SET `fechaHora` = p_fechaHora,
+        `motivo` = p_motivo, 
+        `diagnostico` = p_diagnostico, 
+        `observacion` = p_observacion,
+        `pacienteId` = p_pacienteId,
+        `medicoId` = p_medicoId
     WHERE `idConsulta` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_insertar` (IN `p_fechaHora` DATETIME, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT, IN `p_historiaId` INT, IN `p_medicoId` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_insertar` (IN `p_fechaHora` DATETIME, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT, IN `p_historiaId` INT, IN `p_medicoId` INT)   BEGIN
     INSERT INTO `consultas` (`fechaHora`, `motivo`, `diagnostico`, `observacion`, `historiaId`, `medicoId`)
     VALUES (p_fechaHora, p_motivo, p_diagnostico, p_observacion, p_historiaId, p_medicoId);
-    SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `consultas`
-    WHERE (`idConsulta` = p_id)
-    ORDER BY `fechaHora` DESC;
+    WHERE (`idConsulta` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_actualizar` (IN `p_id` INT, IN `p_numero` VARCHAR(20), IN `p_piso` INT, IN `p_tipo` VARCHAR(50), IN `p_estado` ENUM('Disponible','Ocupado','En mantenimiento'))   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `consultorio` WHERE `idHabitacion` = p_id) THEN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_actualizar` (IN `p_id` INT, IN `p_estado` ENUM('Disponible','Ocupado','En mantenimiento'))   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `consultorio` WHERE `idConsultorio` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El consultorio indicado no existe.';
     END IF;
+
     UPDATE `consultorio`
-    SET `numero` = p_numero, `piso` = p_piso, `tipo` = p_tipo, `estado` = p_estado
-    WHERE `idHabitacion` = p_id;
+    SET `estado` = p_estado
+    WHERE `idConsultorio` = p_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_eliminar` (IN `p_id` INT)   BEGIN
@@ -106,15 +172,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_eliminar` (IN `p_id`
     DELETE FROM `consultorio` WHERE `idHabitacion` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_insertar` (IN `p_numero` VARCHAR(20), IN `p_piso` INT, IN `p_tipo` VARCHAR(50), IN `p_estado` ENUM('Disponible','Ocupado','En mantenimiento'), OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_insertar` (IN `p_numero` VARCHAR(20), IN `p_piso` INT, IN `p_tipo` VARCHAR(50), IN `p_estado` ENUM('Disponible','Ocupado','En mantenimiento'))   BEGIN
     INSERT INTO `consultorio` (`numero`, `piso`, `tipo`, `estado`)
     VALUES (p_numero, p_piso, p_tipo, COALESCE(p_estado, 'Disponible'));
-    SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultorio_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `consultorio`
-    WHERE (`idHabitacion` = p_id);
+    WHERE (`idConsultorio` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_actualizar` (IN `p_id` INT, IN `p_dosis` VARCHAR(100), IN `p_frecuencia` VARCHAR(100), IN `p_duracion` VARCHAR(100))   BEGIN
@@ -122,41 +187,18 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_actualizar` (IN `
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El detalle de receta indicado no existe.';
     END IF;
     UPDATE `detallesreceta`
-    SET `dosis` = p_dosis, `frecuencia` = p_frecuencia, `duracion` = p_duracion
+    SET 
+    `dosis` = p_dosis,
+    `frecuencia` = p_frecuencia,
+    `duracion` = p_duracion
     WHERE `idDetalle` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_insertar` (IN `p_cantidad` INT, IN `p_dosis` VARCHAR(100), IN `p_frecuencia` VARCHAR(100), IN `p_duracion` VARCHAR(100), IN `p_recetaId` INT, IN `p_articuloId` INT, IN `p_usuarioId` INT, OUT `p_nuevoId` INT)   BEGIN
-    DECLARE v_idMovimiento INT;
-
-    -- Sin esta transaccion, si `sp_movimientos_stock_insertar` falla por
-    -- stock insuficiente, el INSERT en `detallesreceta` ya habria quedado
-    -- guardado (cada statement se autocommitea por separado), dejando un
-    -- item de receta sin el descuento de stock correspondiente.
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
-
-    START TRANSACTION;
-
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_insertar` (IN `p_cantidad` INT, IN `p_dosis` VARCHAR(100), IN `p_frecuencia` VARCHAR(100), IN `p_duracion` VARCHAR(100), IN `p_recetaId` INT, IN `p_articuloId` INT)   BEGIN
     INSERT INTO `detallesreceta`
         (`cantidad`, `dosis`, `frecuencia`, `duracion`, `recetaId`, `articuloId`)
     VALUES
         (p_cantidad, p_dosis, p_frecuencia, p_duracion, p_recetaId, p_articuloId);
-    SET p_nuevoId = LAST_INSERT_ID();
-
-    -- Reciclaje: se llama al procedure de movimientos de stock para
-    -- registrar la SALIDA del articulo dispensado (el trigger de
-    -- `movimientos_stock` valida stock suficiente y descuenta automaticamente).
-    CALL `sp_movimientos_stock_insertar`(
-        p_articuloId, 'SALIDA', p_cantidad,
-        CONCAT('Dispensado por receta #', p_recetaId),
-        p_usuarioId, v_idMovimiento
-    );
-
-    COMMIT;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_listar` (IN `p_id` INT)   BEGIN
@@ -164,171 +206,70 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_detallesreceta_listar` (IN `p_id
     WHERE (`idDetalle` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_especialidades_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT)   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `especialidades` WHERE `idEspecialidad` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La especialidad indicada no existe.';
-    END IF;
-    UPDATE `especialidades` SET `nombre` = p_nombre, `descripcion` = p_descripcion
-    WHERE `idEspecialidad` = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_especialidades_eliminar` (IN `p_id` INT)   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `especialidades` WHERE `idEspecialidad` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La especialidad indicada no existe.';
-    END IF;
-    DELETE FROM `especialidades` WHERE `idEspecialidad` = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_especialidades_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `especialidades` (`nombre`, `descripcion`) VALUES (p_nombre, p_descripcion);
-    SET p_nuevoId = LAST_INSERT_ID();
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_especialidades_listar` (IN `p_id` INT)   BEGIN
-    SELECT * FROM `especialidades` WHERE (p_id IS NULL OR `idEspecialidad` = p_id);
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_estudios_actualizar` (IN `p_id` INT, IN `p_resultado` TEXT, IN `p_archivo` VARCHAR(255))   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `estudios` WHERE `idEstudio` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El estudio indicado no existe.';
-    END IF;
-    UPDATE `estudios` SET `resultado` = p_resultado, `archivo` = p_archivo
-    WHERE `idEstudio` = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_estudios_insertar` (IN `p_tipo` VARCHAR(100), IN `p_fecha` DATETIME, IN `p_resultado` TEXT, IN `p_archivo` VARCHAR(255), IN `p_pacienteId` INT, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `estudios` (`tipo`, `fecha`, `resultado`, `archivo`, `pacienteId`)
-    VALUES (p_tipo, p_fecha, p_resultado, p_archivo, p_pacienteId);
-    SET p_nuevoId = LAST_INSERT_ID();
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_estudios_listar` (IN `p_id` INT)   BEGIN
-    SELECT * FROM `estudios`
-    WHERE (`idEstudio` = p_id)
-    ORDER BY `fecha` DESC;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_actualizar` (IN `p_id` INT, IN `p_importeTotal` DECIMAL(10,2), IN `p_estado` ENUM('Pendiente','Pagada','Anulada'))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_actualizar` (IN `p_id` INT, IN `p_estado` ENUM('Pendiente','Pagada','Anulada'))   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `facturas` WHERE `idFactura` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La factura indicada no existe.';
     END IF;
     UPDATE `facturas`
-    SET `importeTotal` = COALESCE(p_importeTotal, `importeTotal`),
+    SET 
         `estado` = COALESCE(p_estado, `estado`)
     WHERE `idFactura` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_insertar` (IN `p_fecha` DATETIME, IN `p_importeTotal` DECIMAL(10,2), IN `p_pacienteId` INT, IN `p_obraSocialId` INT, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `facturas` (`fecha`, `importeTotal`, `pacienteId`, `obraSocialId`)
-    VALUES (p_fecha, p_importeTotal, p_pacienteId, p_obraSocialId);
-    SET p_nuevoId = LAST_INSERT_ID();
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_insertar` (IN `p_fecha` DATETIME, IN `p_importeTotal` DECIMAL(10,2), IN `p_estado` INT, IN `p_pacienteId` INT, IN `p_obraSocialId` INT)   BEGIN
+    INSERT INTO `facturas` (`fecha`, `importeTotal`,`estado`, `pacienteId`, `obraSocialId`)
+    VALUES (p_fecha, p_importeTotal, p_estado, p_pacienteId, p_obraSocialId);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_listar` (IN `p_id` INT, IN `p_pacienteId` INT, IN `p_estado` ENUM('Pendiente','Pagada','Anulada'))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `facturas`
-    WHERE (p_id IS NULL OR `idFactura` = p_id)
-      AND (p_pacienteId IS NULL OR `pacienteId` = p_pacienteId)
-      AND (p_estado IS NULL OR `estado` = p_estado)
-    ORDER BY `fecha` DESC;
+    WHERE (`idFactura` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_guardia_actualizar` (IN `p_id` INT, IN `p_horaInicio` TIME, IN `p_horaFin` TIME, IN `p_estado` ENUM('Activa','Finalizada','Suspendida'))   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `guardia` WHERE `idGuardia` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La guardia indicada no existe.';
-    END IF;
-    UPDATE `guardia`
-    SET `horaInicio` = p_horaInicio, `horaFin` = p_horaFin, `estado` = p_estado
-    WHERE `idGuardia` = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_guardia_insertar` (IN `p_fecha` DATE, IN `p_horaInicio` TIME, IN `p_horaFin` TIME, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `guardia` (`fecha`, `horaInicio`, `horaFin`)
-    VALUES (p_fecha, p_horaInicio, p_horaFin);
-    SET p_nuevoId = LAST_INSERT_ID();
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_guardia_listar` (IN `p_id` INT, IN `p_estado` ENUM('Activa','Finalizada','Suspendida'))   BEGIN
-    SELECT * FROM `guardia`
-    WHERE (p_id IS NULL OR `idGuardia` = p_id)
-      AND (p_estado IS NULL OR `estado` = p_estado);
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_actualizar` (IN `p_id` INT, IN `p_antecedentes` TEXT, IN `p_alergia` TEXT, IN `p_observacion` TEXT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_actualizar` (IN `p_id` INT, IN `p_antecedentes` TEXT, IN `p_observacion` TEXT, IN `p_flagBorrado` BOOLEAN)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `historiasclinicas` WHERE `idHistoria` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La historia clinica indicada no existe.';
     END IF;
+    
     UPDATE `historiasclinicas`
-    SET `antecedentes` = p_antecedentes, `alergia` = p_alergia, `observacion` = p_observacion
+    SET `antecedentes` = p_antecedentes, 
+        `observacion` = p_observacion,
+        `pacienteId` = p_pacienteId,
+        `flagBorrado` = p_flagBorrado
     WHERE `idHistoria` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_insertar` (IN `p_fechaApertura` DATE, IN `p_antecedentes` TEXT, IN `p_alergia` TEXT, IN `p_observacion` TEXT, IN `p_usuarioId` INT, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `historiasclinicas` (`fechaApertura`, `antecedentes`, `alergia`, `observacion`, `usuarioId`)
-    VALUES (p_fechaApertura, p_antecedentes, p_alergia, p_observacion, p_usuarioId);
-    SET p_nuevoId = LAST_INSERT_ID();
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_insertar` (IN `p_fechaApertura` DATE, IN `p_antecedentes` TEXT, IN `p_observacion` TEXT, IN `p_pacienteId` INT)   BEGIN
+    INSERT INTO `historiasclinicas` (`fechaApertura`, `antecedentes`, `observacion`, `pacienteId`)
+    VALUES (p_fechaApertura, p_antecedentes, p_observacion, p_pacienteId);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_listar` (IN `p_id` INT, IN `p_usuarioId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `historiasclinicas`
-    WHERE (p_id IS NULL OR `idHistoria` = p_id)
-      AND (p_usuarioId IS NULL OR `usuarioId` = p_usuarioId);
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_medicoespecialidad_actualizar` (IN `p_id` INT, IN `p_medicoId` INT, IN `p_especialidadId` INT)   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `medico_especialidad` WHERE `idMedicoEspecialidad` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relacion medico-especialidad indicada no existe.';
-    END IF;
-    UPDATE `medico_especialidad`
-    SET `medicoId` = p_medicoId, `especialidadId` = p_especialidadId
-    WHERE `idMedicoEspecialidad` = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_medicoespecialidad_eliminar` (IN `p_id` INT)   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `medico_especialidad` WHERE `idMedicoEspecialidad` = p_id) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relacion medico-especialidad indicada no existe.';
-    END IF;
-    DELETE FROM `medico_especialidad` WHERE `idMedicoEspecialidad` = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_medicoespecialidad_insertar` (IN `p_medicoId` INT, IN `p_especialidadId` INT, OUT `p_nuevoId` INT)   BEGIN
-    IF (SELECT `rolId` FROM `usuarios` WHERE `idUsuario` = p_medicoId) != 2 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El usuario indicado no posee el rol de Medico.';
-    END IF;
-
-    INSERT INTO `medico_especialidad` (`medicoId`, `especialidadId`)
-    VALUES (p_medicoId, p_especialidadId);
-    SET p_nuevoId = LAST_INSERT_ID();
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_medicoespecialidad_listar` (IN `p_id` INT, IN `p_medicoId` INT)   BEGIN
-    SELECT me.`idMedicoEspecialidad`, me.`medicoId`, me.`especialidadId`, e.`nombre` AS especialidad
-    FROM `medico_especialidad` me
-    INNER JOIN `especialidades` e ON e.`idEspecialidad` = me.`especialidadId`
-    WHERE (p_id IS NULL OR me.`idMedicoEspecialidad` = p_id)
-      AND (p_medicoId IS NULL OR me.`medicoId` = p_medicoId);
+    WHERE (`idHistoria` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_movimientos_stock_actualizar` (IN `p_id` INT, IN `p_motivo` TEXT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `movimientos_stock` WHERE `idMovimiento` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El movimiento de stock indicado no existe.';
     END IF;
-    UPDATE `movimientos_stock` SET `motivo` = p_motivo WHERE `idMovimiento` = p_id;
+    UPDATE `movimientos_stock`
+    SET 
+    `motivo` = p_motivo 
+    WHERE `idMovimiento` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_movimientos_stock_insertar` (IN `p_idArticulo` INT, IN `p_tipoMovimiento` ENUM('ENTRADA','SALIDA','AJUSTE'), IN `p_cantidad` INT, IN `p_motivo` TEXT, IN `p_usuarioId` INT, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `movimientos_stock` (`idArticulo`, `tipoMovimiento`, `cantidad`, `motivo`, `usuarioId`)
-    VALUES (p_idArticulo, p_tipoMovimiento, p_cantidad, p_motivo, p_usuarioId);
-    SET p_nuevoId = LAST_INSERT_ID();
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_movimientos_stock_insertar` (IN `p_idArticulo` INT, IN `p_tipoMovimiento` ENUM('ENTRADA','SALIDA','AJUSTE'), IN `p_cantidad` INT, IN `p_motivo` TEXT, IN `p_FechaHora` DATETIME, IN `p_usuarioId` INT)   BEGIN
+    INSERT INTO `movimientos_stock` (`idArticulo`, `tipoMovimiento`, `cantidad`, `motivo`, `fechaHora`, `usuarioId`)
+    VALUES (p_idArticulo, p_tipoMovimiento, p_cantidad, p_motivo, p_FechaHora, p_usuarioId);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_movimientos_stock_listar` (IN `p_id` INT, IN `p_idArticulo` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_movimientos_stock_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `movimientos_stock`
-    WHERE (p_id IS NULL OR `idMovimiento` = p_id)
-      AND (p_idArticulo IS NULL OR `idArticulo` = p_idArticulo)
-    ORDER BY `fechaHora` DESC;
+    WHERE (`idMovimiento` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_numeroConvenio` VARCHAR(50), IN `p_beneficios` TEXT, IN `p_cobertura` VARCHAR(100))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_numeroConvenio` VARCHAR(50), IN `p_beneficios` TEXT, IN `p_cobertura` VARCHAR(100), IN `p_flagBorrado` BOOLEAN)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `obrassociales` WHERE `idObraSocial` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La obra social indicada no existe.';
     END IF;
@@ -337,7 +278,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_actualizar` (IN `p
     SET `nombre` = p_nombre,
         `numeroConvenio` = p_numeroConvenio,
         `beneficios` = p_beneficios,
-        `cobertura` = p_cobertura
+        `cobertura` = p_cobertura,
+        `flagBorrado` = p_flagBorrado
     WHERE `idObraSocial` = p_id;
 END$$
 
@@ -354,41 +296,131 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_eliminar` (IN `p_i
     DELETE FROM `obrassociales` WHERE `idObraSocial` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_insertar` (IN `p_nombre` VARCHAR(100), IN `p_numeroConvenio` VARCHAR(50), IN `p_beneficios` TEXT, IN `p_cobertura` VARCHAR(100), OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_insertar` (IN `p_nombre` VARCHAR(100), IN `p_numeroConvenio` VARCHAR(50), IN `p_beneficios` TEXT, IN `p_cobertura` VARCHAR(100))   BEGIN
     INSERT INTO `obrassociales` (`nombre`, `numeroConvenio`, `beneficios`, `cobertura`)
     VALUES (p_nombre, p_numeroConvenio, p_beneficios, p_cobertura);
-    SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_obrassociales_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `obrassociales`
-    WHERE (p_id IS NULL OR `idObraSocial` = p_id);
+    WHERE (`idObraSocial` = p_id);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisorol_actualizar` (IN `p_id` INT, IN `p_rolId` INT, IN `p_permisoId` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `permisorol` WHERE `idPermisoRol` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de permiso y rol indicada no existe.';
+    END IF;
+
+    UPDATE `permisorol`
+    SET `rolId` = p_rolId,
+        `permisoId` = p_permisoId
+    WHERE `idPermisoRol` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisorol_eliminar` (IN `p_id` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `permisorol` WHERE `idPermisoRol` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de permiso y rol indicada no existe.';
+    END IF;
+    DELETE FROM `permisorol` WHERE `idPermisoRol` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisorol_insertar` (IN `p_rolId` INT, IN `p_permisoId` INT)   BEGIN
+    INSERT INTO `permisorol` (`rolId`, `permisoId`)
+    VALUES (p_rolId , p_permisoId);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisorol_listar` (IN `p_id` INT)   BEGIN
+    SELECT * FROM `permisorol`
+    WHERE (`idPermisoRol` = p_id);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisos_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` VARCHAR(255))   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `permisos` WHERE `idPermiso` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El permiso indicado no existe.';
+    END IF;
+
+    UPDATE `permisos`
+    SET `nombre` = p_nombre,
+        `descripcion` = p_descripcion
+    WHERE `idPermiso` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisos_eliminar` (IN `p_id` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `permisos` WHERE `idPermiso` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El permiso indicado no existe.';
+    END IF;
+    IF EXISTS (SELECT 1 FROM `permisorol` WHERE `permisoId` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede eliminar: el permiso está asignado a uno o más roles.';
+    END IF;
+    DELETE FROM `permisos` WHERE `idPermiso` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisos_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` VARCHAR(255))   BEGIN
+    INSERT INTO `permisos` (`nombre`, `descripcion`)
+    VALUES (p_nombre , p_descripcion);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_permisos_listar` (IN `p_id` INT)   BEGIN
+    SELECT * FROM `permisos`
+    WHERE (`idPermiso` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_recetas_actualizar` (IN `p_id` INT, IN `p_indicacion` TEXT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `recetas` WHERE `idReceta` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La receta indicada no existe.';
     END IF;
-    UPDATE `recetas` SET `indicacion` = p_indicacion WHERE `idReceta` = p_id;
+    UPDATE `recetas` 
+    SET 
+    `indicacion` = p_indicacion 
+    WHERE `idReceta` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_recetas_insertar` (IN `p_fecha` DATE, IN `p_indicacion` TEXT, IN `p_consultaId` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_recetas_insertar` (IN `p_fecha` DATE, IN `p_indicacion` TEXT, IN `p_consultaId` INT)   BEGIN
     INSERT INTO `recetas` (`fecha`, `indicacion`, `consultaId`)
     VALUES (p_fecha, p_indicacion, p_consultaId);
-    SET p_nuevoId = LAST_INSERT_ID();
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_recetas_listar` (IN `p_id` INT, IN `p_consultaId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_recetas_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `recetas`
-    WHERE (p_id IS NULL OR `idReceta` = p_id)
-      AND (p_consultaId IS NULL OR `consultaId` = p_consultaId);
+    WHERE (`idReceta` = p_id);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_RolDeUsuario_actualizar` (IN `p_id` INT, IN `p_usuarioId` INT, IN `p_rolId` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `roldeusuario` WHERE `idRolUsuario` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de rol de usuario indicada no existe.';
+    END IF;
+
+    UPDATE `roldeusuario`
+    SET `usuarioId` = p_usuarioId,
+        `rolId` = p_rolId
+    WHERE `idRolUsuario` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_RolDeUsuario_eliminar` (IN `p_id` INT)   BEGIN
+    IF NOT EXISTS (SELECT 1 FROM `roldeusuario` WHERE `idRolUsuario` = p_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de rol de usuario indicada no existe.';
+    END IF;
+    DELETE FROM `roldeusuario` WHERE `idRolUsuario` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_RolDeUsuario_insertar` (IN `p_usuarioId` INT, IN `p_rolId` INT)   BEGIN
+    INSERT INTO `roldeusuario` (`usuarioId`, `rolId`)
+    VALUES (p_usuarioId , p_rolId);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_RolDeUsuario_listar` (IN `p_id` INT)   BEGIN
+    SELECT * FROM `roldeusuario`
+    WHERE (`idRolUsuario` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_roles_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `roles` WHERE `idRol` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El rol indicado no existe.';
     END IF;
-    UPDATE `roles` SET `nombre` = p_nombre, `descripcion` = p_descripcion
+    UPDATE `roles` 
+    SET 
+    `nombre` = p_nombre, 
+    `descripcion` = p_descripcion
     WHERE `idRol` = p_id;
 END$$
 
@@ -402,13 +434,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_roles_eliminar` (IN `p_id` INT) 
     DELETE FROM `roles` WHERE `idRol` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_roles_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT, OUT `p_nuevoId` INT)   BEGIN
-    INSERT INTO `roles` (`nombre`, `descripcion`) VALUES (p_nombre, p_descripcion);
-    SET p_nuevoId = LAST_INSERT_ID();
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_roles_insertar` (IN `p_nombre` VARCHAR(100), IN `p_descripcion` TEXT)   BEGIN
+    INSERT INTO `roles` (`nombre`, `descripcion`) 
+    VALUES (p_nombre, p_descripcion);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_roles_listar` (IN `p_id` INT)   BEGIN
-    SELECT * FROM `roles` WHERE (p_id IS NULL OR `idRol` = p_id);
+    SELECT * FROM `roles`
+    WHERE (`idRol` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_seleccionar` (IN `tabla` VARCHAR(64))   BEGIN
@@ -425,29 +458,25 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_seleccionar` (IN `tabla` VARCHAR
     DEALLOCATE PREPARE stmt;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_actualizar` (IN `p_id` INT, IN `p_prioridad` INT, IN `p_estado` VARCHAR(50), IN `p_observacion` TEXT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_actualizar` (IN `p_estado` VARCHAR(50))   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `triage` WHERE `idTriage` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El registro de triage indicado no existe.';
     END IF;
     UPDATE `triage`
-    SET `prioridad` = p_prioridad, `estado` = p_estado, `observacion` = p_observacion
+    SET `estado` = p_estado
     WHERE `idTriage` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_insertar` (IN `p_fecha` DATETIME, IN `p_prioridad` INT, IN `p_estado` VARCHAR(50), IN `p_observacion` TEXT, IN `p_pacienteId` INT, IN `p_guardiaId` INT, IN `p_enfermeroId` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_insertar` (IN `p_fecha` DATETIME, IN `p_prioridad` INT, IN `p_estado` VARCHAR(50), IN `p_observacion` TEXT, IN `p_pacienteId` INT, IN `p_consultorioId` INT, IN `p_enfermeroId` INT)   BEGIN
     INSERT INTO `triage`
-        (`fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `guardiaId`, `enfermeroId`)
+        (`fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`)
     VALUES
-        (p_fecha, p_prioridad, p_estado, p_observacion, p_pacienteId, p_guardiaId, p_enfermeroId);
-    SET p_nuevoId = LAST_INSERT_ID();
+        (p_fecha, p_prioridad, p_estado, p_observacion, p_pacienteId, p_consultorioId, p_enfermeroId);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_listar` (IN `p_id` INT, IN `p_guardiaId` INT, IN `p_pacienteId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `triage`
-    WHERE (p_id IS NULL OR `idTriage` = p_id)
-      AND (p_guardiaId IS NULL OR `guardiaId` = p_guardiaId)
-      AND (p_pacienteId IS NULL OR `pacienteId` = p_pacienteId)
-    ORDER BY `prioridad` ASC, `fecha` ASC;
+    WHERE (`idTriage` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_actualizar` (IN `p_id` INT, IN `p_fecha` DATE, IN `p_horaInicio` TIME, IN `p_horaFin` TIME, IN `p_motivo` TEXT, IN `p_consultorioId` INT)   BEGIN
@@ -455,8 +484,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_actualizar` (IN `p_id` IN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El turno indicado no existe.';
     END IF;
     UPDATE `turnos`
-    SET `fecha` = p_fecha, `horaInicio` = p_horaInicio, `horaFin` = p_horaFin,
-        `motivo` = p_motivo, `consultorioId` = p_consultorioId
+    SET 
+    	`fecha` = p_fecha,
+    	`horaInicio` = p_horaInicio, 
+    	`horaFin` = p_horaFin,
+        `motivo` = p_motivo,
+        `consultorioId` = p_consultorioId
     WHERE `idTurno` = p_id;
 END$$
 
@@ -467,30 +500,28 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_cambiar_estado` (IN `p_id
     UPDATE `turnos` SET `estado` = p_estado WHERE `idTurno` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_insertar` (IN `p_fecha` DATE, IN `p_horaInicio` TIME, IN `p_horaFin` TIME, IN `p_motivo` TEXT, IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_especialidadId` INT, IN `p_consultorioId` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_insertar` (IN `p_fecha` DATE, IN `p_horaInicio` TIME, IN `p_horaFin` TIME, IN `p_estado` ENUM('Pendiente','Atendido','Ausente','Cancelado'), IN `p_motivo` TEXT, IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_especialidadId` INT, IN `p_consultorioId` INT)   BEGIN
     INSERT INTO `turnos`
-        (`fecha`, `horaInicio`, `horaFin`, `motivo`, `pacienteId`, `medicoId`, `especialidadId`, `consultorioId`)
+        (`fecha`, `horaInicio`, `horaFin`, `estado`, `motivo`, `pacienteId`, `medicoId`, `especialidadId`, `consultorioId`)
     VALUES
-        (p_fecha, p_horaInicio, p_horaFin, p_motivo, p_pacienteId, p_medicoId, p_especialidadId, p_consultorioId);
-    SET p_nuevoId = LAST_INSERT_ID();
+        (p_fecha, p_horaInicio, p_horaFin, COALESCE(p_estado, 'Pendiente'), p_motivo, p_pacienteId, p_medicoId, p_especialidadId, p_consultorioId);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_listar` (IN `p_id` INT, IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_fecha` DATE, IN `p_estado` ENUM('Pendiente','Atendido','Ausente','Cancelado','Anulado'))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `turnos`
-    WHERE (p_id IS NULL OR `idTurno` = p_id)
-      AND (p_pacienteId IS NULL OR `pacienteId` = p_pacienteId)
-      AND (p_medicoId IS NULL OR `medicoId` = p_medicoId)
-      AND (p_fecha IS NULL OR `fecha` = p_fecha)
-      AND (p_estado IS NULL OR `estado` = p_estado)
-    ORDER BY `fecha`, `horaInicio`;
+    WHERE (`idTurno` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_actualizar` (IN `p_id` INT, IN `p_medicoId` INT, IN `p_consultorioId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_actualizar` (IN `p_id` INT, IN `tipoAtencion` ENUM('TURNO_SIMPLE','EMERGENCIA','INTERNACION'), IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_consultorioId` INT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `ubicacionpaciente` WHERE `idUbicacion` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El registro de ubicacion indicado no existe.';
     END IF;
+    
     UPDATE `ubicacionpaciente`
-    SET `medicoId` = p_medicoId, `consultorioId` = p_consultorioId
+    SET `tipoAtencion` = p_tipoAtencion,
+    	`pacienteId` = p_pacienteId,
+        `medicoId` = p_medicoId,
+        `consultorioId` = p_consultorioId
     WHERE `idUbicacion` = p_id;
 END$$
 
@@ -503,19 +534,16 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_dar_alta` (IN 
     WHERE `idUbicacion` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_insertar` (IN `p_tipoAtencion` ENUM('TURNO_SIMPLE','EMERGENCIA','INTERNACION'), IN `p_fechaIngreso` DATETIME, IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_consultorioId` INT, OUT `p_nuevoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_insertar` (IN `p_tipoAtencion` ENUM('TURNO_SIMPLE','EMERGENCIA','INTERNACION'), IN `p_fechaIngreso` DATETIME, IN `p_fechaSalida` DATETIME, IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_consultorioId` INT)   BEGIN
     INSERT INTO `ubicacionpaciente`
-        (`tipoAtencion`, `fechaIngreso`, `pacienteId`, `medicoId`, `consultorioId`)
+        (`tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`)
     VALUES
-        (COALESCE(p_tipoAtencion, 'TURNO_SIMPLE'), p_fechaIngreso, p_pacienteId, p_medicoId, p_consultorioId);
-    SET p_nuevoId = LAST_INSERT_ID();
+        (COALESCE(p_tipoAtencion, 'TURNO_SIMPLE'), p_fechaIngreso, p_fechaSalida, p_pacienteId, p_medicoId, p_consultorioId);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_listar` (IN `p_id` INT, IN `p_pacienteId` INT, IN `p_soloActivos` TINYINT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `ubicacionpaciente`
-    WHERE (p_id IS NULL OR `idUbicacion` = p_id)
-      AND (p_pacienteId IS NULL OR `pacienteId` = p_pacienteId)
-      AND (p_soloActivos IS NULL OR p_soloActivos = 0 OR `fechaSalida` IS NULL);
+    WHERE (`idUbicacion` = p_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_actualizar` (IN `p_id` INT, IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT, IN `p_flagBorrado` BOOLEAN)   BEGIN
@@ -543,16 +571,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_
     UPDATE `usuarios` SET `flagBorrado` = p_estado WHERE `idUsuario` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_eliminar` (IN `p_id` INT)   BEGIN
-	DELETE FROM usuarios
-    WHERE idUsuario = p_id;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT, IN `p_flagBorrado` BOOLEAN)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT)   BEGIN
     INSERT INTO `usuarios`
-        (`nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `password`, `obraSocialId`, `flagBorrado`)
+        (`nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `password`, `obraSocialId`)
     VALUES
-        (p_nombre, p_apellido, p_dni, p_fechaNacimiento, p_telefono, p_email, p_password, p_obraSocialId, p_flagBorrado);
+        (p_nombre, p_apellido, p_dni, p_fechaNacimiento, p_telefono, p_email, p_password, p_obraSocialId);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT)   BEGIN
@@ -583,6 +606,13 @@ CREATE TABLE `alergiapaciente` (
   `alergiaId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `alergiapaciente`
+--
+
+INSERT INTO `alergiapaciente` (`idAlergiaPaciente`, `pacienteId`, `alergiaId`) VALUES
+(1, 2, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -601,7 +631,8 @@ CREATE TABLE `alergias` (
 
 INSERT INTO `alergias` (`idAlergia`, `nombre`, `descripcion`) VALUES
 (1, 'Alergia al mani', 'Es alérgico al maní y derivados. Provoca hinchazón y picazón'),
-(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta');
+(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta'),
+(3, 'probando', 'probando');
 
 -- --------------------------------------------------------
 
@@ -626,7 +657,7 @@ CREATE TABLE `articulos` (
 
 INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, `tipoArticulo`, `stockActual`, `stockMinimo`, `temperaturaIdealEnCelcius`) VALUES
 (1, 'Ibuprofeno 600mg', 'Analgésico y antiinflamatorio', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10),
-(2, 'Amoxicilina 500mg', 'Antibiótico de amplio espectro', 'Cápsulas x 16', 'MEDICAMENTO', 90, 20, 7),
+(2, 'Amoxicilina 500mg', 'Antibiótico de amplio espectro', 'Cápsulas x 16', 'MEDICAMENTO', 213, 20, 7),
 (3, 'Paracetamol 1g', 'Antipirético y analgésico', 'Comprimidos x 40', 'MEDICAMENTO', 210, 45, 10),
 (4, 'Losartán 50mg', 'Antihipertensivo crónico', 'Comprimidos x 30', 'MEDICAMENTO', 80, 25, 0),
 (5, 'Clonazepam 0.5mg', 'Ansiolítico bajo receta archivada', 'Comprimidos x 30', 'MEDICAMENTO', 45, 15, -2),
@@ -635,7 +666,8 @@ INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, 
 (8, 'Guantes de látex M', 'Cajas de 100 unidades', 'Protección', 'INSUMO', 85, 20, NULL),
 (9, 'Alcohol en gel 500ml', 'Dispensador desinfectante', 'Sanitizante', 'INSUMO', 40, 15, NULL),
 (10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL),
-(11, 'micho', 'tito', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10);
+(11, 'micho', 'tito', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10),
+(12, 'probando', 'probando', 'probando', 'MEDICAMENTO', 123, 123, 5);
 
 -- --------------------------------------------------------
 
@@ -659,7 +691,8 @@ CREATE TABLE `consultas` (
 
 INSERT INTO `consultas` (`idConsulta`, `fechaHora`, `motivo`, `diagnostico`, `observacion`, `historiaId`, `medicoId`) VALUES
 (1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
-(2, '2026-09-14 10:15:00', 'Dolor precordial fuerte', 'Angina inestable', 'Derivado de urgencia a Unidad Coronaria.', 2, 2);
+(2, '2026-09-14 10:15:00', 'Dolor precordial fuerte', 'Angina inestable', 'Derivado de urgencia a Unidad Coronaria.', 2, 2),
+(3, '0000-00-00 00:00:00', 'probando', 'probando', 'probando', 2, 2);
 
 -- --------------------------------------------------------
 
@@ -684,7 +717,8 @@ INSERT INTO `consultorio` (`idConsultorio`, `numero`, `piso`, `tipo`, `estado`) 
 (2, '102', 1, 'Consultas Generales', 'Disponible'),
 (3, '201', 2, 'Cardiología', 'En mantenimiento'),
 (4, '202', 2, 'Ecografías y Rayos', 'Disponible'),
-(5, 'G-01', 0, 'Shockroom Guardia', 'Ocupado');
+(5, 'G-01', 0, 'Shockroom Guardia', 'Ocupado'),
+(6, 'probando', 2, 'probando', 'Ocupado');
 
 -- --------------------------------------------------------
 
@@ -708,7 +742,8 @@ CREATE TABLE `detallesreceta` (
 
 INSERT INTO `detallesreceta` (`idDetalle`, `cantidad`, `dosis`, `frecuencia`, `duracion`, `recetaId`, `articuloId`) VALUES
 (1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4),
-(2, 1, '1g', 'Cada 8 horas', '3 días', 2, 3);
+(2, 1, '1g', 'Cada 8 horas', '3 días', 2, 3),
+(3, 123, 'probando', 'probando', 'probando', 2, 2);
 
 -- --------------------------------------------------------
 
@@ -724,6 +759,13 @@ CREATE TABLE `facturas` (
   `pacienteId` int(11) NOT NULL,
   `obraSocialId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `facturas`
+--
+
+INSERT INTO `facturas` (`idFactura`, `fecha`, `importeTotal`, `estado`, `pacienteId`, `obraSocialId`) VALUES
+(1, '0000-00-00 00:00:00', 12.00, 'Pagada', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -747,7 +789,8 @@ CREATE TABLE `historiasclinicas` (
 INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `observacion`, `pacienteId`, `flagBorrado`) VALUES
 (1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 1, 0),
 (2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 3, 0),
-(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0);
+(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0),
+(5, '0000-00-00', 'probando', 'probando', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -764,6 +807,13 @@ CREATE TABLE `movimientos_stock` (
   `fechaHora` datetime DEFAULT current_timestamp(),
   `usuarioId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `movimientos_stock`
+--
+
+INSERT INTO `movimientos_stock` (`idMovimiento`, `idArticulo`, `tipoMovimiento`, `cantidad`, `motivo`, `fechaHora`, `usuarioId`) VALUES
+(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2);
 
 --
 -- Disparadores `movimientos_stock`
@@ -831,7 +881,8 @@ INSERT INTO `obrassociales` (`idObraSocial`, `nombre`, `numeroConvenio`, `benefi
 (2, 'Swiss Medical', 'CO-99312', 'Guardia libre, odontología preventiva', '100%', 0),
 (3, 'Galeno Silver', 'CO-55214', 'Kinesiología hasta 20 sesiones/año', '70%', 0),
 (4, 'PAMI', 'CO-11200', 'Medicamentos gratis crónicos, prótesis', '100%', 0),
-(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0);
+(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0),
+(6, 'probando', 'probando', 'probando', 'probando', 0);
 
 -- --------------------------------------------------------
 
@@ -845,6 +896,13 @@ CREATE TABLE `permisorol` (
   `permisoId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `permisorol`
+--
+
+INSERT INTO `permisorol` (`idPermisoRol`, `rolId`, `permisoId`) VALUES
+(4, 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -856,6 +914,13 @@ CREATE TABLE `permisos` (
   `nombre` varchar(50) NOT NULL,
   `descripcion` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `permisos`
+--
+
+INSERT INTO `permisos` (`idPermiso`, `nombre`, `descripcion`) VALUES
+(1, 'probando', 'probando');
 
 -- --------------------------------------------------------
 
@@ -876,7 +941,8 @@ CREATE TABLE `recetas` (
 
 INSERT INTO `recetas` (`idReceta`, `fecha`, `indicacion`, `consultaId`) VALUES
 (1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1),
-(2, '2026-09-14', 'Administrar vía intravenosa en la internación.', 2);
+(2, '2026-09-14', 'Administrar vía intravenosa en la internación.', 2),
+(3, '2026-10-19', 'probando', 2);
 
 -- --------------------------------------------------------
 
@@ -900,7 +966,8 @@ INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
 (3, 2, 2),
 (4, 3, 5),
 (5, 1, 5),
-(6, 5, 5);
+(6, 5, 5),
+(7, 2, 3);
 
 -- --------------------------------------------------------
 
@@ -924,7 +991,8 @@ INSERT INTO `roles` (`idRol`, `nombre`, `descripcion`) VALUES
 (3, 'Enfermero', 'Asistencia e ingresos'),
 (4, 'Recepcionista', 'Gestión de turnos y caja'),
 (5, 'Paciente', 'Usuario consumidor final'),
-(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios');
+(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios'),
+(7, 'probando', 'probando');
 
 -- --------------------------------------------------------
 
@@ -944,13 +1012,23 @@ CREATE TABLE `triage` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Volcado de datos para la tabla `triage`
+--
+
+INSERT INTO `triage` (`idTriage`, `fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`) VALUES
+(1, '0000-00-00 00:00:00', 3, 'probando', 'probando', 2, 2, 4);
+
+--
 -- Disparadores `triage`
 --
 DELIMITER $$
 CREATE TRIGGER `validar_triage_enfermero` BEFORE INSERT ON `triage` FOR EACH ROW BEGIN
     DECLARE v_rolEnfermero INT;
 
-    SELECT `rolId` INTO v_rolEnfermero FROM `usuarios` WHERE `idUsuario` = NEW.enfermeroId;
+    SELECT `rolId` INTO v_rolEnfermero 
+    FROM `roldeusuario` 
+    WHERE `usuarioId` = NEW.enfermeroId;
+
     IF v_rolEnfermero IS NULL OR v_rolEnfermero != 3 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario registrado en Triage debe poseer el rol de Enfermero.';
@@ -999,13 +1077,15 @@ CREATE TRIGGER `validar_turnos_duplicados_insert` BEFORE INSERT ON `turnos` FOR 
         SET MESSAGE_TEXT = 'La hora de fin debe ser mayor a la hora de inicio del turno.';
     END IF;
 
-    SELECT `rolId` INTO v_rolMedico FROM `usuarios` WHERE `idUsuario` = NEW.medicoId;
+  
+    SELECT `rolId` INTO v_rolMedico FROM `roldeusuario` WHERE `usuarioId` = NEW.medicoId;
     IF v_rolMedico IS NULL OR v_rolMedico != 2 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como medico no posee el rol de Medico.';
     END IF;
 
-    SELECT `rolId` INTO v_rolPaciente FROM `usuarios` WHERE `idUsuario` = NEW.pacienteId;
+
+    SELECT `rolId` INTO v_rolPaciente FROM `roldeusuario` WHERE `usuarioId` = NEW.pacienteId;
     IF v_rolPaciente IS NULL OR v_rolPaciente != 5 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como paciente no posee el rol de Paciente.';
@@ -1056,13 +1136,13 @@ CREATE TRIGGER `validar_turnos_duplicados_update` BEFORE UPDATE ON `turnos` FOR 
         SET MESSAGE_TEXT = 'La hora de fin debe ser mayor a la hora de inicio del turno.';
     END IF;
 
-    SELECT `rolId` INTO v_rolMedico FROM `usuarios` WHERE `idUsuario` = NEW.medicoId;
+    SELECT `rolId` INTO v_rolMedico FROM `roldeusuario` WHERE `usuarioId` = NEW.medicoId;
     IF v_rolMedico IS NULL OR v_rolMedico != 2 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como medico no posee el rol de Medico.';
     END IF;
 
-    SELECT `rolId` INTO v_rolPaciente FROM `usuarios` WHERE `idUsuario` = NEW.pacienteId;
+    SELECT `rolId` INTO v_rolPaciente FROM `roldeusuario` WHERE `usuarioId` = NEW.pacienteId;
     IF v_rolPaciente IS NULL OR v_rolPaciente != 5 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como paciente no posee el rol de Paciente.';
@@ -1130,7 +1210,8 @@ CREATE TABLE `ubicacionpaciente` (
 INSERT INTO `ubicacionpaciente` (`idUbicacion`, `tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`) VALUES
 (1, 'TURNO_SIMPLE', '2026-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
 (2, 'INTERNACION', '2026-09-14 10:05:00', NULL, 3, 2, 5),
-(3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4);
+(3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4),
+(4, 'EMERGENCIA', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 2, 2, 2);
 
 --
 -- Disparadores `ubicacionpaciente`
@@ -1211,7 +1292,8 @@ INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimien
 (3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 'micho', 4, 0),
 (4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', 'hello', NULL, 0),
 (5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 'aa12', 5, 0),
-(6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0);
+(6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0),
+(9, 'probando', 'probando', 'probando', '0000-00-00', 'probando', 'probando', 'probando', 2, 0);
 
 --
 -- Índices para tablas volcadas
@@ -1370,97 +1452,97 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `alergiapaciente`
 --
 ALTER TABLE `alergiapaciente`
-  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `alergias`
 --
 ALTER TABLE `alergias`
-  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `articulos`
 --
 ALTER TABLE `articulos`
-  MODIFY `idArticulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idArticulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `consultas`
 --
 ALTER TABLE `consultas`
-  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorio`
 --
 ALTER TABLE `consultorio`
-  MODIFY `idConsultorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idConsultorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `detallesreceta`
 --
 ALTER TABLE `detallesreceta`
-  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
-  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `historiasclinicas`
 --
 ALTER TABLE `historiasclinicas`
-  MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos_stock`
 --
 ALTER TABLE `movimientos_stock`
-  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `obrassociales`
 --
 ALTER TABLE `obrassociales`
-  MODIFY `idObraSocial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idObraSocial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `permisorol`
 --
 ALTER TABLE `permisorol`
-  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `recetas`
 --
 ALTER TABLE `recetas`
-  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `triage`
 --
 ALTER TABLE `triage`
-  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `turnos`
@@ -1472,13 +1554,13 @@ ALTER TABLE `turnos`
 -- AUTO_INCREMENT de la tabla `ubicacionpaciente`
 --
 ALTER TABLE `ubicacionpaciente`
-  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Restricciones para tablas volcadas
