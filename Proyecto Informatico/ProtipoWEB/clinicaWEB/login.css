@@ -97,3 +97,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
 .login-box h1, .login-box > .muted { text-align: center; }
 .roles { gap: 8px; margin: 20px 0 4px; }
 .roles label { min-width: 0; padding: 12px 4px; font-size: .92rem; }
+.cambio {
+  margin: 18px 0 0;
+  text-align: center;
+}
