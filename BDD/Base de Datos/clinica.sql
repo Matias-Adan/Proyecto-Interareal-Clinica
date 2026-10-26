@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-10-2026 a las 16:55:55
+-- Tiempo de generación: 26-10-2026 a las 16:38:03
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -124,7 +124,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_articulos_listar` (IN `p_id` INT
     WHERE `idArticulo` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_actualizar` (IN `p_id` INT, IN `p_fechaHora` DATETIME, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT, IN `p_pacienteId` INT, IN `p_medicoId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_actualizar` (IN `p_id` INT, IN `p_fechaHora` DATETIME, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observacion` TEXT, IN `p_historiaId` INT, IN `p_medicoId` INT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `consultas` WHERE `idConsulta` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La consulta indicada no existe.';
     END IF;
@@ -134,7 +134,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_consultas_actualizar` (IN `p_id`
         `motivo` = p_motivo, 
         `diagnostico` = p_diagnostico, 
         `observacion` = p_observacion,
-        `pacienteId` = p_pacienteId,
+        `historiaId` = p_historiaId,
         `medicoId` = p_medicoId
     WHERE `idConsulta` = p_id;
 END$$
@@ -216,7 +216,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_actualizar` (IN `p_id` 
     WHERE `idFactura` = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_insertar` (IN `p_fecha` DATETIME, IN `p_importeTotal` DECIMAL(10,2), IN `p_estado` INT, IN `p_pacienteId` INT, IN `p_obraSocialId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_facturas_insertar` (IN `p_fecha` DATETIME, IN `p_importeTotal` DECIMAL(10,2), IN `p_estado` ENUM('Pendiente','Pagada','Anulada'), IN `p_pacienteId` INT, IN `p_obraSocialId` INT)   BEGIN
     INSERT INTO `facturas` (`fecha`, `importeTotal`,`estado`, `pacienteId`, `obraSocialId`)
     VALUES (p_fecha, p_importeTotal, p_estado, p_pacienteId, p_obraSocialId);
 END$$
@@ -631,7 +631,7 @@ CREATE TABLE `alergias` (
 INSERT INTO `alergias` (`idAlergia`, `nombre`, `descripcion`) VALUES
 (1, 'Alergia al mani', 'Es alérgico al maní y derivados. Provoca hinchazón y picazón'),
 (2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta'),
-(3, 'probando', 'probando');
+(3, 'Alergia a mati', 'Es alérgico al mati y derivados. Provoca hinchazón y picazón');
 
 -- --------------------------------------------------------
 
@@ -691,7 +691,8 @@ CREATE TABLE `consultas` (
 INSERT INTO `consultas` (`idConsulta`, `fechaHora`, `motivo`, `diagnostico`, `observacion`, `historiaId`, `medicoId`) VALUES
 (1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
 (2, '2026-09-14 10:15:00', 'Dolor precordial fuerte', 'Angina inestable', 'Derivado de urgencia a Unidad Coronaria.', 2, 2),
-(3, '0000-00-00 00:00:00', 'probando', 'probando', 'probando', 2, 2);
+(3, '0000-00-00 00:00:00', 'probando', 'probando', 'probando', 2, 2),
+(4, '2018-09-12 09:30:00', 'Papitaciones ocasionales', 'Hipertensión rterial controlada', 'Se ajusta mediación diaria.', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -742,7 +743,8 @@ CREATE TABLE `detallesreceta` (
 INSERT INTO `detallesreceta` (`idDetalle`, `cantidad`, `dosis`, `frecuencia`, `duracion`, `recetaId`, `articuloId`) VALUES
 (1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4),
 (2, 1, '1g', 'Cada 8 horas', '3 días', 2, 3),
-(3, 123, 'probando', 'probando', 'probando', 2, 2);
+(3, 123, 'probando', 'probando', 'probando', 2, 2),
+(4, 2, '912mg', 'Cada 18 horas', '3 días', 2, 4);
 
 -- --------------------------------------------------------
 
@@ -764,7 +766,10 @@ CREATE TABLE `facturas` (
 --
 
 INSERT INTO `facturas` (`idFactura`, `fecha`, `importeTotal`, `estado`, `pacienteId`, `obraSocialId`) VALUES
-(1, '0000-00-00 00:00:00', 12.00, 'Pagada', 1, 2);
+(1, '2000-10-10 10:00:00', 12.00, 'Pagada', 1, 2),
+(2, '2026-10-26 12:00:00', 1500.50, 'Pendiente', 1, 3),
+(3, '2010-12-09 00:00:00', 1500.50, 'Pendiente', 1, 3),
+(4, '2010-12-09 12:00:00', 1500.50, 'Pendiente', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -1451,13 +1456,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `alergiapaciente`
 --
 ALTER TABLE `alergiapaciente`
-  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `alergias`
 --
 ALTER TABLE `alergias`
-  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `articulos`
@@ -1469,7 +1474,7 @@ ALTER TABLE `articulos`
 -- AUTO_INCREMENT de la tabla `consultas`
 --
 ALTER TABLE `consultas`
-  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorio`
@@ -1481,13 +1486,13 @@ ALTER TABLE `consultorio`
 -- AUTO_INCREMENT de la tabla `detallesreceta`
 --
 ALTER TABLE `detallesreceta`
-  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
-  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `historiasclinicas`
