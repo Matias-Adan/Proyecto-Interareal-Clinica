@@ -12,6 +12,10 @@ public class Triage {
 	private int consultorioId;
 	private int enfermeroId;
 	
+	public Triage() {
+
+	}
+	
 	public Triage(int idTriage, LocalDate fecha, String prioridad, String estado, String observacion, int pacienteId,
 			int consultorioId, int enfermeroId) {
 		this.idTriage = idTriage;

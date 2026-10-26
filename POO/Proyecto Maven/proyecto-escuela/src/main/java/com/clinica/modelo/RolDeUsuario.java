@@ -5,6 +5,10 @@ public class RolDeUsuario {
 	private int usuarioId;
 	private int rolId;
 	
+	public RolDeUsuario() {
+
+	}
+	
 	public RolDeUsuario(int idRolUsuario, int usuarioId, int rolId) {
 		this.idRolUsuario = idRolUsuario;
 		this.usuarioId = usuarioId;

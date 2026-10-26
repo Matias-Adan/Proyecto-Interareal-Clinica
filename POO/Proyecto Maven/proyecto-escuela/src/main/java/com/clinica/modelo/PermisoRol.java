@@ -5,6 +5,10 @@ public class PermisoRol {
 	private int rolId;
 	private int PermisoId;
 	
+	public PermisoRol() {
+
+	}
+	
 	public PermisoRol(int idUsuario, int rolId, int permisoId) {
 		this.idUsuario = idUsuario;
 		this.rolId = rolId;

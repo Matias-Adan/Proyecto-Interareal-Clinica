@@ -8,6 +8,10 @@ public class ObraSocial {
 	private String cobertura;
 	private boolean flagBorrado;
 
+	public ObraSocial() {
+
+	}
+	
 	public ObraSocial(int idObraSocial,  String nombre,  int numeroConvenio,  String beneficios, String cobertura, boolean flagBorrado) {
 		this.idObraSocial = idObraSocial;
 		this.nombre = nombre;

@@ -13,6 +13,10 @@ public class Usuario {
 	private String password;
 	private int obraSocialId;
 	private boolean flagBorrado;
+	
+	public Usuario() {
+
+	}
 
 	public Usuario(int idUsuario, String nombre, String apellido, int dni, LocalDate fechaNacimiento, int telefono,
 			String email, String password, int obraSocialId, boolean flagBorrado) {

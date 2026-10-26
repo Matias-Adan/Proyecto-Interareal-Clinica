@@ -7,18 +7,22 @@ public class Consulta {
 	private LocalDateTime fechaHora;
 	private String motivo;
 	private String diagnostico;
-	private String obvservacion;
-	private int historialId;
+	private String observacion;
+	private int historiaId;
 	private int medicoId;
 	
+	public Consulta() {
+			
+	}
+	
 	public Consulta(int idConsulta, LocalDateTime fechaHora, String motivo, String diagnostico,
-			String obvservacion, int historialId, int medicoId) {
+			String observacion, int historiaId, int medicoId) {
 		this.idConsulta = idConsulta;
-		this.fechaHora = fechaHora;
+		this.fechaHora = fechaHora; 
 		this.motivo = motivo;
 		this.diagnostico = diagnostico;
-		this.obvservacion = obvservacion;
-		this.historialId = historialId;
+		this.observacion = observacion;
+		this.historiaId = historiaId;
 		this.medicoId = medicoId;
 	}
 
@@ -54,20 +58,20 @@ public class Consulta {
 		this.diagnostico = diagnostico;
 	}
 
-	public String getObvservacion() {
-		return obvservacion;
+	public String getObservacion() {
+		return observacion;
 	}
 
-	public void setObvservacion(String obvservacion) {
-		this.obvservacion = obvservacion;
+	public void setObvservacion(String observacion) {
+		this.observacion = observacion;
 	}
 
-	public int getHistorialId() {
-		return historialId;
+	public int getHistoriaId() {
+		return historiaId;
 	}
 
-	public void setHistorialId(int historialId) {
-		this.historialId = historialId;
+	public void setHistorialId(int historiaId) {
+		this.historiaId = historiaId;
 	}
 
 	public int getMedicoId() {

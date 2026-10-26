@@ -5,6 +5,10 @@ public class Permiso {
 	private String nombre;
 	private String descripcion;
 	
+	public Permiso() {
+
+	}
+	
 	public Permiso(int idPermiso, String nombre, String descripcion) {
 		this.idPermiso = idPermiso;
 		this.nombre = nombre;

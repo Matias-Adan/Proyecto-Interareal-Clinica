@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PermisoRolDaoImpl implements IPermisoRolDao {
 
-    @Override
+	@Override
     public List<PermisoRol> listar() {
         List<PermisoRol> lista = new ArrayList<>();
         String sql = "SELECT * FROM permiso_rol";
@@ -16,14 +16,19 @@ public class PermisoRolDaoImpl implements IPermisoRolDao {
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                
+                PermisoRol pr = new PermisoRol(
+                    rs.getInt("idUsuario"),
+                    rs.getInt("rolId"),
+                    rs.getInt("permisoId")
+                );
+                lista.add(pr);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return lista;
     }
-
+	
     @Override
     public boolean insertar(PermisoRol p) {
         String sql = "INSERT INTO permiso_rol (...) VALUES (...)";

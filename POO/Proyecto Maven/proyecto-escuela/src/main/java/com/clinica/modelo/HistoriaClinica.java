@@ -10,6 +10,10 @@ public class HistoriaClinica {
 	private int pacienteId;
 	private boolean flagBorrado;
 	
+	public HistoriaClinica() {
+			
+	}
+	
 	public HistoriaClinica(int idHistoria, LocalDate fechaApertura, String antecedentes,
 	 String obvservacion, int pacienteId, boolean flagBorrado) {
 		this.idHistoria = idHistoria;

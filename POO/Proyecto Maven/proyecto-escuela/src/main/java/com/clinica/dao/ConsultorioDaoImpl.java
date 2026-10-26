@@ -14,7 +14,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
     @Override
     public List<Consultorio> listar() {
         List<Consultorio> lista = new ArrayList<>();
-        String sql = "{CALL sp_seleccionar(\"consultorios\")}";
+        String sql = "{CALL sp_seleccionar(\"consultorio\")}";
         
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql);
@@ -22,7 +22,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
 
             while (rs.next()) {
                 Consultorio c = new Consultorio(
-                        rs.getInt("idHabitacion"),
+                        rs.getInt("idConsultorio"),
                         rs.getInt("numero"),
                         rs.getString("tipo"),
                         rs.getString("estado"),
@@ -39,7 +39,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
     @Override
     public Consultorio buscarPorId(int id) {
         Consultorio c = null;
-        String sql = "{CALL sp_consultorios_listar(?)}";
+        String sql = "{CALL sp_consultorio_listar(?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -48,7 +48,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
             try (ResultSet rs = cs.executeQuery()) {
                 if (rs.next()) {
                     c = new Consultorio(
-                            rs.getInt("idHabitacion"),
+                            rs.getInt("idConsultorio"),
                             rs.getInt("numero"),
                             rs.getString("tipo"),
                             rs.getString("estado"),
@@ -64,7 +64,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
 
     @Override
     public boolean insertar(Consultorio c) {
-        String sql = "{CALL sp_consultorios_insertar(?, ?, ?)}";
+        String sql = "{CALL sp_consultorio_insertar(?, ?, ?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -82,12 +82,12 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
 
     @Override
     public boolean actualizar(Consultorio c) {
-        String sql = "{CALL sp_consultorios_actualizar(?, ?, ?, ?)}";
+        String sql = "{CALL sp_consultorio_actualizar(?, ?, ?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
-            cs.setInt(1, c.getIdHabitacion());
+            cs.setInt(1, c.getIdConsultorio());
             cs.setInt(2, c.getNumero());
             cs.setString(3, c.getTipo());
             cs.setString(4, c.getEstado());

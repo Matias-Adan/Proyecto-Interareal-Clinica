@@ -7,11 +7,15 @@ public class Articulo {
 	private String presentacion;
 	private String tipoArticulo;
 	private int stockActual;
-	private int stockMinimo;
+	private int 	stockMinimo;
 	private double temperaturaIdealEnCelcius;
 
+	public Articulo() {
+			
+		}
+	
 	public Articulo(int idArticulo, String nombre, String descripcion, String presentacion, String tipoArticulo,
-			int stockActual, int stockMinimo, double temperaturaIdealEnCelcius) {
+		int stockActual, int stockMinimo, double temperaturaIdealEnCelcius) {
 		this.idArticulo = idArticulo;
 		this.nombre = nombre;
 		this.descripcion = descripcion;

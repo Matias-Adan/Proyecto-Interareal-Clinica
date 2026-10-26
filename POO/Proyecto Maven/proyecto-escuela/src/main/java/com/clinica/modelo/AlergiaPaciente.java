@@ -5,6 +5,10 @@ public class AlergiaPaciente {
 	private int pacienteId;
 	private int alergiaId;
 	
+	public AlergiaPaciente() {
+		
+	}
+	
 	public AlergiaPaciente(int idAlergiaPaciente, int pacienteId, int alergiaId) {
 		this.idAlergiaPaciente = idAlergiaPaciente;
 		this.pacienteId = pacienteId;

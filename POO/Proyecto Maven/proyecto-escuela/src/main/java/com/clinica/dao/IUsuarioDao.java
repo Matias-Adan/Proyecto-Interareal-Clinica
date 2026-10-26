@@ -11,4 +11,5 @@ public interface IUsuarioDao {
 	boolean actualizar(Usuario u);
 	boolean eliminar(int id);
 	Usuario login(String usuario);
+	boolean cambiarEstadoBorrado(int id, boolean flagBorrado);
 }

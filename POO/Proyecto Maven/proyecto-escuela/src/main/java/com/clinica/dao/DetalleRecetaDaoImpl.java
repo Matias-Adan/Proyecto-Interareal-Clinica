@@ -14,7 +14,7 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
     @Override
     public List<DetalleReceta> listar() {
         List<DetalleReceta> lista = new ArrayList<>();
-        String sql = "{CALL sp_seleccionar(\"detalle_recetas\")}";
+        String sql = "{CALL sp_seleccionar(\"detallesreceta\")}";
         
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql);
@@ -24,11 +24,11 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
                 DetalleReceta dr = new DetalleReceta(
                         rs.getInt("idDetalle"),
                         rs.getInt("cantidad"),
-                        rs.getInt("dosis"),
+                        rs.getString("dosis"),
                         rs.getString("frecuencia"),
                         rs.getString("duracion"),
                         rs.getInt("recetaId"),
-                        rs.getInt("medicamentoId")
+                        rs.getInt("articuloId")
                 );
                 lista.add(dr);
             }
@@ -41,7 +41,7 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
     @Override
     public DetalleReceta buscarPorId(int id) {
         DetalleReceta dr = null;
-        String sql = "{CALL sp_detalles_receta_listar(?)}";
+        String sql = "{CALL sp_detallesreceta_listar(?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -52,11 +52,11 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
                     dr = new DetalleReceta(
                             rs.getInt("idDetalle"),
                             rs.getInt("cantidad"),
-                            rs.getInt("dosis"),
+                            rs.getString("dosis"),
                             rs.getString("frecuencia"),
                             rs.getString("duracion"),
                             rs.getInt("recetaId"),
-                            rs.getInt("medicamentoId")
+                            rs.getInt("articuloId")
                     );
                 }
             }
@@ -68,17 +68,17 @@ public class DetalleRecetaDaoImpl implements IDetalleRecetaDao {
 
     @Override
     public boolean insertar(DetalleReceta dr) {
-        String sql = "{CALL sp_detalles_receta_insertar(?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL sp_detallesreceta_insertar(?, ?, ?, ?, ?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
             cs.setInt(1, dr.getCantidad());
-            cs.setInt(2, dr.getDosis());
+            cs.setString(2, dr.getDosis());
             cs.setString(3, dr.getFrecuencia());
             cs.setString(4, dr.getDuracion());
             cs.setInt(5, dr.getRecetaId());
-            cs.setInt(6, dr.getMedicamentoId());
+            cs.setInt(6, dr.getArticuloId());
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {

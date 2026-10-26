@@ -11,6 +11,11 @@ public class UbicacionPaciente {
 	private int medicoId;
 	private int consultorioId;
 	
+	public UbicacionPaciente() {
+
+	}
+
+	
 	public UbicacionPaciente(int idUbicacion, String tipoAtencion, LocalDate fechaIngreso, LocalDate fechaSalida,
 			int pacienteId, int consultorioId) {
 		this.idUbicacion = idUbicacion;

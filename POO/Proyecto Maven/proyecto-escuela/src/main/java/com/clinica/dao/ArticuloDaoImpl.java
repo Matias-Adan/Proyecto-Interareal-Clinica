@@ -76,9 +76,9 @@ public class ArticuloDaoImpl implements IArticuloDao {
              CallableStatement cs = con.prepareCall(sql)) {
             
             cs.setString(1, a.getNombre());
-            cs.setString(2, a.getPresentacion());
-            cs.setString(3, a.getTipoArticulo());
-            cs.setString(4, a.getDescripcion());
+            cs.setString(2, a.getDescripcion());
+            cs.setString(3, a.getPresentacion());
+            cs.setString(4, a.getTipoArticulo());
             cs.setInt(5, a.getStockActual());
             cs.setInt(6, a.getStockMinimo());
             cs.setDouble(7, a.getTemperaturaIdealEnCelcius());

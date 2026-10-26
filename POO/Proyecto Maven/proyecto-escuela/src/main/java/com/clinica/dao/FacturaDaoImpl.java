@@ -4,7 +4,7 @@ import com.clinica.config.Conexion;
 import com.clinica.modelo.Factura;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ public class FacturaDaoImpl implements IFacturaDao {
              ResultSet rs = cs.executeQuery()) {
 
             while (rs.next()) {
-                Date sqlDate = rs.getDate("fecha");
+            	Timestamp sqlTimestamp = rs.getTimestamp("fecha");
                 
                 Factura f = new Factura(
                         rs.getInt("idFactura"),
-                        sqlDate != null ? sqlDate.toLocalDate() : null,
+                        sqlTimestamp != null ? sqlTimestamp.toLocalDateTime() : null,
                         rs.getDouble("importeTotal"),
                         rs.getString("estado"),
                         rs.getInt("pacienteId"),
@@ -51,11 +51,11 @@ public class FacturaDaoImpl implements IFacturaDao {
             cs.setInt(1, id);
             try (ResultSet rs = cs.executeQuery()) {
                 if (rs.next()) {
-                    Date sqlDate = rs.getDate("fecha");
+                	Timestamp sqlTimestamp = rs.getTimestamp("fecha");
                     
                     f = new Factura(
                             rs.getInt("idFactura"),
-                            sqlDate != null ? sqlDate.toLocalDate() : null,
+                            sqlTimestamp != null ? sqlTimestamp.toLocalDateTime() : null,
                             rs.getDouble("importeTotal"),
                             rs.getString("estado"),
                             rs.getInt("pacienteId"),
@@ -76,7 +76,7 @@ public class FacturaDaoImpl implements IFacturaDao {
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
-            cs.setDate(1, f.getFecha() != null ? Date.valueOf(f.getFecha()) : null);
+            cs.setTimestamp(1, f.getFecha() != null ? Timestamp.valueOf(f.getFecha()) : null);
             cs.setDouble(2, f.getImporteTotal());
             cs.setString(3, f.getEstado());
             cs.setInt(4, f.getPacienteId());
@@ -91,17 +91,14 @@ public class FacturaDaoImpl implements IFacturaDao {
 
     @Override
     public boolean actualizar(Factura f) {
-        String sql = "{CALL sp_facturas_actualizar(?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL sp_facturas_actualizar(?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
             cs.setInt(1, f.getIdFactura());
-            cs.setDate(2, f.getFecha() != null ? Date.valueOf(f.getFecha()) : null);
-            cs.setDouble(3, f.getImporteTotal());
-            cs.setString(4, f.getEstado());
-            cs.setInt(5, f.getPacienteId());
-            cs.setInt(6, f.getObraSocialId());
+            cs.setString(2, f.getEstado());
+
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {

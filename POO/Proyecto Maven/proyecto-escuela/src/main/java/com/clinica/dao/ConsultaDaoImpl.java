@@ -29,8 +29,8 @@ public class ConsultaDaoImpl implements IConsultaDao {
                         sqlTimestamp != null ? sqlTimestamp.toLocalDateTime() : null,
                         rs.getString("motivo"),
                         rs.getString("diagnostico"),
-                        rs.getString("obvservacion"),
-                        rs.getInt("historialId"),
+                        rs.getString("observacion"),
+                        rs.getInt("historiaId"),
                         rs.getInt("medicoId")
                 );
                 lista.add(c);
@@ -59,8 +59,8 @@ public class ConsultaDaoImpl implements IConsultaDao {
                             sqlTimestamp != null ? sqlTimestamp.toLocalDateTime() : null,
                             rs.getString("motivo"),
                             rs.getString("diagnostico"),
-                            rs.getString("obvservacion"),
-                            rs.getInt("historialId"),
+                            rs.getString("observacion"),
+                            rs.getInt("historiaId"),
                             rs.getInt("medicoId")
                     );
                 }
@@ -81,8 +81,8 @@ public class ConsultaDaoImpl implements IConsultaDao {
             cs.setTimestamp(1, c.getFecha() != null ? Timestamp.valueOf(c.getFecha()) : null);
             cs.setString(2, c.getMotivo());
             cs.setString(3, c.getDiagnostico());
-            cs.setString(4, c.getObvservacion());
-            cs.setInt(5, c.getHistorialId());
+            cs.setString(4, c.getObservacion());
+            cs.setInt(5, c.getHistoriaId());
             cs.setInt(6, c.getMedicoId());
 
             return cs.executeUpdate() > 0;
@@ -103,8 +103,8 @@ public class ConsultaDaoImpl implements IConsultaDao {
             cs.setTimestamp(2, c.getFecha() != null ? Timestamp.valueOf(c.getFecha()) : null);
             cs.setString(3, c.getMotivo());
             cs.setString(4, c.getDiagnostico());
-            cs.setString(5, c.getObvservacion());
-            cs.setInt(6, c.getHistorialId());
+            cs.setString(5, c.getObservacion());
+            cs.setInt(6, c.getHistoriaId());
             cs.setInt(7, c.getMedicoId());
 
             return cs.executeUpdate() > 0;

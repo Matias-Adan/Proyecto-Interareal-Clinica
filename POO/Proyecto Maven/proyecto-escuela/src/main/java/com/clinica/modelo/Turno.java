@@ -15,7 +15,9 @@ public class Turno {
 	private int especialidadId;
 	private int consultorioId;
 	
-	
+	public Turno() {
+
+	}
 
 	public Turno(int idTurno, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, String estado, String motivo,
 			int pacienteId, int personalId, int especialidadId, int consultorioId) {

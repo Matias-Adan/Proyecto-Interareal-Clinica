@@ -177,4 +177,23 @@ public class UsuarioDaoImpl implements IUsuarioDao {
         }
         return u;
     }
+    
+    @Override
+    public boolean cambiarEstadoBorrado(int id, boolean estado) {
+    	String sql = "{CALL sp_usuarios_cambiar_estado(?, ?)}";
+		
+    	try (Connection con = Conexion.getInstancia().getConexion();
+    		 CallableStatement cs = con.prepareCall(sql)){
+    		
+    		cs.setInt(1, id);
+    		cs.setBoolean(2, estado);
+    		
+    		return cs.executeUpdate() > 0;
+    	} catch (SQLException e) {
+    		System.err.println("❌ Error al cambiar el flag de borrado del usuario: " + e.getMessage());
+            return false;
+        }
+		
+    }
+    
 }

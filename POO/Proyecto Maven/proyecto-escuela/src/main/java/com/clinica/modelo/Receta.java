@@ -8,6 +8,10 @@ public class Receta {
 	private String indicacion;
 	private int consultaId;
 	
+	public Receta() {
+		
+	}
+	
 	public Receta(int idReceta, LocalDate fecha, String indicacion, int consultaId) {
 		this.idReceta = idReceta;
 		this.fecha = fecha;

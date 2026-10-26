@@ -11,6 +11,10 @@ public class MovimientoStock {
 	private LocalDateTime fechaHora;
 	private int usuarioId;
 	
+	public MovimientoStock() {
+
+	}
+	
 	public MovimientoStock(int movimientoStock, int idArticulo, String tipoMovimiento, int cantidad, String motivo,
 			LocalDateTime fechaHora, int usuarioId) {
 		this.movimientoStock = movimientoStock;

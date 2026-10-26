@@ -1,16 +1,20 @@
 package com.clinica.modelo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Factura {
 	private int idFactura;
-	private LocalDate fecha;
+	private LocalDateTime fecha;
 	private double importeTotal;
 	private String estado;
 	private int pacienteId;
 	private int obraSocialId;
 	
-	public Factura(int idFactura, LocalDate fecha, double importeTotal, String estado, int pacienteId,
+	public Factura() {
+		
+	}
+	
+	public Factura(int idFactura, LocalDateTime fecha, double importeTotal, String estado, int pacienteId,
 			int obraSocialId) {
 		this.idFactura = idFactura;
 		this.fecha = fecha;
@@ -28,11 +32,11 @@ public class Factura {
 		this.idFactura = idFactura;
 	}
 
-	public LocalDate getFecha() {
+	public LocalDateTime getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(LocalDate fecha) {
+	public void setFecha(LocalDateTime fecha) {
 		this.fecha = fecha;
 	}
 

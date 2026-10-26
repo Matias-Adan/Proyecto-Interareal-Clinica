@@ -3,21 +3,25 @@ package com.clinica.modelo;
 public class DetalleReceta {
 	private int idDetalle;
 	private int cantidad;
-	private int dosis;
+	private String dosis;
 	private String frecuencia;
 	private String duracion;
 	private int recetaId;
-	private int medicamentoId;
+	private int articuloId;
 	
-	public DetalleReceta(int idReceta, int cantidad, int dosis, String frecuencia, String duracion, int recetaId,
-			int medicamentoId) {
+	public DetalleReceta() {
+
+	}
+	
+	public DetalleReceta(int idReceta, int cantidad, String dosis, String frecuencia, String duracion, int recetaId,
+			int articuloId) {
 		this.idDetalle = idReceta;
 		this.cantidad = cantidad;
 		this.dosis = dosis;
 		this.frecuencia = frecuencia;
 		this.duracion = duracion;
 		this.recetaId = recetaId;
-		this.medicamentoId = medicamentoId;
+		this.articuloId = articuloId;
 	}
 
 	public int getIdReceta() {
@@ -36,11 +40,11 @@ public class DetalleReceta {
 		this.cantidad = cantidad;
 	}
 
-	public int getDosis() {
+	public String getDosis() {
 		return dosis;
 	}
 
-	public void setDosis(int dosis) {
+	public void setDosis(String dosis) {
 		this.dosis = dosis;
 	}
 
@@ -68,12 +72,12 @@ public class DetalleReceta {
 		this.recetaId = recetaId;
 	}
 
-	public int getMedicamentoId() {
-		return medicamentoId;
+	public int getArticuloId() {
+		return articuloId;
 	}
 
-	public void setMedicamentoId(int medicamentoId) {
-		this.medicamentoId = medicamentoId;
+	public void setArticuloId(int articuloId) {
+		this.articuloId = articuloId;
 	}
 	
 	

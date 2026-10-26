@@ -5,6 +5,10 @@ public class Alergia {
 	private String nombre;
 	private String descripcion;
 	
+	public Alergia() {
+
+	}
+	
 	public Alergia(int idAlergia, String nombre, String descripcion) {
 		this.idAlergia = idAlergia;
 		this.nombre = nombre;

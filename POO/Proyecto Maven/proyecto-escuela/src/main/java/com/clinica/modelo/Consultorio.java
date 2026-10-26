@@ -1,26 +1,30 @@
 package com.clinica.modelo;
 
 public class Consultorio {
-	private int idHabitacion;
+	private int idConsultorio;
 	private int numero;
 	private int piso;
 	private String tipo;
 	private String estado;
 	
-	public Consultorio(int idHabitacion, int numero, String tipo, String estado, int piso) {
-		this.idHabitacion = idHabitacion;
+	public Consultorio() {
+		
+	}
+	
+	public Consultorio(int idConsultorio, int numero, String tipo, String estado, int piso) {
+		this.idConsultorio = idConsultorio;
 		this.numero = numero;
 		this.tipo = tipo;
 		this.estado = estado;
 		this.piso = piso;
 	}
 
-	public int getIdHabitacion() {
-		return idHabitacion;
+	public int getIdConsultorio() {
+		return idConsultorio;
 	}
 
-	public void setIdHabitacion(int idHabitacion) {
-		this.idHabitacion = idHabitacion;
+	public void setIdConsultorio(int idConsultorio) {
+		this.idConsultorio = idConsultorio;
 	}
 
 	public int getNumero() {

@@ -37,7 +37,7 @@ public class AlergiaPacienteDaoImpl implements IAlergiaPacienteDao {
     @Override
     public AlergiaPaciente buscarPorId(int id) {
         AlergiaPaciente ap = null;
-        String sql = "{CALL sp_alergias_paciente_listar(?)}";
+        String sql = "{CALL sp_alergiapaciente_listar(?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -60,7 +60,7 @@ public class AlergiaPacienteDaoImpl implements IAlergiaPacienteDao {
 
     @Override
     public boolean insertar(AlergiaPaciente ap) {
-        String sql = "{CALL sp_alergias_paciente_insertar(?, ?)}";
+        String sql = "{CALL sp_alergiapaciente_insertar(?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -77,7 +77,7 @@ public class AlergiaPacienteDaoImpl implements IAlergiaPacienteDao {
 
     @Override
     public boolean actualizar(AlergiaPaciente ap) {
-        String sql = "{CALL sp_alergias_paciente_actualizar(?, ?, ?)}";
+        String sql = "{CALL sp_alergiapaciente_actualizar(?, ?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -95,7 +95,7 @@ public class AlergiaPacienteDaoImpl implements IAlergiaPacienteDao {
 
     @Override
     public boolean eliminar(int id) {
-        String sql = "{CALL sp_alergias_paciente_eliminar(?)}";
+        String sql = "{CALL sp_alergiapaciente_eliminar(?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
