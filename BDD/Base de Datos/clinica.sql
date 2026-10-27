@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2026 a las 16:38:03
+-- Tiempo de generación: 27-10-2026 a las 16:01:27
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -234,7 +234,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_actualizar` (I
     UPDATE `historiasclinicas`
     SET `antecedentes` = p_antecedentes, 
         `observacion` = p_observacion,
-        `pacienteId` = p_pacienteId,
         `flagBorrado` = p_flagBorrado
     WHERE `idHistoria` = p_id;
 END$$
@@ -658,7 +657,7 @@ INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, 
 (1, 'Ibuprofeno 600mg', 'Analgésico y antiinflamatorio', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10),
 (2, 'Amoxicilina 500mg', 'Antibiótico de amplio espectro', 'Cápsulas x 16', 'MEDICAMENTO', 213, 20, 7),
 (3, 'Paracetamol 1g', 'Antipirético y analgésico', 'Comprimidos x 40', 'MEDICAMENTO', 210, 45, 10),
-(4, 'Losartán 50mg', 'Antihipertensivo crónico', 'Comprimidos x 30', 'MEDICAMENTO', 80, 25, 0),
+(4, 'Losartán 50mg', 'Antihipertensivo crónico', 'Comprimidos x 30', 'MEDICAMENTO', 67, 25, 0),
 (5, 'Clonazepam 0.5mg', 'Ansiolítico bajo receta archivada', 'Comprimidos x 30', 'MEDICAMENTO', 45, 15, -2),
 (6, 'Gasa estéril 10x10', 'Paquetes de gasas hidrófilas', 'Descartable', 'INSUMO', 450, 100, NULL),
 (7, 'Jeringas 5ml', 'Jeringas con aguja descartable', 'Descartable', 'INSUMO', 320, 50, NULL),
@@ -794,7 +793,8 @@ INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, 
 (1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 1, 0),
 (2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 3, 0),
 (3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0),
-(5, '0000-00-00', 'probando', 'probando', 2, 0);
+(5, '0000-00-00', 'probando', 'probando', 2, 0),
+(9, '2018-09-12', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 4, 1);
 
 -- --------------------------------------------------------
 
@@ -817,7 +817,8 @@ CREATE TABLE `movimientos_stock` (
 --
 
 INSERT INTO `movimientos_stock` (`idMovimiento`, `idArticulo`, `tipoMovimiento`, `cantidad`, `motivo`, `fechaHora`, `usuarioId`) VALUES
-(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2);
+(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2),
+(2, 4, 'SALIDA', 13, 'niga', '2016-10-19 21:30:59', 4);
 
 --
 -- Disparadores `movimientos_stock`
@@ -924,7 +925,8 @@ CREATE TABLE `permisos` (
 --
 
 INSERT INTO `permisos` (`idPermiso`, `nombre`, `descripcion`) VALUES
-(1, 'probando', 'probando');
+(1, 'probando', 'probando'),
+(2, 'probando', 'robando');
 
 -- --------------------------------------------------------
 
@@ -946,7 +948,8 @@ CREATE TABLE `recetas` (
 INSERT INTO `recetas` (`idReceta`, `fecha`, `indicacion`, `consultaId`) VALUES
 (1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1),
 (2, '2026-09-14', 'Administrar vía intravenosa en la internación.', 2),
-(3, '2026-10-19', 'probando', 2);
+(3, '2026-10-19', 'probando', 2),
+(4, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 2);
 
 -- --------------------------------------------------------
 
@@ -996,7 +999,8 @@ INSERT INTO `roles` (`idRol`, `nombre`, `descripcion`) VALUES
 (4, 'Recepcionista', 'Gestión de turnos y caja'),
 (5, 'Paciente', 'Usuario consumidor final'),
 (6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios'),
-(7, 'probando', 'probando');
+(7, 'probando', 'probando'),
+(8, 'Epstein', 'Control total del sistema');
 
 -- --------------------------------------------------------
 
@@ -1498,49 +1502,49 @@ ALTER TABLE `facturas`
 -- AUTO_INCREMENT de la tabla `historiasclinicas`
 --
 ALTER TABLE `historiasclinicas`
-  MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos_stock`
 --
 ALTER TABLE `movimientos_stock`
-  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `obrassociales`
 --
 ALTER TABLE `obrassociales`
-  MODIFY `idObraSocial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idObraSocial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `permisorol`
 --
 ALTER TABLE `permisorol`
-  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `recetas`
 --
 ALTER TABLE `recetas`
-  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `triage`
