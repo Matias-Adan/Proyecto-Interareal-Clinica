@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -113,8 +114,8 @@ public class TriageDaoImplTest {
 			
 			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
-			LocalDate fechaEjemplo = LocalDate.of(2026, 6, 6);
-			Triage nuevo = new Triage(0, fechaEjemplo, "Amarillo", "Atendido", "Dolor moderado", 10, 2, 5);
+			LocalDateTime fechaHoraEjemplo = LocalDateTime.of(2026, 6, 6, 10, 0);
+			Triage nuevo = new Triage(0, fechaHoraEjemplo, "Amarillo", "Atendido", "Dolor moderado", 10, 2, 5);
 			boolean resultado = triageDao.insertar(nuevo);
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
@@ -137,8 +138,8 @@ public class TriageDaoImplTest {
 			
 			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
-			LocalDate fechaEjemplo = LocalDate.of(2026, 6, 6);
-			Triage t = new Triage(1, fechaEjemplo, "Verde", "Finalizado", "Controlado", 10, 2, 5);
+			LocalDateTime fechaHoraEjemplo = LocalDateTime.of(2026, 6, 6, 10, 0);
+			Triage t = new Triage(1, fechaHoraEjemplo, "Verde", "Finalizado", "Controlado", 10, 2, 5);
 			boolean resultado = triageDao.actualizar(t);
 			
 			assertTrue(resultado, "El método debe responder true al actualizar");

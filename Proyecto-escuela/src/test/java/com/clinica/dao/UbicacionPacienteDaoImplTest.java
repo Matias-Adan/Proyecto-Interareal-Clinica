@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,8 +111,8 @@ public class UbicacionPacienteDaoImplTest {
 			
 			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
-			LocalDate fechaIngresoEjemplo = LocalDate.of(2026, 6, 6);
-			LocalDate fechaSalidaEjemplo = LocalDate.of(2026, 6, 10);
+			LocalDateTime fechaIngresoEjemplo = LocalDateTime.of(2026, 6, 6, 10, 0);
+			LocalDateTime fechaSalidaEjemplo = LocalDateTime.of(2026, 6, 9, 20, 0);
 			
 			UbicacionPaciente nuevo = new UbicacionPaciente(0, "Guardia", fechaIngresoEjemplo, fechaSalidaEjemplo, 10, 2);
 			nuevo.setMedicoId(3);
@@ -136,8 +137,10 @@ public class UbicacionPacienteDaoImplTest {
 			
 			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
-			LocalDate fechaIngresoEjemplo = LocalDate.of(2026, 6, 6);
-			LocalDate fechaSalidaEjemplo = LocalDate.of(2026, 6, 12);
+			
+			LocalDateTime fechaIngresoEjemplo = LocalDateTime.of(2026, 6, 6, 10, 0);
+			LocalDateTime fechaSalidaEjemplo = LocalDateTime.of(2026, 6, 9, 20, 0);
+			
 			
 			UbicacionPaciente up = new UbicacionPaciente(1, "Internación", fechaIngresoEjemplo, fechaSalidaEjemplo, 10, 2);
 			up.setMedicoId(3);
