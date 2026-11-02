@@ -9,5 +9,5 @@ public interface ITurnoDao {
 	List<Turno> listar();
 	Turno buscarPorId(int id);
 	boolean actualizar(Turno t);
-	boolean eliminar(int id);
+	boolean cambiarEstado(int id, String estado);
 }

@@ -9,6 +9,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonObject;
+
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,6 +25,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+
+
 
 @WebServlet("/turnos")
 public class TurnoServlet extends HttpServlet {
@@ -76,6 +81,7 @@ public class TurnoServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -104,6 +110,7 @@ public class TurnoServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -127,10 +134,58 @@ public class TurnoServlet extends HttpServlet {
         }
         out.flush();
     }
+    
+    protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuarioLogueado") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().print("{\"error\": \"No autorizado. Debe iniciar sesión.\"}");
+            return; // Corta la ejecución de inmediato
+        }
+        
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        BufferedReader reader = request.getReader();
+        try {
+            // Leemos la petición como un JSON genérico
+            JsonObject jsonBody = gson.fromJson(reader, JsonObject.class);
+            
+            // Validamos que vengan los datos mínimos obligatorios para el Turno
+            if (!jsonBody.has("idTurno") || !jsonBody.has("estado")) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print("{\"error\": \"Faltan parámetros requeridos en el JSON: idTurno y estado\"}");
+                out.flush();
+                return;
+            }
+            
+            int id = jsonBody.get("idTurno").getAsInt();
+            String nuevoEstado = jsonBody.get("estado").getAsString();
+            
+            // Invocamos el método creado en el paso anterior en tu DAO de turnos
+            if (turnoDao.cambiarEstado(id, nuevoEstado)) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.print("{\"mensaje\": \"Estado del turno actualizado correctamente\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print("{\"error\": \"No se pudo actualizar el estado del turno\"}");
+            }
+            
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.println("{\"error\": \"Error en el formato de los datos JSON enviados en el PATCH.\"}");
+        }
+        out.flush();
+    }
 
-    // ELIMINAR (DELETE)
+
+ // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -139,29 +194,11 @@ public class TurnoServlet extends HttpServlet {
             return;
         }
         
-        String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idStr);
-                
-                if (turnoDao.eliminar(id)) {
-                    out.print("{\"mensaje\": \"Turno eliminado correctamente\"}");
-                } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print("{\"error\": \"No se pudo eliminar el turno\"}");
-                }
-                
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\": \"El ID proporcionado debe ser un número entero válido.\"}");
-            }
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\": \"Falta el parámetro id\"}");
-        }
+        
+        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+        out.print("{\"error\": \"La funcionalidad de eliminación no está implementada en el DAO de turnos.\"}");
         out.flush();
     }
 }

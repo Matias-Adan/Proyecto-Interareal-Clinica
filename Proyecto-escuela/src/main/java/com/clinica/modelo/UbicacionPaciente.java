@@ -1,12 +1,12 @@
 package com.clinica.modelo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class UbicacionPaciente {
 	private int idUbicacion;
 	private String tipoAtencion;
-	private LocalDate fechaIngreso;
-	private LocalDate fechaSalida;
+	private LocalDateTime fechaIngreso;
+	private LocalDateTime fechaSalida;
 	private int pacienteId;
 	private int medicoId;
 	private int consultorioId;
@@ -16,7 +16,7 @@ public class UbicacionPaciente {
 	}
 
 	
-	public UbicacionPaciente(int idUbicacion, String tipoAtencion, LocalDate fechaIngreso, LocalDate fechaSalida,
+	public UbicacionPaciente(int idUbicacion, String tipoAtencion, LocalDateTime fechaIngreso, LocalDateTime fechaSalida,
 			int pacienteId, int consultorioId) {
 		this.idUbicacion = idUbicacion;
 		this.tipoAtencion = tipoAtencion;
@@ -42,19 +42,19 @@ public class UbicacionPaciente {
 		this.tipoAtencion = tipoAtencion;
 	}
 
-	public LocalDate getFechaIngreso() {
+	public LocalDateTime getFechaIngreso() {
 		return fechaIngreso;
 	}
 
-	public void setFechaIngreso(LocalDate fechaIngreso) {
+	public void setFechaIngreso(LocalDateTime fechaIngreso) {
 		this.fechaIngreso = fechaIngreso;
 	}
 
-	public LocalDate getFechaSalida() {
+	public LocalDateTime getFechaSalida() {
 		return fechaSalida;
 	}
 
-	public void setFechaSalida(LocalDate fechaSalida) {
+	public void setFechaSalida(LocalDateTime fechaSalida) {
 		this.fechaSalida = fechaSalida;
 	}
 

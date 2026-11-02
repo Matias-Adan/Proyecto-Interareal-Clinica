@@ -1,10 +1,10 @@
 package com.clinica.modelo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Triage {
 	private int idTriage;
-	private LocalDate fecha;
+	private LocalDateTime fecha;
 	private String prioridad;
 	private String estado;
 	private String observacion;
@@ -16,7 +16,7 @@ public class Triage {
 
 	}
 	
-	public Triage(int idTriage, LocalDate fecha, String prioridad, String estado, String observacion, int pacienteId,
+	public Triage(int idTriage, LocalDateTime fecha, String prioridad, String estado, String observacion, int pacienteId,
 			int consultorioId, int enfermeroId) {
 		this.idTriage = idTriage;
 		this.fecha = fecha;
@@ -36,11 +36,11 @@ public class Triage {
 		this.idTriage = idTriage;
 	}
 
-	public LocalDate getFecha() {
+	public LocalDateTime getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(LocalDate fecha) {
+	public void setFecha(LocalDateTime fecha) {
 		this.fecha = fecha;
 	}
 

@@ -108,7 +108,7 @@ public class TurnoDaoImpl implements ITurnoDao {
 
     @Override
     public boolean actualizar(Turno t) {
-        String sql = "{CALL sp_turnos_actualizar(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL sp_turnos_actualizar(?, ?, ?, ?, ?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -117,12 +117,8 @@ public class TurnoDaoImpl implements ITurnoDao {
             cs.setDate(2, t.getFecha() != null ? Date.valueOf(t.getFecha()) : null);
             cs.setTime(3, t.getHoraInicio() != null ? Time.valueOf(t.getHoraInicio()) : null);
             cs.setTime(4, t.getHoraFin() != null ? Time.valueOf(t.getHoraFin()) : null);
-            cs.setString(5, t.getEstado());
-            cs.setString(6, t.getMotivo());
-            cs.setInt(7, t.getPacienteId());
-            cs.setInt(8, t.getMedicoId());
-            cs.setInt(9, t.getEspecialidadId());
-            cs.setInt(10, t.getConsultorioId());
+            cs.setString(5, t.getMotivo());
+            cs.setInt(6, t.getConsultorioId());
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -132,17 +128,21 @@ public class TurnoDaoImpl implements ITurnoDao {
     }
 
     @Override
-    public boolean eliminar(int id) {
-        String sql = "{CALL sp_turnos_eliminar(?)}";
-
-        try (Connection con = Conexion.getInstancia().getConexion();
+    public boolean cambiarEstado(int id, String nuevoEstado) {
+        String sql = "{CALL sp_turnos_cambiar_estado(?, ?)}";
+        try (Connection con = Conexion.getInstancia().getConexion(); 
              CallableStatement cs = con.prepareCall(sql)) {
             
             cs.setInt(1, id);
+            cs.setString(2, nuevoEstado);
+            
             return cs.executeUpdate() > 0;
+            
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar turno: " + e.getMessage());
+            System.err.println("❌ Error al cambiar el estado del turno: " + e.getMessage());
             return false;
         }
     }
+
+
 }

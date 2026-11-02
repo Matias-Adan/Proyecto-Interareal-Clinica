@@ -4,7 +4,7 @@ import com.clinica.config.Conexion;
 import com.clinica.modelo.Triage;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,18 +15,18 @@ public class TriageDaoImpl implements ITriageDao {
     @Override
     public List<Triage> listar() {
         List<Triage> lista = new ArrayList<>();
-        String sql = "{CALL sp_seleccionar(\"triages\")}";
+        String sql = "{CALL sp_seleccionar(\"triage\")}";
         
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql);
              ResultSet rs = cs.executeQuery()) {
 
             while (rs.next()) {
-                Date sqlDate = rs.getDate("fecha");
+            	Timestamp sqlTimestamp = rs.getTimestamp("fecha");
                 
                 Triage t = new Triage(
                         rs.getInt("idTriage"),
-                        sqlDate != null ? sqlDate.toLocalDate() : null,
+                        sqlTimestamp != null ? sqlTimestamp.toLocalDateTime() : null,
                         rs.getString("prioridad"),
                         rs.getString("estado"),
                         rs.getString("observacion"),
@@ -45,7 +45,7 @@ public class TriageDaoImpl implements ITriageDao {
     @Override
     public Triage buscarPorId(int id) {
         Triage t = null;
-        String sql = "{CALL sp_triages_listar(?)}";
+        String sql = "{CALL sp_triage_listar(?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
@@ -53,11 +53,11 @@ public class TriageDaoImpl implements ITriageDao {
             cs.setInt(1, id);
             try (ResultSet rs = cs.executeQuery()) {
                 if (rs.next()) {
-                    Date sqlDate = rs.getDate("fecha");
+                	Timestamp sqlTimestamp = rs.getTimestamp("fecha");
                     
                     t = new Triage(
                             rs.getInt("idTriage"),
-                            sqlDate != null ? sqlDate.toLocalDate() : null,
+                            sqlTimestamp != null ? sqlTimestamp.toLocalDateTime() : null,
                             rs.getString("prioridad"),
                             rs.getString("estado"),
                             rs.getString("observacion"),
@@ -75,12 +75,12 @@ public class TriageDaoImpl implements ITriageDao {
 
     @Override
     public boolean insertar(Triage t) {
-        String sql = "{CALL sp_triages_insertar(?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL sp_triage_insertar(?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
-            cs.setDate(1, t.getFecha() != null ? Date.valueOf(t.getFecha()) : null);
+            cs.setTimestamp(1, t.getFecha() != null ? Timestamp.valueOf(t.getFecha()) : null);
             cs.setString(2, t.getPrioridad());
             cs.setString(3, t.getEstado());
             cs.setString(4, t.getObservacion());
@@ -97,19 +97,13 @@ public class TriageDaoImpl implements ITriageDao {
 
     @Override
     public boolean actualizar(Triage t) {
-        String sql = "{CALL sp_triages_actualizar(?, ?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL sp_triage_actualizar(?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
             cs.setInt(1, t.getIdTriage());
-            cs.setDate(2, t.getFecha() != null ? Date.valueOf(t.getFecha()) : null);
-            cs.setString(3, t.getPrioridad());
-            cs.setString(4, t.getEstado());
-            cs.setString(5, t.getObservacion());
-            cs.setInt(6, t.getPacienteId());
-            cs.setInt(7, t.getConsultorioId());
-            cs.setInt(8, t.getEnfermeroId());
+            cs.setString(2, t.getEstado());
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {

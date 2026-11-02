@@ -20,23 +20,40 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime; 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@WebServlet("/ubicaciones-pacientes")
+@WebServlet("/ubicacionpaciente")
 public class UbicacionPacienteServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private IUbicacionPacienteDao ubicacionPacienteDao = UbicacionPacienteDaoFactory.getUbicacionPacienteDao();
     
-
+    // SE ADAPTÓ LA CONFIGURACIÓN PARA PROCESAR LOCALDATE Y LOCALDATETIME
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) -> 
                 src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE)))
             .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context) -> 
                 json == null ? null : LocalDate.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE))
+            .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) ->
+                src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+            .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (json, typeOfT, context) ->
+                json == null ? null : LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .create();
 
+    // ENRUTADOR PARA ADMITIR EL MÉTODO PATCH NATIVAMENTE
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getMethod().equalsIgnoreCase("PATCH")) {
+            doPatch(request, response);
+        } else {
+            super.service(request, response);
+        }
+    }
+
+    
+    
     // LISTAR O BUSCAR POR ID (GET)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -72,6 +89,7 @@ public class UbicacionPacienteServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -100,6 +118,7 @@ public class UbicacionPacienteServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -123,10 +142,61 @@ public class UbicacionPacienteServlet extends HttpServlet {
         }
         out.flush();
     }
+    
+    // DAR DE ALTA / FINALIZAR UBICACIÓN (PATCH)
+    
+    protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 1. Validar la sesión del usuario
+        /*HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuarioLogueado") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
+            return;
+        }*/
+        
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
 
-    // ELIMINAR (DELETE)
+        try {
+            // 2. Leer los parámetros enviados en el cuerpo JSON (ej: {"idUbicacion": 5, "fechaSalida": "2026-11-02T11:15:00"})
+            BufferedReader reader = request.getReader();
+            UbicacionPaciente datosAlta = gson.fromJson(reader, UbicacionPaciente.class);
+
+            if (datosAlta == null || datosAlta.getIdUbicacion() == 0) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print("{\"error\": \"El campo 'idUbicacion' es obligatorio en el cuerpo de la solicitud.\"}");
+                out.flush();
+                return;
+            }
+
+            int id = datosAlta.getIdUbicacion();
+            LocalDateTime fechaSalida = datosAlta.getFechaSalida(); // Puede ser null, el SP usará NOW() por el COALESCE
+
+            // 3. Ejecutar el método en el DAO
+            if (ubicacionPacienteDao.darAlta(id, fechaSalida)) {
+                out.print("{\"mensaje\": \"Paciente dado de alta de su ubicación correctamente.\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print("{\"error\": \"No se pudo procesar el alta. Verifique que el ID de ubicación exista.\"}");
+            }
+
+        } catch (com.google.gson.JsonSyntaxException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print("{\"error\": \"Error en el formato JSON enviado o formato de fecha inválido.\"}");
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"error\": \"Ocurrió un error inesperado: " + e.getMessage() + "\"}");
+        }
+        out.flush();
+    }
+
+
+ // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -135,29 +205,11 @@ public class UbicacionPacienteServlet extends HttpServlet {
             return;
         }
         
-        String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idStr);
-                
-                if (ubicacionPacienteDao.eliminar(id)) {
-                    out.print("{\"mensaje\": \"Ubicación de paciente eliminada correctamente\"}");
-                } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print("{\"error\": \"No se pudo eliminar la ubicación de paciente\"}");
-                }
-                
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\": \"El ID proporcionado debe ser un número entero válido.\"}");
-            }
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\": \"Falta el parámetro id\"}");
-        }
+        
+        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+        out.print("{\"error\": \"La funcionalidad de eliminación no está implementada en el DAO de ubicacion del paciente.\"}");
         out.flush();
     }
 }
