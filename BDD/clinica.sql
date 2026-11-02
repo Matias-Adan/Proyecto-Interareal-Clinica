@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-10-2026 a las 16:01:27
+-- Tiempo de generación: 02-11-2026 a las 15:32:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -457,7 +457,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_seleccionar` (IN `tabla` VARCHAR
     DEALLOCATE PREPARE stmt;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_actualizar` (IN `p_estado` VARCHAR(50))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_triage_actualizar` (IN `p_id` INT, IN `p_estado` VARCHAR(50))   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `triage` WHERE `idTriage` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El registro de triage indicado no existe.';
     END IF;
@@ -511,14 +511,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_turnos_listar` (IN `p_id` INT)  
     WHERE (`idTurno` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_actualizar` (IN `p_id` INT, IN `tipoAtencion` ENUM('TURNO_SIMPLE','EMERGENCIA','INTERNACION'), IN `p_pacienteId` INT, IN `p_medicoId` INT, IN `p_consultorioId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ubicacionpaciente_actualizar` (IN `p_id` INT, IN `p_tipoAtencion` ENUM('TURNO_SIMPLE','EMERGENCIA','INTERNACION'), IN `p_fechaSalida` TIMESTAMP, IN `p_medicoId` INT, IN `p_consultorioId` INT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `ubicacionpaciente` WHERE `idUbicacion` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El registro de ubicacion indicado no existe.';
     END IF;
     
     UPDATE `ubicacionpaciente`
     SET `tipoAtencion` = p_tipoAtencion,
-    	`pacienteId` = p_pacienteId,
+    	`fechaSalida` = p_fechaSalida,
         `medicoId` = p_medicoId,
         `consultorioId` = p_consultorioId
     WHERE `idUbicacion` = p_id;
@@ -1024,7 +1024,9 @@ CREATE TABLE `triage` (
 --
 
 INSERT INTO `triage` (`idTriage`, `fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`) VALUES
-(1, '0000-00-00 00:00:00', 3, 'probando', 'probando', 2, 2, 4);
+(1, '1000-10-10 10:10:10', 3, 'probando', 'probando', 2, 2, 4),
+(2, '2000-10-10 10:10:10', 2, 'cracs', 'probandoo', 2, 2, 4),
+(3, '2000-10-10 10:10:10', 2, 'probandoox', 'probandoox', 2, 2, 4);
 
 --
 -- Disparadores `triage`
@@ -1070,31 +1072,33 @@ CREATE TABLE `turnos` (
 
 INSERT INTO `turnos` (`idTurno`, `fecha`, `horaInicio`, `horaFin`, `estado`, `motivo`, `pacienteId`, `medicoId`, `especialidadId`, `consultorioId`) VALUES
 (1, '2026-09-14', '09:30:00', '10:00:00', 'Atendido', 'Control de rutina por presión', 1, 2, 1, 3),
-(2, '2026-09-14', '11:00:00', '11:30:00', 'Ausente', 'Revisión de análisis', 3, 2, 1, 3);
+(2, '2016-09-14', '21:30:00', '22:00:00', 'Ausente', 'Control de rutina por presión', 3, 2, 1, 2),
+(3, '2006-09-14', '21:30:00', '22:00:00', 'Atendido', 'Control de rutina por presión', 5, 2, 1, 2);
 
 --
 -- Disparadores `turnos`
 --
 DELIMITER $$
 CREATE TRIGGER `validar_turnos_duplicados_insert` BEFORE INSERT ON `turnos` FOR EACH ROW BEGIN
-    DECLARE v_rolMedico INT;
-    DECLARE v_rolPaciente INT;
-
     IF NEW.horaFin <= NEW.horaInicio THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'La hora de fin debe ser mayor a la hora de inicio del turno.';
     END IF;
 
-  
-    SELECT `rolId` INTO v_rolMedico FROM `roldeusuario` WHERE `usuarioId` = NEW.medicoId;
-    IF v_rolMedico IS NULL OR v_rolMedico != 2 THEN
+    -- Verifica si el médico tiene asignado el rol 2 dentro de sus múltiples roles
+    IF NOT EXISTS (
+        SELECT 1 FROM `roldeusuario` 
+        WHERE `usuarioId` = NEW.medicoId AND `rolId` = 2
+    ) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como medico no posee el rol de Medico.';
     END IF;
 
-
-    SELECT `rolId` INTO v_rolPaciente FROM `roldeusuario` WHERE `usuarioId` = NEW.pacienteId;
-    IF v_rolPaciente IS NULL OR v_rolPaciente != 5 THEN
+    -- Verifica si el paciente tiene asignado el rol 5 dentro de sus múltiples roles
+    IF NOT EXISTS (
+        SELECT 1 FROM `roldeusuario` 
+        WHERE `usuarioId` = NEW.pacienteId AND `rolId` = 5
+    ) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como paciente no posee el rol de Paciente.';
     END IF;
@@ -1136,22 +1140,25 @@ $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `validar_turnos_duplicados_update` BEFORE UPDATE ON `turnos` FOR EACH ROW BEGIN
-    DECLARE v_rolMedico INT;
-    DECLARE v_rolPaciente INT;
-
     IF NEW.horaFin <= NEW.horaInicio THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'La hora de fin debe ser mayor a la hora de inicio del turno.';
     END IF;
 
-    SELECT `rolId` INTO v_rolMedico FROM `roldeusuario` WHERE `usuarioId` = NEW.medicoId;
-    IF v_rolMedico IS NULL OR v_rolMedico != 2 THEN
+    -- Verifica si el médico tiene asignado el rol 2 dentro de sus múltiples roles
+    IF NOT EXISTS (
+        SELECT 1 FROM `roldeusuario` 
+        WHERE `usuarioId` = NEW.medicoId AND `rolId` = 2
+    ) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como medico no posee el rol de Medico.';
     END IF;
 
-    SELECT `rolId` INTO v_rolPaciente FROM `roldeusuario` WHERE `usuarioId` = NEW.pacienteId;
-    IF v_rolPaciente IS NULL OR v_rolPaciente != 5 THEN
+    -- Verifica si el paciente tiene asignado el rol 5 dentro de sus múltiples roles
+    IF NOT EXISTS (
+        SELECT 1 FROM `roldeusuario` 
+        WHERE `usuarioId` = NEW.pacienteId AND `rolId` = 5
+    ) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El usuario asignado como paciente no posee el rol de Paciente.';
     END IF;
@@ -1217,9 +1224,12 @@ CREATE TABLE `ubicacionpaciente` (
 
 INSERT INTO `ubicacionpaciente` (`idUbicacion`, `tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`) VALUES
 (1, 'TURNO_SIMPLE', '2026-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
-(2, 'INTERNACION', '2026-09-14 10:05:00', NULL, 3, 2, 5),
+(2, 'INTERNACION', '2026-09-14 10:05:00', '2026-11-02 15:30:00', 3, 2, 5),
 (3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4),
-(4, 'EMERGENCIA', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 2, 2, 2);
+(4, 'EMERGENCIA', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 2, 2, 2),
+(5, 'TURNO_SIMPLE', '2000-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
+(6, 'TURNO_SIMPLE', '2000-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
+(7, 'TURNO_SIMPLE', '2010-09-14 09:20:00', '2026-09-14 09:50:00', 2, 2, 2);
 
 --
 -- Disparadores `ubicacionpaciente`
@@ -1550,19 +1560,19 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `triage`
 --
 ALTER TABLE `triage`
-  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `idTurno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idTurno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `ubicacionpaciente`
 --
 ALTER TABLE `ubicacionpaciente`
-  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
