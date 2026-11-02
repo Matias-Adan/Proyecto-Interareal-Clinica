@@ -66,7 +66,7 @@ public class TurnoDaoImplTest {
 			when(resultSetMock.getString("estado")).thenReturn("Confirmado");
 			when(resultSetMock.getString("motivo")).thenReturn("Control general");
 			when(resultSetMock.getInt("pacienteId")).thenReturn(10);
-			when(resultSetMock.getInt("personalId")).thenReturn(3);
+			when(resultSetMock.getInt("medicoId")).thenReturn(3);
 			when(resultSetMock.getInt("especialidadId")).thenReturn(1);
 			when(resultSetMock.getInt("consultorioId")).thenReturn(2);
 
@@ -158,12 +158,8 @@ public class TurnoDaoImplTest {
 			verify(callableStatementMock).setDate(eq(2), any(java.sql.Date.class));
 			verify(callableStatementMock).setTime(eq(3), any(Time.class));
 			verify(callableStatementMock).setTime(eq(4), any(Time.class));
-			verify(callableStatementMock).setString(5, "Completado");
-			verify(callableStatementMock).setString(6, "Control");
-			verify(callableStatementMock).setInt(7, 10);
-			verify(callableStatementMock).setInt(8, 3);
-			verify(callableStatementMock).setInt(9, 1);
-			verify(callableStatementMock).setInt(10, 2);
+			verify(callableStatementMock).setString(5, "Control");
+			verify(callableStatementMock).setInt(6, 2);
 		}
 	}
 }

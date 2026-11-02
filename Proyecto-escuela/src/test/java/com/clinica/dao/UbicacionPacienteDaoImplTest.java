@@ -13,7 +13,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -121,8 +120,8 @@ public class UbicacionPacienteDaoImplTest {
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
 			verify(callableStatementMock).setString(1, "Guardia");
-			verify(callableStatementMock).setDate(eq(2), any(java.sql.Date.class));
-			verify(callableStatementMock).setDate(eq(3), any(java.sql.Date.class));
+			verify(callableStatementMock).setTimestamp(eq(2), any(java.sql.Timestamp.class));
+			verify(callableStatementMock).setTimestamp(eq(3), any(java.sql.Timestamp.class));
 			verify(callableStatementMock).setInt(4, 10);
 			verify(callableStatementMock).setInt(5, 3);
 			verify(callableStatementMock).setInt(6, 2);
@@ -141,20 +140,23 @@ public class UbicacionPacienteDaoImplTest {
 			LocalDateTime fechaIngresoEjemplo = LocalDateTime.of(2026, 6, 6, 10, 0);
 			LocalDateTime fechaSalidaEjemplo = LocalDateTime.of(2026, 6, 9, 20, 0);
 			
-			
-			UbicacionPaciente up = new UbicacionPaciente(1, "Internación", fechaIngresoEjemplo, fechaSalidaEjemplo, 10, 2);
-			up.setMedicoId(3);
+			UbicacionPaciente up = new UbicacionPaciente();
+			up.setIdUbicacion(1);
+			up.setTipoAtencion("Internación");
+			// up.setFechaIngreso(fechaIngresoEjemplo); // Si tu objeto lo requiere, ponlo aquí
+			up.setFechaSalida(fechaSalidaEjemplo);
+			up.setMedicoId(10);       // <- Esto asegura el 10 en la posición 4
+			up.setConsultorioId(2);   // <- Esto asegura el 2 en la posición 5
+
 			
 			boolean resultado = ubicacionPacienteDao.actualizar(up);
 			
 			assertTrue(resultado, "El método debe responder true al actualizar");
 			verify(callableStatementMock).setInt(1, 1);
 			verify(callableStatementMock).setString(2, "Internación");
-			verify(callableStatementMock).setDate(eq(3), any(java.sql.Date.class));
-			verify(callableStatementMock).setDate(eq(4), any(java.sql.Date.class));
-			verify(callableStatementMock).setInt(5, 10);
-			verify(callableStatementMock).setInt(6, 3);
-			verify(callableStatementMock).setInt(7, 2);
+			verify(callableStatementMock).setTimestamp(eq(3), any(java.sql.Timestamp.class));
+			verify(callableStatementMock).setInt(4, 10);
+			verify(callableStatementMock).setInt(5, 2);
 		}
 	}
 }

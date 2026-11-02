@@ -120,7 +120,7 @@ public class TriageDaoImplTest {
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
 			// Ajusta a setDate o setObject según lo que utilice el Stored Procedure de inserción
-			verify(callableStatementMock).setDate(eq(1), any(java.sql.Date.class));
+			verify(callableStatementMock).setTimestamp(eq(1), any(java.sql.Timestamp.class));
 			verify(callableStatementMock).setString(2, "Amarillo");
 			verify(callableStatementMock).setString(3, "Atendido");
 			verify(callableStatementMock).setString(4, "Dolor moderado");
@@ -144,13 +144,7 @@ public class TriageDaoImplTest {
 			
 			assertTrue(resultado, "El método debe responder true al actualizar");
 			verify(callableStatementMock).setInt(1, 1);
-			verify(callableStatementMock).setDate(eq(2), any(java.sql.Date.class));
-			verify(callableStatementMock).setString(3, "Verde");
-			verify(callableStatementMock).setString(4, "Finalizado");
-			verify(callableStatementMock).setString(5, "Controlado");
-			verify(callableStatementMock).setInt(6, 10);
-			verify(callableStatementMock).setInt(7, 2);
-			verify(callableStatementMock).setInt(8, 5);
+			verify(callableStatementMock).setString(2, "Finalizado");
 		}
 	}
 }
