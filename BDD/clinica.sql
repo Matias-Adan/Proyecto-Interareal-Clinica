@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-11-2026 a las 15:32:01
+-- Tiempo de generación: 03-11-2026 a las 15:53:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -25,6 +25,77 @@ DELIMITER $$
 --
 -- Procedimientos
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SPT_EmitirReceta` (IN `p_id` INT, IN `p_motivo` TEXT, IN `p_diagnostico` TEXT, IN `p_observando` TEXT, IN `p_historiaId` INT, IN `p_medicoId` INT, IN `p_indicacionReceta` VARCHAR(100), IN `p_articuloId` INT, IN `p_cantidad` INT, IN `p_dosis` VARCHAR(50), IN `p_frecuencia` VARCHAR(50), IN `p_duracion` VARCHAR(50))   BEGIN
+    START TRANSACTION;
+    
+    IF NOT EXISTS (SELECT 1 FROM `turnos` WHERE `idTurno` = p_id) THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El turno indicado no existe. Transacción abortada.';
+    END IF;
+
+    UPDATE `turnos` 
+    SET `estado` = 'Atendido' 
+    WHERE `idTurno` = p_id;
+   
+    INSERT INTO `consultas` (`fechaHora`, `motivo`, `diagnostico`, `observacion`, `historiaId`, `medicoId`)
+    VALUES (NOW(), p_motivo, p_diagnostico, p_observando, p_historiaId, p_medicoId);
+  
+    IF P_indicacionReceta IS NOT NULL THEN
+        INSERT INTO `recetas` (`fecha`, `indicacion`, `consultaId`)
+        VALUES (CURDATE(), P_indicacionReceta, LAST_INSERT_ID());
+     
+        IF p_articuloId IS NOT NULL AND (p_cantidad IS NULL OR p_cantidad <= 0) THEN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Se especificó un artículo pero la cantidad es inválida. Transacción abortada.';
+        
+        ELSEIF p_articuloId IS NOT NULL AND p_cantidad > 0 THEN
+            INSERT INTO `detallesreceta` (`cantidad`, `dosis`, `frecuencia`, `duracion`, `recetaId`, `articuloId`)
+            VALUES (p_cantidad, p_dosis, p_frecuencia, p_duracion, LAST_INSERT_ID(), p_articuloId);
+        END IF;
+        
+    END IF;
+   
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SPT_Facturacion` (IN `p_idUbicacion` INT, IN `p_consultorioId` INT, IN `p_importeTotal` DECIMAL(10,2), IN `p_pacienteId` INT, IN `p_obraSocialId` INT)   BEGIN
+    START TRANSACTION;
+    
+    IF NOT EXISTS (SELECT 1 FROM `ubicacionpaciente` WHERE `idUbicacion` = p_idUbicacion AND `fechaSalida` IS NULL) THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No se encontró una internación activa para el ID indicado. Transacción abortada.';
+    END IF;
+
+	UPDATE `ubicacionpaciente` 
+    SET `fechaSalida` = NOW() 
+    WHERE `idUbicacion` = p_idUbicacion;
+  
+    UPDATE `consultorio` 
+    SET `estado` = 'Disponible' 
+    WHERE `idConsultorio` = p_consultorioId;
+   
+    INSERT INTO `facturas` (`fecha`, `importeTotal`, `estado`, `pacienteId`, `obraSocialId`)
+    VALUES (NOW(), p_importeTotal, 'Pendiente', p_pacienteId, p_obraSocialId);
+   
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SPT_IngresoEmergencia` (IN `p_prioridad` INT, IN `p_estado` VARCHAR(50), IN `p_observacion` TEXT, IN `p_pacienteId` INT, IN `p_consultorioId` INT, IN `p_enfermeroId` INT)   BEGIN
+    START TRANSACTION;
+
+    INSERT INTO `triage` (`fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`)
+    VALUES (NOW(), p_prioridad, p_estado, p_observacion, p_pacienteId, p_consultorioId, p_enfermeroId);
+  
+    UPDATE `consultorio` 
+    SET `estado` = 'Ocupado' 
+    WHERE `idConsultorio` = p_consultorioId;
+
+    INSERT INTO `ubicacionpaciente` (`tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`)
+    VALUES ('EMERGENCIA', NOW(), NULL, p_pacienteId, NULL, p_consultorioId);
+
+    COMMIT;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_alergiapaciente_actualizar` (IN `p_id` INT, IN `p_pacienteId` INT, IN `p_alergiaId` INT)   BEGIN
     IF NOT EXISTS (SELECT 1 FROM `alergiapaciente` WHERE `idAlergiaPaciente` = p_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La relación de alergia de paciente indicada no existe.';
@@ -691,7 +762,9 @@ INSERT INTO `consultas` (`idConsulta`, `fechaHora`, `motivo`, `diagnostico`, `ob
 (1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
 (2, '2026-09-14 10:15:00', 'Dolor precordial fuerte', 'Angina inestable', 'Derivado de urgencia a Unidad Coronaria.', 2, 2),
 (3, '0000-00-00 00:00:00', 'probando', 'probando', 'probando', 2, 2),
-(4, '2018-09-12 09:30:00', 'Papitaciones ocasionales', 'Hipertensión rterial controlada', 'Se ajusta mediación diaria.', 1, 2);
+(4, '2018-09-12 09:30:00', 'Papitaciones ocasionales', 'Hipertensión rterial controlada', 'Se ajusta mediación diaria.', 1, 2),
+(5, '2026-11-03 11:30:27', 'probando', 'probando', 'probando', 3, 3),
+(6, '2026-11-03 11:32:46', 'probando', 'probando', 'probando', 3, 3);
 
 -- --------------------------------------------------------
 
@@ -715,8 +788,8 @@ INSERT INTO `consultorio` (`idConsultorio`, `numero`, `piso`, `tipo`, `estado`) 
 (1, '101', 1, 'Pediatría', 'Disponible'),
 (2, '102', 1, 'Consultas Generales', 'Disponible'),
 (3, '201', 2, 'Cardiología', 'En mantenimiento'),
-(4, '202', 2, 'Ecografías y Rayos', 'Disponible'),
-(5, 'G-01', 0, 'Shockroom Guardia', 'Ocupado'),
+(4, '202', 2, 'Ecografías y Rayos', 'Ocupado'),
+(5, 'G-01', 0, 'Shockroom Guardia', 'Disponible'),
 (6, 'probando', 2, 'probando', 'Ocupado');
 
 -- --------------------------------------------------------
@@ -743,7 +816,9 @@ INSERT INTO `detallesreceta` (`idDetalle`, `cantidad`, `dosis`, `frecuencia`, `d
 (1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4),
 (2, 1, '1g', 'Cada 8 horas', '3 días', 2, 3),
 (3, 123, 'probando', 'probando', 'probando', 2, 2),
-(4, 2, '912mg', 'Cada 18 horas', '3 días', 2, 4);
+(4, 2, '912mg', 'Cada 18 horas', '3 días', 2, 4),
+(5, 2, 'probando', 'probando', 'probando', 5, 4),
+(6, 2, 'probando', 'probando', 'probando', 6, 4);
 
 -- --------------------------------------------------------
 
@@ -768,7 +843,8 @@ INSERT INTO `facturas` (`idFactura`, `fecha`, `importeTotal`, `estado`, `pacient
 (1, '2000-10-10 10:00:00', 12.00, 'Pagada', 1, 2),
 (2, '2026-10-26 12:00:00', 1500.50, 'Pendiente', 1, 3),
 (3, '2010-12-09 00:00:00', 1500.50, 'Pendiente', 1, 3),
-(4, '2010-12-09 12:00:00', 1500.50, 'Pendiente', 1, 3);
+(4, '2010-12-09 12:00:00', 1500.50, 'Pendiente', 1, 3),
+(5, '2026-11-03 11:42:18', 2000.00, 'Pendiente', 3, 4);
 
 -- --------------------------------------------------------
 
@@ -949,7 +1025,9 @@ INSERT INTO `recetas` (`idReceta`, `fecha`, `indicacion`, `consultaId`) VALUES
 (1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1),
 (2, '2026-09-14', 'Administrar vía intravenosa en la internación.', 2),
 (3, '2026-10-19', 'probando', 2),
-(4, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 2);
+(4, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 2),
+(5, '2026-11-03', 'probando', 5),
+(6, '2026-11-03', 'probando', 6);
 
 -- --------------------------------------------------------
 
@@ -1026,7 +1104,8 @@ CREATE TABLE `triage` (
 INSERT INTO `triage` (`idTriage`, `fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`) VALUES
 (1, '1000-10-10 10:10:10', 3, 'probando', 'probando', 2, 2, 4),
 (2, '2000-10-10 10:10:10', 2, 'cracs', 'probandoo', 2, 2, 4),
-(3, '2000-10-10 10:10:10', 2, 'probandoox', 'probandoox', 2, 2, 4);
+(3, '2000-10-10 10:10:10', 2, 'probandoox', 'probandoox', 2, 2, 4),
+(4, '2026-11-03 11:35:12', 2, 'probando', 'probando', 1, 4, 4);
 
 --
 -- Disparadores `triage`
@@ -1072,7 +1151,7 @@ CREATE TABLE `turnos` (
 
 INSERT INTO `turnos` (`idTurno`, `fecha`, `horaInicio`, `horaFin`, `estado`, `motivo`, `pacienteId`, `medicoId`, `especialidadId`, `consultorioId`) VALUES
 (1, '2026-09-14', '09:30:00', '10:00:00', 'Atendido', 'Control de rutina por presión', 1, 2, 1, 3),
-(2, '2016-09-14', '21:30:00', '22:00:00', 'Ausente', 'Control de rutina por presión', 3, 2, 1, 2),
+(2, '2016-09-14', '21:30:00', '22:00:00', 'Pendiente', 'Control de rutina por presión', 3, 2, 1, 2),
 (3, '2006-09-14', '21:30:00', '22:00:00', 'Atendido', 'Control de rutina por presión', 5, 2, 1, 2);
 
 --
@@ -1224,12 +1303,13 @@ CREATE TABLE `ubicacionpaciente` (
 
 INSERT INTO `ubicacionpaciente` (`idUbicacion`, `tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`) VALUES
 (1, 'TURNO_SIMPLE', '2026-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
-(2, 'INTERNACION', '2026-09-14 10:05:00', '2026-11-02 15:30:00', 3, 2, 5),
+(2, 'INTERNACION', '2026-09-14 10:05:00', '2026-11-03 11:42:18', 3, 2, 5),
 (3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4),
 (4, 'EMERGENCIA', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 2, 2, 2),
 (5, 'TURNO_SIMPLE', '2000-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
 (6, 'TURNO_SIMPLE', '2000-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
-(7, 'TURNO_SIMPLE', '2010-09-14 09:20:00', '2026-09-14 09:50:00', 2, 2, 2);
+(7, 'TURNO_SIMPLE', '2010-09-14 09:20:00', '2026-09-14 09:50:00', 2, 2, 2),
+(8, 'EMERGENCIA', '2026-11-03 11:35:12', NULL, 1, NULL, 4);
 
 --
 -- Disparadores `ubicacionpaciente`
@@ -1312,6 +1392,132 @@ INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimien
 (5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 'aa12', 5, 0),
 (6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0),
 (9, 'probando', 'probando', 'probando', '0000-00-00', 'probando', 'probando', 'probando', 2, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_agenda_turnos_medicos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_agenda_turnos_medicos` (
+`idTurno` int(11)
+,`fecha` date
+,`horaInicio` time
+,`horaFin` time
+,`estado_turno` enum('Pendiente','Atendido','Ausente','Cancelado','Anulado')
+,`motivo` text
+,`medico_nombre` varchar(201)
+,`paciente_nombre` varchar(201)
+,`paciente_dni` varchar(20)
+,`consultorio_numero` varchar(20)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_alergias_pacientes_criticos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_alergias_pacientes_criticos` (
+`paciente_id` int(11)
+,`paciente_nombre` varchar(201)
+,`paciente_dni` varchar(20)
+,`alergia_nombre` varchar(40)
+,`alergia_descripcion` varchar(100)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_articulos_bajo_stock_minimo`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_articulos_bajo_stock_minimo` (
+`idArticulo` int(11)
+,`articulo_nombre` varchar(100)
+,`tipoArticulo` enum('MEDICAMENTO','INSUMO')
+,`presentacion` varchar(100)
+,`stockActual` int(11)
+,`stockMinimo` int(11)
+,`cantidad_a_reponer` bigint(12)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_consultorios_ocupados_actuales`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_consultorios_ocupados_actuales` (
+`idConsultorio` int(11)
+,`consultorio_numero` varchar(20)
+,`especialidad_sala` varchar(50)
+,`tipoAtencion` enum('TURNO_SIMPLE','EMERGENCIA','INTERNACION')
+,`fechaIngreso` datetime
+,`paciente_nombre` varchar(201)
+,`paciente_dni` varchar(20)
+,`medico_atendiendo` varchar(201)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_reporte_facturacion_obras_sociales`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_reporte_facturacion_obras_sociales` (
+`anio` int(4)
+,`mes` int(2)
+,`obra_social` varchar(100)
+,`estado_pago` enum('Pendiente','Pagada','Anulada')
+,`total_facturas` bigint(21)
+,`monto_total_facturado` decimal(32,2)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_agenda_turnos_medicos`
+--
+DROP TABLE IF EXISTS `v_agenda_turnos_medicos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_agenda_turnos_medicos`  AS SELECT `t`.`idTurno` AS `idTurno`, `t`.`fecha` AS `fecha`, `t`.`horaInicio` AS `horaInicio`, `t`.`horaFin` AS `horaFin`, `t`.`estado` AS `estado_turno`, `t`.`motivo` AS `motivo`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_nombre`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, `c`.`numero` AS `consultorio_numero` FROM (((`turnos` `t` join `usuarios` `md` on(`t`.`medicoId` = `md`.`idUsuario`)) join `usuarios` `us` on(`t`.`pacienteId` = `us`.`idUsuario`)) left join `consultorio` `c` on(`t`.`consultorioId` = `c`.`idConsultorio`)) ORDER BY `t`.`fecha` DESC, `t`.`horaInicio` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_alergias_pacientes_criticos`
+--
+DROP TABLE IF EXISTS `v_alergias_pacientes_criticos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_alergias_pacientes_criticos`  AS SELECT `u`.`idUsuario` AS `paciente_id`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `u`.`dni` AS `paciente_dni`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`ap`.`pacienteId` = `u`.`idUsuario`)) join `alergias` `a` on(`ap`.`alergiaId` = `a`.`idAlergia`)) ORDER BY `u`.`apellido` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_articulos_bajo_stock_minimo`
+--
+DROP TABLE IF EXISTS `v_articulos_bajo_stock_minimo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_articulos_bajo_stock_minimo`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `articulo_nombre`, `articulos`.`tipoArticulo` AS `tipoArticulo`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual`, `articulos`.`stockMinimo` AS `stockMinimo`, `articulos`.`stockMinimo`- `articulos`.`stockActual` AS `cantidad_a_reponer` FROM `articulos` WHERE `articulos`.`stockActual` <= `articulos`.`stockMinimo` ORDER BY `articulos`.`stockMinimo`- `articulos`.`stockActual` DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_consultorios_ocupados_actuales`
+--
+DROP TABLE IF EXISTS `v_consultorios_ocupados_actuales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_consultorios_ocupados_actuales`  AS SELECT `c`.`idConsultorio` AS `idConsultorio`, `c`.`numero` AS `consultorio_numero`, `c`.`tipo` AS `especialidad_sala`, `up`.`tipoAtencion` AS `tipoAtencion`, `up`.`fechaIngreso` AS `fechaIngreso`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_atendiendo` FROM (((`consultorio` `c` join `ubicacionpaciente` `up` on(`c`.`idConsultorio` = `up`.`consultorioId`)) join `usuarios` `us` on(`up`.`pacienteId` = `us`.`idUsuario`)) left join `usuarios` `md` on(`up`.`medicoId` = `md`.`idUsuario`)) WHERE `up`.`fechaSalida` is null AND `c`.`estado` = 'Ocupado' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_reporte_facturacion_obras_sociales`
+--
+DROP TABLE IF EXISTS `v_reporte_facturacion_obras_sociales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_reporte_facturacion_obras_sociales`  AS SELECT year(`f`.`fecha`) AS `anio`, month(`f`.`fecha`) AS `mes`, `os`.`nombre` AS `obra_social`, `f`.`estado` AS `estado_pago`, count(`f`.`idFactura`) AS `total_facturas`, sum(`f`.`importeTotal`) AS `monto_total_facturado` FROM (`facturas` `f` join `obrassociales` `os` on(`f`.`obraSocialId` = `os`.`idObraSocial`)) GROUP BY year(`f`.`fecha`), month(`f`.`fecha`), `os`.`nombre`, `f`.`estado` ORDER BY year(`f`.`fecha`) DESC, month(`f`.`fecha`) DESC, sum(`f`.`importeTotal`) DESC ;
 
 --
 -- Índices para tablas volcadas
@@ -1488,7 +1694,7 @@ ALTER TABLE `articulos`
 -- AUTO_INCREMENT de la tabla `consultas`
 --
 ALTER TABLE `consultas`
-  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorio`
@@ -1500,13 +1706,13 @@ ALTER TABLE `consultorio`
 -- AUTO_INCREMENT de la tabla `detallesreceta`
 --
 ALTER TABLE `detallesreceta`
-  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
-  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `historiasclinicas`
@@ -1542,7 +1748,7 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `recetas`
 --
 ALTER TABLE `recetas`
-  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `roldeusuario`
@@ -1560,7 +1766,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `triage`
 --
 ALTER TABLE `triage`
-  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `turnos`
@@ -1572,7 +1778,7 @@ ALTER TABLE `turnos`
 -- AUTO_INCREMENT de la tabla `ubicacionpaciente`
 --
 ALTER TABLE `ubicacionpaciente`
-  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
