@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-11-2026 a las 15:53:01
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 07-11-2026 a las 18:29:52
+-- Versión del servidor: 10.11.16-MariaDB
+-- Versión de PHP: 8.5.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -317,6 +317,11 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_listar` (IN `p_id` INT)   BEGIN
     SELECT * FROM `historiasclinicas`
     WHERE (`idHistoria` = p_id);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mis_turnos` (IN `p_dni` INT)   BEGIN
+select fecha, horaInicio, horaFin, estado_turno, motivo, medico_nombre, consultorio_numero from v_agenda_turnos_medicos
+where paciente_dni = p_dni;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_movimientos_stock_actualizar` (IN `p_id` INT, IN `p_motivo` TEXT)   BEGIN
@@ -640,11 +645,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_cambiar_estado` (IN `p_
     WHERE idUsuario = p_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(40), IN `p_obraSocialId` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_insertar` (IN `p_nombre` VARCHAR(100), IN `p_apellido` VARCHAR(100), IN `p_dni` VARCHAR(20), IN `p_fechaNacimiento` DATE, IN `p_telefono` VARCHAR(30), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(255), IN `p_obraSocialId` INT)   BEGIN
     INSERT INTO `usuarios`
         (`nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `password`, `obraSocialId`)
     VALUES
         (p_nombre, p_apellido, p_dni, p_fechaNacimiento, p_telefono, p_email, p_password, p_obraSocialId);
+    
+    INSERT INTO `roldeusuario` 
+    	(`usuarioId`, `rolId`)
+    VALUES
+    	((SELECT idUsuario from usuarios 
+         ORDER by idUsuario DESC 
+         LIMIT 1) , 5);
+        
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_usuarios_listar` (IN `p_id` INT)   BEGIN
@@ -1052,7 +1065,12 @@ INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
 (4, 3, 5),
 (5, 1, 5),
 (6, 5, 5),
-(7, 2, 3);
+(7, 2, 3),
+(9, 11, 5),
+(10, 12, 5),
+(11, 13, 5),
+(12, 14, 5),
+(13, 15, 5);
 
 -- --------------------------------------------------------
 
@@ -1375,7 +1393,7 @@ CREATE TABLE `usuarios` (
   `fechaNacimiento` date DEFAULT NULL,
   `telefono` varchar(30) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(40) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `obraSocialId` int(11) DEFAULT NULL,
   `flagBorrado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -1391,7 +1409,13 @@ INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimien
 (4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', 'hello', NULL, 0),
 (5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 'aa12', 5, 0),
 (6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0),
-(9, 'probando', 'probando', 'probando', '0000-00-00', 'probando', 'probando', 'probando', 2, 0);
+(9, 'probando', 'probando', 'probando', '0000-00-00', 'probando', 'probando', 'probando', 2, 0),
+(10, 'Benjamin', 'Montiel', '48800767', '2008-08-21', '1130431933', 'benjaminmontiel.et32@gmail.com', '123', 1, 0),
+(11, '`Benjamin`', '`Fernandez`', '`49433890`', '1000-10-10', '`1143908900`', '`benja09fer@gmail.com`', '`123`', 3, 0),
+(12, 'Federico', 'Tamburelli', '80323454', '2008-12-19', '1143560922', 'fede@gmail.com', '123', 2, 0),
+(13, 'Santiago', 'Montenegro', '30800545', '2011-06-26', '1190436555', 'monte@gmail.com', '$2a$10$va2ce6f1lAr7MQCgZcBQs.WktJNttJthw', 2, 0),
+(14, 'bru', 'bru', '11111111', '2011-11-11', '1130431932', 'bru@gmail.com', '$2a$10$0CDsPgp8h7yLkUs8R1hpOu74lecsu5Z5P', 2, 0),
+(15, 'my', 'nigga', '12345678', '2000-02-20', '11304319', 'benjaminmontielet.et32@gmail.com', '$2a$10$dT8nuVH.hSsOSORrie/KW./q74mjLag4gYr9BMhi/MFOSJvyCEM3G', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1466,58 +1490,13 @@ CREATE TABLE `v_consultorios_ocupados_actuales` (
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `v_reporte_facturacion_obras_sociales` (
-`anio` int(4)
-,`mes` int(2)
+`anio` int(5)
+,`mes` int(3)
 ,`obra_social` varchar(100)
 ,`estado_pago` enum('Pendiente','Pagada','Anulada')
 ,`total_facturas` bigint(21)
 ,`monto_total_facturado` decimal(32,2)
 );
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_agenda_turnos_medicos`
---
-DROP TABLE IF EXISTS `v_agenda_turnos_medicos`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_agenda_turnos_medicos`  AS SELECT `t`.`idTurno` AS `idTurno`, `t`.`fecha` AS `fecha`, `t`.`horaInicio` AS `horaInicio`, `t`.`horaFin` AS `horaFin`, `t`.`estado` AS `estado_turno`, `t`.`motivo` AS `motivo`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_nombre`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, `c`.`numero` AS `consultorio_numero` FROM (((`turnos` `t` join `usuarios` `md` on(`t`.`medicoId` = `md`.`idUsuario`)) join `usuarios` `us` on(`t`.`pacienteId` = `us`.`idUsuario`)) left join `consultorio` `c` on(`t`.`consultorioId` = `c`.`idConsultorio`)) ORDER BY `t`.`fecha` DESC, `t`.`horaInicio` ASC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_alergias_pacientes_criticos`
---
-DROP TABLE IF EXISTS `v_alergias_pacientes_criticos`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_alergias_pacientes_criticos`  AS SELECT `u`.`idUsuario` AS `paciente_id`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `u`.`dni` AS `paciente_dni`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`ap`.`pacienteId` = `u`.`idUsuario`)) join `alergias` `a` on(`ap`.`alergiaId` = `a`.`idAlergia`)) ORDER BY `u`.`apellido` ASC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_articulos_bajo_stock_minimo`
---
-DROP TABLE IF EXISTS `v_articulos_bajo_stock_minimo`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_articulos_bajo_stock_minimo`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `articulo_nombre`, `articulos`.`tipoArticulo` AS `tipoArticulo`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual`, `articulos`.`stockMinimo` AS `stockMinimo`, `articulos`.`stockMinimo`- `articulos`.`stockActual` AS `cantidad_a_reponer` FROM `articulos` WHERE `articulos`.`stockActual` <= `articulos`.`stockMinimo` ORDER BY `articulos`.`stockMinimo`- `articulos`.`stockActual` DESC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_consultorios_ocupados_actuales`
---
-DROP TABLE IF EXISTS `v_consultorios_ocupados_actuales`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_consultorios_ocupados_actuales`  AS SELECT `c`.`idConsultorio` AS `idConsultorio`, `c`.`numero` AS `consultorio_numero`, `c`.`tipo` AS `especialidad_sala`, `up`.`tipoAtencion` AS `tipoAtencion`, `up`.`fechaIngreso` AS `fechaIngreso`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_atendiendo` FROM (((`consultorio` `c` join `ubicacionpaciente` `up` on(`c`.`idConsultorio` = `up`.`consultorioId`)) join `usuarios` `us` on(`up`.`pacienteId` = `us`.`idUsuario`)) left join `usuarios` `md` on(`up`.`medicoId` = `md`.`idUsuario`)) WHERE `up`.`fechaSalida` is null AND `c`.`estado` = 'Ocupado' ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_reporte_facturacion_obras_sociales`
---
-DROP TABLE IF EXISTS `v_reporte_facturacion_obras_sociales`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_reporte_facturacion_obras_sociales`  AS SELECT year(`f`.`fecha`) AS `anio`, month(`f`.`fecha`) AS `mes`, `os`.`nombre` AS `obra_social`, `f`.`estado` AS `estado_pago`, count(`f`.`idFactura`) AS `total_facturas`, sum(`f`.`importeTotal`) AS `monto_total_facturado` FROM (`facturas` `f` join `obrassociales` `os` on(`f`.`obraSocialId` = `os`.`idObraSocial`)) GROUP BY year(`f`.`fecha`), month(`f`.`fecha`), `os`.`nombre`, `f`.`estado` ORDER BY year(`f`.`fecha`) DESC, month(`f`.`fecha`) DESC, sum(`f`.`importeTotal`) DESC ;
 
 --
 -- Índices para tablas volcadas
@@ -1754,7 +1733,7 @@ ALTER TABLE `recetas`
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1784,7 +1763,52 @@ ALTER TABLE `ubicacionpaciente`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_agenda_turnos_medicos`
+--
+DROP TABLE IF EXISTS `v_agenda_turnos_medicos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_agenda_turnos_medicos`  AS SELECT `t`.`idTurno` AS `idTurno`, `t`.`fecha` AS `fecha`, `t`.`horaInicio` AS `horaInicio`, `t`.`horaFin` AS `horaFin`, `t`.`estado` AS `estado_turno`, `t`.`motivo` AS `motivo`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_nombre`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, `c`.`numero` AS `consultorio_numero` FROM (((`turnos` `t` join `usuarios` `md` on(`t`.`medicoId` = `md`.`idUsuario`)) join `usuarios` `us` on(`t`.`pacienteId` = `us`.`idUsuario`)) left join `consultorio` `c` on(`t`.`consultorioId` = `c`.`idConsultorio`)) ORDER BY `t`.`fecha` DESC, `t`.`horaInicio` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_alergias_pacientes_criticos`
+--
+DROP TABLE IF EXISTS `v_alergias_pacientes_criticos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_alergias_pacientes_criticos`  AS SELECT `u`.`idUsuario` AS `paciente_id`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `u`.`dni` AS `paciente_dni`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`ap`.`pacienteId` = `u`.`idUsuario`)) join `alergias` `a` on(`ap`.`alergiaId` = `a`.`idAlergia`)) ORDER BY `u`.`apellido` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_articulos_bajo_stock_minimo`
+--
+DROP TABLE IF EXISTS `v_articulos_bajo_stock_minimo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_articulos_bajo_stock_minimo`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `articulo_nombre`, `articulos`.`tipoArticulo` AS `tipoArticulo`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual`, `articulos`.`stockMinimo` AS `stockMinimo`, `articulos`.`stockMinimo`- `articulos`.`stockActual` AS `cantidad_a_reponer` FROM `articulos` WHERE `articulos`.`stockActual` <= `articulos`.`stockMinimo` ORDER BY `articulos`.`stockMinimo`- `articulos`.`stockActual` DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_consultorios_ocupados_actuales`
+--
+DROP TABLE IF EXISTS `v_consultorios_ocupados_actuales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_consultorios_ocupados_actuales`  AS SELECT `c`.`idConsultorio` AS `idConsultorio`, `c`.`numero` AS `consultorio_numero`, `c`.`tipo` AS `especialidad_sala`, `up`.`tipoAtencion` AS `tipoAtencion`, `up`.`fechaIngreso` AS `fechaIngreso`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_atendiendo` FROM (((`consultorio` `c` join `ubicacionpaciente` `up` on(`c`.`idConsultorio` = `up`.`consultorioId`)) join `usuarios` `us` on(`up`.`pacienteId` = `us`.`idUsuario`)) left join `usuarios` `md` on(`up`.`medicoId` = `md`.`idUsuario`)) WHERE `up`.`fechaSalida` is null AND `c`.`estado` = 'Ocupado' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_reporte_facturacion_obras_sociales`
+--
+DROP TABLE IF EXISTS `v_reporte_facturacion_obras_sociales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_reporte_facturacion_obras_sociales`  AS SELECT year(`f`.`fecha`) AS `anio`, month(`f`.`fecha`) AS `mes`, `os`.`nombre` AS `obra_social`, `f`.`estado` AS `estado_pago`, count(`f`.`idFactura`) AS `total_facturas`, sum(`f`.`importeTotal`) AS `monto_total_facturado` FROM (`facturas` `f` join `obrassociales` `os` on(`f`.`obraSocialId` = `os`.`idObraSocial`)) GROUP BY year(`f`.`fecha`), month(`f`.`fecha`), `os`.`nombre`, `f`.`estado` ORDER BY year(`f`.`fecha`) DESC, month(`f`.`fecha`) DESC, sum(`f`.`importeTotal`) DESC ;
 
 --
 -- Restricciones para tablas volcadas
