@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-11-2026 a las 08:15:41
+-- Tiempo de generación: 09-11-2026 a las 23:49:00
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -320,7 +320,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_historiasclinicas_listar` (IN `p
     WHERE (`idHistoria` = p_id);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mis_turnos` (IN `p_dni` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mis_turnos` (IN `p_dni` VARCHAR(20))   BEGIN
 select fecha, horaInicio, horaFin, estado_turno, motivo, medico_nombre, consultorio_numero from v_agenda_turnos_medicos
 where paciente_dni = p_dni;
 END$$
