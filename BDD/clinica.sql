@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-11-2026 a las 23:49:00
+-- Tiempo de generación: 11-11-2026 a las 01:08:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -740,9 +740,7 @@ INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, 
 (7, 'Jeringas 5ml', 'Jeringas con aguja descartable', 'Descartable', 'INSUMO', 320, 50, NULL),
 (8, 'Guantes de látex M', 'Cajas de 100 unidades', 'Protección', 'INSUMO', 85, 20, NULL),
 (9, 'Alcohol en gel 500ml', 'Dispensador desinfectante', 'Sanitizante', 'INSUMO', 40, 15, NULL),
-(10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL),
-(11, 'micho', 'tito', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10),
-(12, 'probando', 'probando', 'probando', 'MEDICAMENTO', 123, 123, 5);
+(10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL);
 
 -- --------------------------------------------------------
 
@@ -765,13 +763,7 @@ CREATE TABLE `consultas` (
 --
 
 INSERT INTO `consultas` (`idConsulta`, `fechaHora`, `motivo`, `diagnostico`, `observacion`, `historiaId`, `medicoId`) VALUES
-(1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
-(2, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertadaensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
-(4, '2018-09-12 09:30:00', 'Papitaciones ocasionales', 'Hipertensión rterial controlada', 'Se ajusta mediación diaria.', 1, 2),
-(5, '2026-11-03 11:30:27', 'probando', 'probando', 'probando', 3, 3),
-(6, '2026-11-03 11:32:46', 'probando', 'probando', 'probando', 3, 3),
-(7, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
-(8, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2);
+(1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -796,8 +788,7 @@ INSERT INTO `consultorio` (`idConsultorio`, `numero`, `piso`, `tipo`, `estado`) 
 (2, '102', 1, 'Consultas Generales', 'Disponible'),
 (3, '201', 2, 'Cardiología', 'En mantenimiento'),
 (4, '202', 2, 'Ecografías y Rayos', 'Ocupado'),
-(5, 'G-01', 0, 'Shockroom Guardia', 'Disponible'),
-(6, 'probando', 2, 'probando', 'Disponible');
+(5, 'G-01', 0, 'Shockroom Guardia', 'Disponible');
 
 -- --------------------------------------------------------
 
@@ -820,13 +811,7 @@ CREATE TABLE `detallesreceta` (
 --
 
 INSERT INTO `detallesreceta` (`idDetalle`, `cantidad`, `dosis`, `frecuencia`, `duracion`, `recetaId`, `articuloId`) VALUES
-(1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4),
-(2, 1, '1g', 'Cada 8 horas', '3 días', 2, 3),
-(3, 123, 'probando', 'probando', 'probando', 2, 2),
-(4, 2, '912mg', 'Cada 18 horas', '3 días', 2, 4),
-(5, 2, 'probando', 'probando', 'probando', 5, 4),
-(6, 2, 'probando', 'probando', 'probando', 6, 4),
-(7, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4);
+(1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -849,11 +834,7 @@ CREATE TABLE `facturas` (
 
 INSERT INTO `facturas` (`idFactura`, `fecha`, `importeTotal`, `estado`, `pacienteId`, `obraSocialId`) VALUES
 (1, '2000-10-10 10:00:00', 12.00, 'Pagada', 1, 2),
-(2, '2026-10-26 12:00:00', 1500.50, 'Pendiente', 1, 3),
-(3, '2010-12-09 00:00:00', 1500.50, 'Pendiente', 1, 3),
-(4, '2010-12-09 12:00:00', 1500.50, 'Pendiente', 1, 3),
-(5, '2026-11-03 11:42:18', 2000.00, 'Pendiente', 3, 4),
-(6, '2000-10-10 10:00:00', 12.00, 'Pendiente', 1, 2);
+(5, '2026-11-03 11:42:18', 2000.00, 'Pendiente', 3, 4);
 
 -- --------------------------------------------------------
 
@@ -877,10 +858,7 @@ CREATE TABLE `historiasclinicas` (
 INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `observacion`, `pacienteId`, `flagBorrado`) VALUES
 (1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 1, 0),
 (2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 3, 0),
-(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0),
-(5, '0000-00-00', 'probando', 'probando', 2, 0),
-(9, '2018-09-12', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 4, 1),
-(12, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 13, 1);
+(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0);
 
 -- --------------------------------------------------------
 
@@ -903,9 +881,7 @@ CREATE TABLE `movimientos_stock` (
 --
 
 INSERT INTO `movimientos_stock` (`idMovimiento`, `idArticulo`, `tipoMovimiento`, `cantidad`, `motivo`, `fechaHora`, `usuarioId`) VALUES
-(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2),
-(2, 4, 'SALIDA', 13, 'niga', '2016-10-19 21:30:59', 4),
-(3, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2);
+(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2);
 
 --
 -- Disparadores `movimientos_stock`
@@ -973,10 +949,7 @@ INSERT INTO `obrassociales` (`idObraSocial`, `nombre`, `numeroConvenio`, `benefi
 (2, 'Swiss Medical', 'CO-99312', 'Guardia libre, odontología preventiva', '100%', 0),
 (3, 'Galeno Silver', 'CO-55214', 'Kinesiología hasta 20 sesiones/año', '70%', 0),
 (4, 'PAMI', 'CO-11200', 'Medicamentos gratis crónicos, prótesis', '100%', 0),
-(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0),
-(6, 'proobindo', 'probando', 'probando', 'probando', 1),
-(10, 'proobando', 'probando', 'probando', 'probando', 0),
-(11, 'proobaando', 'probando', 'probando', 'probando', 0);
+(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0);
 
 -- --------------------------------------------------------
 
@@ -995,7 +968,16 @@ CREATE TABLE `permisorol` (
 --
 
 INSERT INTO `permisorol` (`idPermisoRol`, `rolId`, `permisoId`) VALUES
-(4, 1, 1);
+(4, 1, 7),
+(6, 2, 6),
+(7, 3, 6),
+(8, 5, 3),
+(9, 1, 3),
+(10, 2, 3),
+(11, 3, 3),
+(12, 6, 3),
+(13, 4, 6),
+(14, 4, 3);
 
 -- --------------------------------------------------------
 
@@ -1006,7 +988,7 @@ INSERT INTO `permisorol` (`idPermisoRol`, `rolId`, `permisoId`) VALUES
 CREATE TABLE `permisos` (
   `idPermiso` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(50) NOT NULL
+  `descripcion` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1014,8 +996,9 @@ CREATE TABLE `permisos` (
 --
 
 INSERT INTO `permisos` (`idPermiso`, `nombre`, `descripcion`) VALUES
-(1, 'probando', 'probando'),
-(2, 'probando', 'robando');
+(3, 'Vista de paciente', 'Te permite ver la interfaz del paciente'),
+(6, 'Vista de medico', 'Te permite ver la interfaz del medico y utilizar sus funciones'),
+(7, 'Vista de Admin', 'Te permite ver la interfaz de Administrador y utilizar sus funciones');
 
 -- --------------------------------------------------------
 
@@ -1035,12 +1018,7 @@ CREATE TABLE `recetas` (
 --
 
 INSERT INTO `recetas` (`idReceta`, `fecha`, `indicacion`, `consultaId`) VALUES
-(1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1),
-(2, '2026-09-14', 'Administrar vía intravenosa en la internación.', 2),
-(3, '2026-10-19', 'probando', 2),
-(4, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 2),
-(5, '2026-11-03', 'probando', 5),
-(6, '2026-11-03', 'probando', 6);
+(1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1);
 
 -- --------------------------------------------------------
 
@@ -1066,12 +1044,8 @@ INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
 (5, 1, 5),
 (6, 5, 5),
 (7, 2, 3),
-(9, 11, 5),
 (10, 12, 5),
-(11, 13, 5),
-(12, 14, 5),
-(13, 15, 5),
-(14, 15, 2);
+(11, 13, 5);
 
 -- --------------------------------------------------------
 
@@ -1095,9 +1069,7 @@ INSERT INTO `roles` (`idRol`, `nombre`, `descripcion`) VALUES
 (3, 'Enfermero', 'Asistencia e ingresos'),
 (4, 'Recepcionista', 'Gestión de turnos y caja'),
 (5, 'Paciente', 'Usuario consumidor final'),
-(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios'),
-(7, 'probando', 'probando'),
-(8, 'Epstein', 'Control total del sistema');
+(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios');
 
 -- --------------------------------------------------------
 
@@ -1121,10 +1093,7 @@ CREATE TABLE `triage` (
 --
 
 INSERT INTO `triage` (`idTriage`, `fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`) VALUES
-(1, '1000-10-10 10:10:10', 3, 'probando', 'probando', 2, 2, 4),
-(2, '2000-10-10 10:10:10', 2, 'cracs', 'probandoo', 2, 2, 4),
-(3, '2000-10-10 10:10:10', 2, 'probandoox', 'probandoox', 2, 2, 4),
-(4, '2026-11-03 11:35:12', 2, 'probando', 'probando', 1, 4, 4);
+(1, '1000-10-10 10:10:10', 3, 'Enfermo', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4);
 
 --
 -- Disparadores `triage`
@@ -1170,8 +1139,7 @@ CREATE TABLE `turnos` (
 
 INSERT INTO `turnos` (`idTurno`, `fecha`, `horaInicio`, `horaFin`, `estado`, `motivo`, `pacienteId`, `medicoId`, `especialidadId`, `consultorioId`) VALUES
 (1, '2026-09-14', '09:30:00', '10:00:00', 'Atendido', 'Control de rutina por presión', 1, 2, 1, 3),
-(2, '2016-09-14', '21:30:00', '22:00:00', 'Pendiente', 'Control de rutina por presión', 3, 2, 1, 2),
-(3, '2006-09-14', '21:30:00', '22:00:00', 'Atendido', 'Control de rutina por presión', 5, 2, 1, 2);
+(2, '2016-09-14', '21:30:00', '22:00:00', 'Pendiente', 'Control de rutina por presión', 3, 2, 1, 2);
 
 --
 -- Disparadores `turnos`
@@ -1323,12 +1291,7 @@ CREATE TABLE `ubicacionpaciente` (
 INSERT INTO `ubicacionpaciente` (`idUbicacion`, `tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`) VALUES
 (1, 'TURNO_SIMPLE', '2026-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
 (2, 'INTERNACION', '2026-09-14 10:05:00', '2026-11-03 11:42:18', 3, 2, 5),
-(3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4),
-(4, 'EMERGENCIA', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 2, 2, 2),
-(5, 'TURNO_SIMPLE', '2000-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
-(6, 'TURNO_SIMPLE', '2000-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
-(7, 'TURNO_SIMPLE', '2010-09-14 09:20:00', '2026-09-14 09:50:00', 2, 2, 2),
-(8, 'EMERGENCIA', '2026-11-03 11:35:12', NULL, 1, NULL, 4);
+(3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4);
 
 --
 -- Disparadores `ubicacionpaciente`
@@ -1406,17 +1369,12 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimiento`, `telefono`, `email`, `password`, `obraSocialId`, `flagBorrado`) VALUES
 (1, 'Juan Carlos', 'Gómez', '25412874', '1976-05-12', '1145887412', 'juan.gomez@email.com', '1233', 1, 1),
 (2, 'María Paula', 'Rodríguez', '38451254', '1994-08-22', '1169854712', 'maria.medica@clinica.com', '321', NULL, 0),
-(3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 'micho', 4, 1),
+(3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 'fernandez', 4, 1),
 (4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', 'hello', NULL, 0),
 (5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 'aa12', 5, 0),
 (6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0),
-(9, 'probando', 'probando', 'probando', '0000-00-00', 'probando', 'probando', 'probando', 2, 0),
-(10, 'Benjamin', 'Montiel', '48800767', '2008-08-21', '1130431933', 'benjaminmontiel.et32@gmail.com', '123', 1, 0),
-(11, '`Benjamin`', '`Fernandez`', '`49433890`', '1000-10-10', '`1143908900`', '`benja09fer@gmail.com`', '`123`', 3, 0),
 (12, 'Federico', 'Tamburelli', '80323454', '2008-12-19', '1143560922', 'fede@gmail.com', '123', 2, 0),
-(13, 'Santiago', 'Montenegro', '30800545', '2011-06-26', '1190436555', 'monte@gmail.com', '$2a$10$va2ce6f1lAr7MQCgZcBQs.WktJNttJthw', 2, 0),
-(14, 'bru', 'bru', '11111111', '2011-11-11', '1130431932', 'bru@gmail.com', '$2a$10$0CDsPgp8h7yLkUs8R1hpOu74lecsu5Z5P', 2, 0),
-(15, 'my', 'nigga', '12345678', '2000-02-20', '11304319', 'benjaminmontielet.et32@gmail.com', '$2a$10$dT8nuVH.hSsOSORrie/KW./q74mjLag4gYr9BMhi/MFOSJvyCEM3G', 1, 0);
+(13, 'Santiago', 'Montenegro', '30800545', '2011-06-26', '1190436555', 'monte@gmail.com', '$2a$10$va2ce6f1lAr7MQCgZcBQs.WktJNttJthw', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -1761,13 +1719,13 @@ ALTER TABLE `obrassociales`
 -- AUTO_INCREMENT de la tabla `permisorol`
 --
 ALTER TABLE `permisorol`
-  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `recetas`
