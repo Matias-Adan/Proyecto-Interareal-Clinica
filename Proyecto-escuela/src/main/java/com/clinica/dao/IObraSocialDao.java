@@ -9,5 +9,5 @@ public interface IObraSocialDao {
 	List<ObraSocial> listar();
 	ObraSocial buscarPorId(int id);
 	boolean actualizar(ObraSocial o);
-	boolean eliminar(int id);
+	boolean cambiarEstadoBorrado(int id, boolean estado);
 }

@@ -4,6 +4,7 @@ import com.clinica.config.Conexion;
 import com.clinica.modelo.Consulta;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -20,7 +21,7 @@ public class ConsultaDaoImpl implements IConsultaDao {
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql);
              ResultSet rs = cs.executeQuery()) {
-
+        	
             while (rs.next()) {
                 Timestamp sqlTimestamp = rs.getTimestamp("fechaHora");
                 
@@ -37,6 +38,7 @@ public class ConsultaDaoImpl implements IConsultaDao {
             }
         } catch (SQLException e) {
             System.err.println("❌ Error al listar consultas: " + e.getMessage());
+            throw new RuntimeException("Error en base de datos: " + e.getMessage(), e);
         }
         return lista;
     }
@@ -90,6 +92,38 @@ public class ConsultaDaoImpl implements IConsultaDao {
             System.err.println("❌ Error al insertar consulta: " + e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public int insertarYRetornarId(Consulta c) {
+        String sql = "{CALL sp_consultas_insertar(?, ?, ?, ?, ?, ?)}";
+
+        try (Connection con = Conexion.getInstancia().getConexion();
+             CallableStatement cs = con.prepareCall(sql)) {
+
+            cs.setTimestamp(1, c.getFecha() != null ? Timestamp.valueOf(c.getFecha()) : null);
+            cs.setString(2, c.getMotivo());
+            cs.setString(3, c.getDiagnostico());
+            cs.setString(4, c.getObservacion());
+            cs.setInt(5, c.getHistoriaId());
+            cs.setInt(6, c.getMedicoId());
+
+            if (cs.executeUpdate() == 0) {
+                return 0;
+            }
+
+            // Se consulta en la misma conexión para obtener el id autogenerado.
+            try (PreparedStatement ps = con.prepareStatement("SELECT LAST_INSERT_ID()");
+                 ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(
+                    "No se pudo insertar la consulta: " + e.getMessage(), e);
+        }
+        return 0;
     }
 
     @Override

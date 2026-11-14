@@ -100,8 +100,8 @@ public class ArticuloDaoImpl implements IArticuloDao {
             cs.setInt(1, a.getIdArticulo());
             cs.setString(2, a.getNombre());
             cs.setString(3, a.getPresentacion());
-            cs.setString(4, a.getTipoArticulo());
-            cs.setString(5, a.getDescripcion());
+            cs.setString(4, a.getDescripcion());
+            cs.setString(5, a.getTipoArticulo());
             cs.setInt(6, a.getStockActual());
             cs.setInt(7, a.getStockMinimo());
             cs.setDouble(8, a.getTemperaturaIdealEnCelcius());

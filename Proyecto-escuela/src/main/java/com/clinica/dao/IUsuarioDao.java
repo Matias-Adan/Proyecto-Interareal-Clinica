@@ -10,6 +10,6 @@ public interface IUsuarioDao {
 	Usuario buscarPorId(int id);
 	boolean actualizar(Usuario u);
 	boolean eliminar(int id);
-	Usuario login(String usuario);
+	Usuario login(String usuario, String password);
 	boolean cambiarEstadoBorrado(int id, boolean flagBorrado);
 }

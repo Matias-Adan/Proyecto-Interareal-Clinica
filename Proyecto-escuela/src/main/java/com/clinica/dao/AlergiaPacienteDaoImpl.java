@@ -30,6 +30,7 @@ public class AlergiaPacienteDaoImpl implements IAlergiaPacienteDao {
             }
         } catch (SQLException e) {
             System.err.println("❌ Error al listar alergias de pacientes: " + e.getMessage());
+            throw new RuntimeException("Error en base de datos: " + e.getMessage(), e); // Lanza el error para que el test falle con la causa real
         }
         return lista;
     }

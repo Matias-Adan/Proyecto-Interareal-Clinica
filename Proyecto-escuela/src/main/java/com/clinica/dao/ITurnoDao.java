@@ -10,4 +10,5 @@ public interface ITurnoDao {
 	Turno buscarPorId(int id);
 	boolean actualizar(Turno t);
 	boolean cambiarEstado(int id, String estado);
+	
 }

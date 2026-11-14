@@ -23,7 +23,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
             while (rs.next()) {
                 Consultorio c = new Consultorio(
                         rs.getInt("idConsultorio"),
-                        rs.getInt("numero"),
+                        rs.getString("numero"),
                         rs.getString("tipo"),
                         rs.getString("estado"),
                         rs.getInt("piso")
@@ -49,7 +49,7 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
                 if (rs.next()) {
                     c = new Consultorio(
                             rs.getInt("idConsultorio"),
-                            rs.getInt("numero"),
+                            rs.getString("numero"),
                             rs.getString("tipo"),
                             rs.getString("estado"),
                             rs.getInt("piso")
@@ -69,9 +69,10 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
-            cs.setInt(1, c.getNumero());
-            cs.setString(2, c.getTipo());
-            cs.setString(3, c.getEstado());
+            cs.setString(1, c.getNumero());
+            cs.setInt(2, c.getPiso());
+            cs.setString(3, c.getTipo());
+            cs.setString(4, c.getEstado());
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -82,15 +83,13 @@ public class ConsultorioDaoImpl implements IConsultorioDao {
 
     @Override
     public boolean actualizar(Consultorio c) {
-        String sql = "{CALL sp_consultorio_actualizar(?, ?, ?, ?)}";
+        String sql = "{CALL sp_consultorio_actualizar(?, ?)}";
 
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
             cs.setInt(1, c.getIdConsultorio());
-            cs.setInt(2, c.getNumero());
-            cs.setString(3, c.getTipo());
-            cs.setString(4, c.getEstado());
+            cs.setString(2, c.getEstado());
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {

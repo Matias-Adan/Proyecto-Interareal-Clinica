@@ -106,17 +106,20 @@ public class ObraSocialDaoImpl implements IObraSocialDao {
     }
 
     @Override
-    public boolean eliminar(int id) {
-        String sql = "{CALL sp_obrassociales_eliminar(?)}";
-
-        try (Connection con = Conexion.getInstancia().getConexion();
-             CallableStatement cs = con.prepareCall(sql)) {
-            
-            cs.setInt(1, id);
-            return cs.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar obra social: " + e.getMessage());
+    public boolean cambiarEstadoBorrado(int id, boolean estado) {
+    	String sql = "{CALL sp_obrassociales_cambiar_estado(?, ?)}";
+		
+    	try (Connection con = Conexion.getInstancia().getConexion();
+    		 CallableStatement cs = con.prepareCall(sql)){
+    		
+    		cs.setInt(1, id);
+    		cs.setBoolean(2, estado);
+    		
+    		return cs.executeUpdate() > 0;
+    	} catch (SQLException e) {
+    		System.err.println("❌ Error al cambiar el flag de borrado de la obra social: " + e.getMessage());
             return false;
         }
+		
     }
 }
