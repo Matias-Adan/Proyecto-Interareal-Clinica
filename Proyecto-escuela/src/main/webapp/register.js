@@ -1,45 +1,47 @@
-const API_URL = 'http://localhost:8080/Proyecto-escuela/api/usuarios';
-const CLAVE_USUARIO = 'usuarioLogueado';
+// Base de la app calculada desde la URL actual (mismo criterio que app.js).
+// Se calcula acá mismo para que el registro no dependa de que el navegador
+// tenga una versión actualizada de app.js en el caché.
+const BASE_API = window.location.pathname.replace(/\/[^/]*$/, '');
 
-function registrarUsuario(nombre, apellido, dni, fechaNacimiento, telefono, email, password, obraSocialId) {
-    fetch(API_URL , {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            nombre: nombre,
-            apellido: apellido,
-            dni: dni,
-            fechaNacimiento: fechaNacimiento,
-            telefono: telefono,
-            email: email,
-            password: password,
-            obraSocialId: obraSocialId
-        })
-    })
-        .then(rs => rs.json())
-        .then(rs => {
-            if (rs) {
-                const lista = [];
-                lista.push({
-                    idUsuario: rs.idUsuario,
-                    nombre: rs.nombre,
-                    apellido: rs.apellido,
-                    dni: rs.dni,
-                    fechaNacimiento: rs.fechaNacimiento,
-                    telefono: rs.telefono,
-                    email: rs.email,
-                    obraSocialId: rs.obraSocialId
-                });
-                sessionStorage.getItem(CLAVE_USUARIO, JSON.stringify(lista));
-                alert('El usuario se registró correctamente');
-                document.getElementById('formRegister').reset();
-            } else {
-                alert('Error: no se pudo registrar el usuario (el email o el DNI ya existen)');
-            }
-        })
-        .catch(() => {
-            alert('Error: no se pudo conectar con el servidor');
+/**
+ * Envía el registro al servidor y recién redirige al login cuando el
+ * servidor confirma el alta.
+ */
+async function registrarUsuario(datos) {
+    let respuesta;
+    try {
+        respuesta = await fetch(`${BASE_API}/usuarios`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify(datos)
         });
+    } catch (error) {
+        console.error('Error de conexión al registrar:', error);
+        alert('Error: no se pudo conectar con el servidor');
+        return;
+    }
+
+    const cuerpo = await respuesta.json().catch(() => null);
+
+    if (!respuesta.ok) {
+        if (respuesta.status === 403) {
+            // El servidor rechaza crear usuarios si hay una sesión iniciada
+            // que no sea de administrador.
+            alert('No se pudo registrar: tenés una sesión iniciada y solo un administrador puede crear usuarios.\nCerrá la sesión con el botón "Salir" y volvé a intentar.');
+        } else {
+            const mensaje = cuerpo && cuerpo.error
+                ? cuerpo.error
+                : 'no se pudo registrar el usuario';
+            alert('Error: ' + mensaje);
+        }
+        return;
+    }
+
+    alert('El usuario se registró correctamente. Ahora iniciá sesión con tu email y contraseña.');
+    document.getElementById('formRegister').reset();
+    // Recién con el alta confirmada vamos al login.
+    window.location.href = 'login.html';
 }
 
 document.getElementById('formRegister').addEventListener('submit', e => {
@@ -51,6 +53,7 @@ document.getElementById('formRegister').addEventListener('submit', e => {
     const email = valor('email');
     const password = document.getElementById('password').value;
     const password2 = document.getElementById('password2').value;
+
     if (!nombre || !apellido || !dni || !email || !password) {
         alert('Completá los campos obligatorios');
         return;
@@ -63,14 +66,15 @@ document.getElementById('formRegister').addEventListener('submit', e => {
         alert('Las contraseñas no coinciden');
         return;
     }
-    registrarUsuario(
-        nombre,
-        apellido,
-        dni,
-        valor('fechaNacimiento') || null,
-        valor('telefono') || null,
-        email,
-        password,
-        valor('obraSocialId') || null
-    );
+
+    registrarUsuario({
+        nombre: nombre,
+        apellido: apellido,
+        dni: dni,
+        fechaNacimiento: valor('fechaNacimiento') || null,
+        telefono: valor('telefono') || null,
+        email: email,
+        password: password,
+        obraSocialId: valor('obraSocialId') ? Number(valor('obraSocialId')) : null
+    });
 });
