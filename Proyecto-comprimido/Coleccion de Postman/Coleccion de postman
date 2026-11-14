@@ -1,0 +1,2993 @@
+{
+  "info": {
+    "_postman_id": "7ebff5ab-10a2-4fb2-ab1d-7a8310099ccf",
+    "name": "My Collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "60194409",
+    "_collection_link": "https://go.postman.co/collection/60194409-7ebff5ab-10a2-4fb2-ab1d-7a8310099ccf?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Proyecto-escuela",
+      "item": [
+        {
+          "name": "View turnos_medicos",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/vista-turnos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/vista-turnos?paciente_dni=25412874",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "vista-turnos"
+                  ],
+                  "query": [
+                    {
+                      "key": "paciente_dni",
+                      "value": "25412874"
+                    }
+                  ]
+                },
+                "description": "GET de los datos de la view de vista turnos tomando como parametro el dni del paciente"
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/vista-turnos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/vista-turnos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "vista-turnos"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Alergias-paciente",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias-pacientes",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias-pacientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias-pacientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias-pacientes?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias-pacientes?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias-pacientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias-pacientes",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"pacienteId\": 4,\r\n    \"alergiaId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias-pacientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias-pacientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias-pacientes",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idAlergiaPaciente\": 4,\r\n    \"pacienteId\": 4,\r\n    \"alergiaId\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias-pacientes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias-pacientes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias-pacientes?id=4",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias-pacientes?id=4",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias-pacientes"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "4"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Alergias",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombre\": \"Alergia al mati\",\r\n    \"descripcion\": \"Es alérgico al matí y derivados. Provoca hinchazón y picazón\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idAlergia\": 1,\r\n    \"nombre\": \"Alergia al manti\",\r\n    \"descripcion\": \"Es alérgico al maní y derivados. Provoca hinchazón y picazón\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/alergias?id=6",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/alergias?id=6",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "alergias"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Articulos",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/articulos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/articulos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "articulos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/articulos?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/articulos?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "articulos"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/articulos",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombre\": \"Ibuprofenardium 600mg\",\r\n    \"descripcion\": \"Analgésico y antiinflamatorio\",\r\n    \"presentacion\": \"Comprimidos x 20\",\r\n    \"tipoArticulo\": \"MEDICAMENTO\",\r\n    \"stockActual\": 150,\r\n    \"stockMinimo\": 30,\r\n    \"temperaturaIdealEnCelcius\": 10.0\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/articulos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "articulos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/articulos",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idArticulo\": 15,\r\n    \"nombre\": \"Ibuprofenx 600mg\",\r\n    \"descripcion\": \"Analgésico y antiinflamatorio\",\r\n    \"presentacion\": \"Comprimidos x 20\",\r\n    \"tipoArticulo\": \"MEDICAMENTO\",\r\n    \"stockActual\": 150,\r\n    \"stockMinimo\": 30,\r\n    \"temperaturaIdealEnCelcius\": 10.0\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/articulos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "articulos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/articulos?id=15",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/articulos?id=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "articulos"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Consultas",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultas?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultas?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultas",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"fechaHora\": \"2019-09-14T09:30:00\",\r\n    \"motivo\": \"Palpitaciones ocasionales\",\r\n    \"diagnostico\": \"Hipertensión arterial controlada\",\r\n    \"observacion\": \"Se ajusta medicación diaria.\",\r\n    \"historiaId\": 1,\r\n    \"medicoId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultas",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idConsulta\": 9,\r\n    \"fechaHora\": \"2019-09-14T09:30:00\",\r\n    \"motivo\": \"Palniggaciones ocasionales\",\r\n    \"diagnostico\": \"Hipertensión arterial controlada\",\r\n    \"observacion\": \"Se ajusta medicación diaria.\",\r\n    \"historiaId\": 1,\r\n    \"medicoId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultas?id=9",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultas?id=9",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "9"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Consultorios",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultorios",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultorios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultorios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultorios?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultorios?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultorios"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultorios",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"numero\": \"912\",\r\n    \"piso\": 1,\r\n    \"tipo\": \"Pediatría\",\r\n    \"estado\": \"Disponible\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultorios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultorios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultorios",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idConsultorio\": 7,\r\n    \"estado\": \"En mantenimiento\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultorios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultorios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/consultorios?id=7",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idConsultorio\": 7,\r\n    \"estado\": \"En mantenimiento\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/consultorios?id=7",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "consultorios"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "7"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Detalles receta",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/detalle-recetas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/detalle-recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "detalle-recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/detalle-recetas?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/detalle-recetas?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "detalle-recetas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/detalle-recetas",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cantidad\": 2,\r\n    \"dosis\": \"50mg\",\r\n    \"frecuencia\": \"Cada 2 horas\",\r\n    \"duracion\": \"90 días\",\r\n    \"recetaId\": 1,\r\n    \"articuloId\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/detalle-recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "detalle-recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/detalle-recetas",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idDetalle\": 8,\r\n    \"cantidad\": 2,\r\n    \"dosis\": \"50mg\",\r\n    \"frecuencia\": \"Cada 2 horas\",\r\n    \"duracion\": \"90 días\",\r\n    \"recetaId\": 1,\r\n    \"articuloId\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/detalle-recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "detalle-recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/detalle-recetas?id=8",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/detalle-recetas?id=8",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "detalle-recetas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "8"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Facturas",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/facturas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/facturas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "facturas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/facturas?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/facturas?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "facturas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/facturas",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"fecha\": \"2010-10-10 10:00:00\",\r\n    \"importeTotal\": 12.0,\r\n    \"estado\": \"Pagada\",\r\n    \"pacienteId\": 1,\r\n    \"obraSocialId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/facturas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "facturas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/facturas",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idFactura\": 7,\r\n    \"fecha\": \"2010-11-10 10:00:00\",\r\n    \"importeTotal\": 12.0,\r\n    \"estado\": \"Pagada\",\r\n    \"pacienteId\": 1,\r\n    \"obraSocialId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/facturas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "facturas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/facturas?id=7",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/facturas?id=7",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "facturas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "7"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Historias Clinicas",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/historias-clinicas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/historias-clinicas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "historias-clinicas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/historias-clinicas?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/historias-clinicas?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "historias-clinicas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/historias-clinicas",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\r\n    \"fechaApertura\": \"2021-03-15\",\r\n    \"antecedentes\": \"Hipertenso crónico, padre con antecedentes cardíacos.\",\r\n    \"observacion\": \"Paciente regular\",\r\n    \"pacienteId\": 4,\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/historias-clinicas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "historias-clinicas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/historias-clinicas",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idHistoria\": 15,\r\n    \"antecedentes\": \"Hipertenso crónico, padre con antecedentes cardíacos.\",\r\n    \"observacion\": \"Paciente regular\",\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/historias-clinicas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "historias-clinicas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/historias-clinicas?id=15",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/historias-clinicas?id=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "historias-clinicas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Movimientos Stock",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/movimientos-stock",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/movimientos-stock",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "movimientos-stock"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/movimientos-stock?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/movimientos-stock?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "movimientos-stock"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/movimientos-stock",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idArticulo\": 2,\r\n    \"tipoMovimiento\": \"ENTRADA\",\r\n    \"cantidad\": 1,\r\n    \"motivo\": \"probando\",\r\n    \"fechaHora\": \"2026-10-19T21:30:59\",\r\n    \"usuarioId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/movimientos-stock",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "movimientos-stock"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/movimientos-stock",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idMovimiento\": 15,\r\n    \"idArticulo\": 2,\r\n    \"tipoMovimiento\": \"ENTRADA\",\r\n    \"cantidad\": 1,\r\n    \"motivo\": \"probando\",\r\n    \"fechaHora\": \"2026-10-19T21:30:59\",\r\n    \"usuarioId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/movimientos-stock",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "movimientos-stock"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/movimientos-stock?id=15",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/movimientos-stock?id=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "movimientos-stock"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Obras Sociales",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "obras-sociales"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/obras-sociales?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "obras-sociales"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombre\": \"LEONEL PLANOS\",\r\n    \"numeroConvenio\": \"CO-88421\",\r\n    \"beneficios\": \"Consultas ilimitadas, 40% en medicamentos\",\r\n    \"cobertura\": \"80%\",\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "obras-sociales"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idObraSocial\": 12,\r\n    \"nombre\": \"LEONEL PLANOoS\",\r\n    \"numeroConvenio\": \"CO-88421\",\r\n    \"beneficios\": \"Consultas ilimitadas, 40% en medicamentos\",\r\n    \"cobertura\": \"80%\",\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "obras-sociales"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idObraSocial\": 12,\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/obras-sociales",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "obras-sociales"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Permiso Roles",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permiso-roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"rolId\": 6,\r\n    \"PermisoId\": 7\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permiso-roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idPermisoRol\": 15,\r\n    \"rolId\": 6,\r\n    \"PermisoId\": 6\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permiso-roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permiso-roles",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permiso-roles?id=15",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permiso-roles"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "15"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Permisos",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permisos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permisos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permisos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permisos?id=3",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permisos?id=3",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permisos"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permisos",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombre\": \"Vista de Aura\",\r\n    \"descripcion\": \"Te permite ver el aura y farmearla\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permisos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permisos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permisos",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idPermiso\": 8,\r\n    \"nombre\": \"Vista de LAura\",\r\n    \"descripcion\": \"Te permite ver el aura y farmearla\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permisos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permisos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/permisos",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/permisos?id=8",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "permisos"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "8"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Recetas",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/recetas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/recetas?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/recetas?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "recetas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/recetas",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"fecha\": \"2020-09-14\",\r\n    \"indicacion\": \"Tomar por la mañana en ayunas de forma crónica.\",\r\n    \"consultaId\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/recetas Copy",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idReceta\": 7,\r\n    \"fecha\": \"2021-09-14\",\r\n    \"indicacion\": \"Tomar por la mañana en ayunas de forma crónica.\",\r\n    \"consultaId\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/recetas",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "recetas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/recetas?id=7",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/recetas?id=7",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "recetas"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "7"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Roles Ususario",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles-usuario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles-usuario",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles-usuario"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles-usuario?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles-usuario?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles-usuario"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles-usuario",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"usuarioId\": 1,\r\n    \"rolId\": 6\r\n\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles-usuario",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles-usuario"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles-usuario",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idRolUsuario\": 11,\r\n    \"usuarioId\": 13,\r\n    \"rolId\": 6\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles-usuario",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles-usuario"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles-usuario?id=18",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles-usuario?id=18",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles-usuario"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "18"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Roles",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombre\": \"Jeffry Adan\",\r\n    \"descripcion\": \"Control total del sistema\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idRol\": 9,\r\n    \"nombre\": \"Jeffry Adan\",\r\n    \"descripcion\": \"Control total de la isla\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/roles",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/roles?id=9",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "roles"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "9"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Triage",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/triages",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/triages",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "triages"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/triages?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/triages?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "triages"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/triages",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"fecha\": \"2000-10-10T10:10:10\",\r\n    \"prioridad\": \"3\",\r\n    \"estado\": \"Enfermo\",\r\n    \"observacion\": \"Gripe comun, pecho con moco, garganta y nariz obstruida\",\r\n    \"pacienteId\": 1,\r\n    \"consultorioId\": 2,\r\n    \"enfermeroId\": 4\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/triages",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "triages"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/triages",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idTriage\": 5,\r\n    \"estado\": \"Nigga\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/triages",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "triages"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/triages",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idTriage\": 5,\r\n    \"estado\": \"Nigga\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/triages?id=5",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "triages"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Turnos",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/turnos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/turnos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "turnos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/turnos?id=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/turnos?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "turnos"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/turnos",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "5"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"fecha\": \"2027-09-14\",\r\n    \"horaInicio\": \"09:30:00\",\r\n    \"horaFin\": \"10:00:00\",\r\n    \"estado\": \"Atendido\",\r\n    \"motivo\": \"Control de rutina por presión\",\r\n    \"pacienteId\": 1,\r\n    \"medicoId\": 2,\r\n    \"especialidadId\": 1,\r\n    \"consultorioId\": 3\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/turnos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "turnos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/turnos",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idTurno\": 4,\r\n    \"fecha\": \"2026-12-14\",\r\n    \"horaInicio\": \"09:30:00\",\r\n    \"horaFin\": \"10:00:00\",\r\n    \"estado\": \"Atendido\",\r\n    \"motivo\": \"Control de rutina por presión\",\r\n    \"pacienteId\": 1,\r\n    \"medicoId\": 2,\r\n    \"especialidadId\": 1,\r\n    \"consultorioId\": 3\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/turnos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "turnos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/turnos?id=4",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "2"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/turnos?id=4",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "turnos"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "4"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Ubicacionpaciente",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "ubicacionpaciente"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente?id=1",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "ubicacionpaciente"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"tipoAtencion\": \"TURNO_SIMPLE\",\r\n    \"fechaIngreso\": \"2023-09-14T09:20:00\",\r\n    \"fechaSalida\": \"2024-09-14T09:50:00\",\r\n    \"pacienteId\": 1,\r\n    \"medicoId\": 2,\r\n    \"consultorioId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "ubicacionpaciente"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idUbicacion\": 9,\r\n    \"tipoAtencion\": \"TURNO_SIMPLE\",\r\n    \"fechaSalida\": \"2024-10-14T09:50:00\",\r\n    \"medicoId\": 2,\r\n    \"consultorioId\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "ubicacionpaciente"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente?id=9",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/ubicacionpaciente?id=9",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "ubicacionpaciente"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "9"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Usuarios",
+          "item": [
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios?id=13",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios?id=13",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "13"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nombre\": \"Santiago\",\r\n    \"apellido\": \"Montedanza\",\r\n    \"dni\": 31800545,\r\n    \"fechaNacimiento\": \"2011-06-26\",\r\n    \"telefono\": 1191436555,\r\n    \"email\": \"monted@gmail.com\",\r\n    \"password\": \"niga\",\r\n    \"obraSocialId\": 2,\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idUsuario\": 16,\r\n    \"nombre\": \"Santiago\",\r\n    \"apellido\": \"Montedanza\",\r\n    \"dni\": 31800545,\r\n    \"fechaNacimiento\": \"2011-06-26\",\r\n    \"telefono\": 1191436555,\r\n    \"email\": \"monted@gmail.com\",\r\n    \"password\": \"niga\",\r\n    \"obraSocialId\": 2,\r\n    \"flagBorrado\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"idUsuario\": 16,\r\n    \"flagBorrado\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios Copy",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"emiliofernandezet32@gmail.com\",\r\n    \"password\": \"1\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios/login",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "http://localhost:8080/Proyecto-escuela/usuarios",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "X-Rol-Id",
+                    "value": "1"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:8080/Proyecto-escuela/usuarios?id=16",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "Proyecto-escuela",
+                    "usuarios"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "16"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
