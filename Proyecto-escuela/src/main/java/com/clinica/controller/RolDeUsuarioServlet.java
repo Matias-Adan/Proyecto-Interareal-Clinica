@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IRolDeUsuarioDao;
 import com.clinica.modelo.RolDeUsuario;
-import com.clinica.factory.RolDeUsuarioDaoFactory; 
+import com.clinica.service.RolDeUsuarioService;
 
 import com.google.gson.Gson;
 
@@ -21,7 +21,7 @@ import java.util.List;
 public class RolDeUsuarioServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IRolDeUsuarioDao rolDeUsuarioDao = RolDeUsuarioDaoFactory.getRolDeUsuarioDao();
+    private IRolDeUsuarioDao rolDeUsuarioDao = new RolDeUsuarioService();
     private Gson gson = new Gson();
 
     // LISTAR O BUSCAR POR ID (GET)
@@ -59,13 +59,6 @@ public class RolDeUsuarioServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -87,13 +80,6 @@ public class RolDeUsuarioServlet extends HttpServlet {
  // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -106,13 +92,6 @@ public class RolDeUsuarioServlet extends HttpServlet {
     // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");

@@ -39,13 +39,6 @@ public class PermisoRolServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -67,13 +60,6 @@ public class PermisoRolServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -87,13 +73,6 @@ public class PermisoRolServlet extends HttpServlet {
     // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");

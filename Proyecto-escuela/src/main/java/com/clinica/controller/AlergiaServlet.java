@@ -58,14 +58,7 @@ public class AlergiaServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        /*HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
-        */
+        
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
         Alergia nueva = gson.fromJson(reader, Alergia.class);

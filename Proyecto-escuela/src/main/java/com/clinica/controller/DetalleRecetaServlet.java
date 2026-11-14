@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IDetalleRecetaDao;
 import com.clinica.modelo.DetalleReceta;
-import com.clinica.factory.DetalleRecetaDaoFactory; 
+import com.clinica.service.DetalleRecetaService;
 
 import com.google.gson.Gson;
 
@@ -21,7 +21,7 @@ import java.util.List;
 public class DetalleRecetaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IDetalleRecetaDao detalleRecetaDao = DetalleRecetaDaoFactory.getDetalleRecetaDao();
+    private IDetalleRecetaDao detalleRecetaDao = new DetalleRecetaService();
     private Gson gson = new Gson();
 
     // LISTAR O BUSCAR POR ID (GET)
@@ -59,13 +59,6 @@ public class DetalleRecetaServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -87,13 +80,6 @@ public class DetalleRecetaServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -111,13 +97,6 @@ public class DetalleRecetaServlet extends HttpServlet {
     // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();

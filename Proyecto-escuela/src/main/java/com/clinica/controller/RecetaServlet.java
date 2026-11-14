@@ -1,12 +1,15 @@
 package com.clinica.controller;
 
 import com.clinica.dao.IRecetaDao;
+import com.clinica.modelo.DetalleReceta;
 import com.clinica.modelo.Receta;
-import com.clinica.factory.RecetaDaoFactory; 
+import com.clinica.service.RecetaService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
@@ -21,13 +24,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/recetas")
 public class RecetaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IRecetaDao recetaDao = RecetaDaoFactory.getRecetaDao();
+    private RecetaService recetaDao = new RecetaService();
     
   
     private Gson gson = new GsonBuilder()
@@ -72,22 +76,41 @@ public class RecetaServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
-        Receta nueva = gson.fromJson(reader, Receta.class);
+
+        // Se aceptan dos formatos:
+        //   1) El formato plano original: { "consultaId": ..., "indicacion": ... }
+        //   2) El formato completo: { "receta": {...}, "detalles": [...] }
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+
+        Receta nueva;
+        List<DetalleReceta> detalles = null;
+
+        if (json != null && json.has("receta") && json.get("receta").isJsonObject()) {
+            nueva = gson.fromJson(json.get("receta"), Receta.class);
+
+            if (json.has("detalles") && json.get("detalles").isJsonArray()) {
+                detalles = new ArrayList<>();
+                for (JsonElement elemento : json.getAsJsonArray("detalles")) {
+                    detalles.add(gson.fromJson(elemento, DetalleReceta.class));
+                }
+            }
+        } else {
+            nueva = gson.fromJson(json, Receta.class);
+        }
 
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
-        if (recetaDao.insertar(nueva)) {
+        if (detalles != null && !detalles.isEmpty()) {
+            // Regla: receta con al menos un detalle + validación/descuento de stock.
+            int idReceta = recetaDao.insertar(nueva, detalles);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            out.print("{\"mensaje\": \"Receta insertada correctamente\", "
+                    + "\"idReceta\": " + idReceta + "}");
+        } else if (recetaDao.insertar(nueva)) {
             response.setStatus(HttpServletResponse.SC_CREATED);
             out.print("{\"mensaje\": \"Receta insertada correctamente\"}");
         } else {
@@ -100,13 +123,6 @@ public class RecetaServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -119,13 +135,6 @@ public class RecetaServlet extends HttpServlet {
     // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();

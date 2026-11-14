@@ -1,10 +1,12 @@
 package com.clinica.controller;
 
 import com.clinica.dao.IUsuarioDao;
-import com.clinica.factory.UsuarioDaoFactory;
+import com.clinica.service.AutorizacionService;
+import com.clinica.service.UsuarioService;
 import com.clinica.modelo.Usuario;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonPrimitive;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 // Mapeamos para capturar tanto la raíz como sub-rutas (ej: /usuarios/login)
 @WebServlet(urlPatterns = {"/usuarios", "/usuarios/*"})
@@ -28,7 +31,10 @@ import java.util.List;
 public class UsuarioServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IUsuarioDao usuarioDao = UsuarioDaoFactory.getUsuarioDao();
+    private IUsuarioDao usuarioDao = new UsuarioService();
+
+    // Para incluir los roles de la cuenta en la respuesta del login.
+    private final AutorizacionService autorizacion = new AutorizacionService();
     
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) -> 
@@ -105,29 +111,49 @@ public class UsuarioServlet extends HttpServlet {
             try {
                 JsonObject jsonLogin = gson.fromJson(reader, JsonObject.class);
                 
-                // Extraemos únicamente el email del JSON
                 String emailInput = jsonLogin.has("email") ? jsonLogin.get("email").getAsString() : null;
+                String passwordInput = jsonLogin.has("password") ? jsonLogin.get("password").getAsString() : null;
                 
-                if (emailInput == null || emailInput.isEmpty()) {
+                if (emailInput == null || emailInput.isEmpty() || passwordInput == null || passwordInput.isEmpty()) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.print("{\"error\": \"Falta el parámetro requerido: email\"}");
+                    out.print("{\"error\": \"Faltan parámetros requeridos: email y/o contraseña\"}");
                     return;
                 }
                 
-                // Se ejecuta tu Stored Procedure enviando solo el email
-                Usuario usuarioAutenticado = usuarioDao.login(emailInput);
+                Usuario usuarioAutenticado = usuarioDao.login(emailInput, passwordInput);
                 
-                // El chequeo ahora solo valida si el procedimiento encontró al usuario
                 if (usuarioAutenticado != null) {
                     HttpSession session = request.getSession();
                     session.setAttribute("usuarioLogueado", usuarioAutenticado);
                     
+                    // Datos de la cuenta autenticada: el usuario que devolvió
+                    // el procedure de login más los roles que tiene asignados
+                    // en la base. El front los guarda y los usa como
+                    // autenticador de la cuenta logeada. La contraseña no
+                    // viaja: su hash se queda en el servidor.
+                    Set<Integer> roles = autorizacion.rolesDe(usuarioAutenticado.getIdUsuario());
+                    Integer rol = AutorizacionService.rolPrincipal(roles);
+
+                    JsonObject respuesta = new JsonObject();
+                    respuesta.addProperty("mensaje", "Login exitoso");
+                    respuesta.add("usuario", usuarioPublicoJson(usuarioAutenticado));
+
+                    JsonArray rolesJson = new JsonArray();
+                    for (Integer idRol : roles) {
+                        rolesJson.add(idRol);
+                    }
+                    respuesta.add("roles", rolesJson);
+
+                    if (rol != null) {
+                        respuesta.addProperty("rol", rol);
+                    }
+
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print("{\"mensaje\": \"Login exitoso (Usuario encontrado)\", \"usuario\": " + gson.toJson(usuarioAutenticado) + "}");
+                    out.print(gson.toJson(respuesta));
                 } else {
-                    // Si el procedimiento sp_usuarios_login no devolvió ningún registro
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND); 
-                    out.print("{\"error\": \"El email proporcionado no corresponde a ningún usuario registrado.\"}");
+
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+                    out.print("{\"error\": \"Credenciales inválidas. Verifique su email o contraseña.\"}");
                 }
                 
             } catch (Exception e) {
@@ -150,6 +176,8 @@ public class UsuarioServlet extends HttpServlet {
                 out.print("{\"error\": \"No se pudo insertar el usuario\"}");
             }
             out.flush();
+        } catch (SecurityException e) {
+            throw e;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.print("{\"error\": \"Error en el formato de los datos de registro.\"}");
@@ -157,17 +185,31 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Serializa la cuenta para enviarla al front. Igual que el usuarioJson
+     * de SesionServlet: se excluye la contraseña para que su hash no viaje
+     * al navegador ni quede guardado en el sessionStorage del login.
+     */
+    private JsonObject usuarioPublicoJson(Usuario usuario) {
+        JsonObject json = new JsonObject();
+        json.addProperty("idUsuario", usuario.getIdUsuario());
+        json.addProperty("nombre", usuario.getNombre());
+        json.addProperty("apellido", usuario.getApellido());
+        json.addProperty("dni", usuario.getDni());
+        json.addProperty("telefono", usuario.getTelefono());
+        json.addProperty("email", usuario.getEmail());
+        json.addProperty("obraSocialId", usuario.getObraSocialId());
+        json.addProperty("flagBorrado", usuario.isFlagBorrado());
+        if (usuario.getFechaNacimiento() != null) {
+            json.addProperty("fechaNacimiento", usuario.getFechaNacimiento().toString());
+        }
+        return json;
+    }
+
     // PUT - Actualizar usuario
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-    	HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"No autorizado. Debe iniciar sesión.\"}");
-            return; // Corta la ejecución de inmediato
-        }
 
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -184,6 +226,8 @@ public class UsuarioServlet extends HttpServlet {
                 out.print("{\"error\": \"No se pudo actualizar el usuario\"}");
             }
             out.flush();
+        } catch (SecurityException e) {
+            throw e;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print("{\"error\": \"Error en el formato de los datos.\"}");
@@ -194,13 +238,13 @@ public class UsuarioServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-    	HttpSession session = request.getSession(false);
+    	/*HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print("{\"error\": \"No autorizado. Debe iniciar sesión.\"}");
             return; // Corta la ejecución de inmediato
-        }
+        }*/
     	
         String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");
@@ -229,13 +273,6 @@ public class UsuarioServlet extends HttpServlet {
     // Patch - Actualizar flagBorrado
     protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-    	HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"No autorizado. Debe iniciar sesión.\"}");
-            return; // Corta la ejecución de inmediato
-        }
     	
     	request.setCharacterEncoding("UTF-8");
     	response.setContentType("application/json;charset=UTF-8");
@@ -266,6 +303,8 @@ public class UsuarioServlet extends HttpServlet {
                 out.print("{\"error\": \"No se pudo actualizar el estado de borrado del usuario\"}");
             }
             
+        } catch (SecurityException e) {
+            throw e;
         } catch (Exception e) {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         	out.println("{\"error\": \"Error en el formato de los datos JSON enviados en el PATCH.\"}");

@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IFacturaDao;
 import com.clinica.modelo.Factura;
-import com.clinica.factory.FacturaDaoFactory; 
+import com.clinica.service.FacturacionService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -28,7 +28,7 @@ import java.util.List;
 public class FacturaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IFacturaDao facturaDao = FacturaDaoFactory.getFacturaDao();
+    private IFacturaDao facturaDao = new FacturacionService();
     
   
     private Gson gson = new GsonBuilder()
@@ -84,13 +84,6 @@ public class FacturaServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -129,13 +122,6 @@ public class FacturaServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
 
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -173,13 +159,6 @@ public class FacturaServlet extends HttpServlet {
     // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");

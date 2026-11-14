@@ -163,10 +163,11 @@ public class UsuarioController {
 
     private void testLogin() {
         System.out.println("\n--- Ejecutando sp_usuarios_login(?) ---");
-        System.out.print("Ingrese el email o usuario para iniciar sesión: ");
+        System.out.print("Ingrese el email y contraseña para iniciar sesión: ");
         String credencial = scanner.nextLine();
+        String password = scanner.nextLine();
 
-        Usuario u = usuarioDao.login(credencial);
+        Usuario u = usuarioDao.login(credencial, password);
         if (u != null) {
             System.out.println("🎉 ¡Login exitoso! Bienvenido/a, " + u.getNombre() + " " + u.getApellido());
         } else {

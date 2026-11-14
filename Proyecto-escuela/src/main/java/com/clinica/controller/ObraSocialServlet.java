@@ -5,6 +5,8 @@ import com.clinica.modelo.ObraSocial;
 import com.clinica.factory.ObraSocialDaoFactory; 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -59,13 +61,6 @@ public class ObraSocialServlet extends HttpServlet {
     // INSERTAR (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -87,13 +82,6 @@ public class ObraSocialServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -111,41 +99,51 @@ public class ObraSocialServlet extends HttpServlet {
         out.flush();
     }
 
-    // ELIMINAR (DELETE)
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+ // Patch - Actualizar flagBorrado
+    protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
+    	HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
+            response.getWriter().print("{\"error\": \"No autorizado. Debe iniciar sesión.\"}");
+            return; // Corta la ejecución de inmediato
         }
-        
-        String idStr = request.getParameter("id");
-        response.setContentType("application/json;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-
-        if (idStr != null && !idStr.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idStr);
-                
-               
-                if (obraSocialDao.eliminar(id)) {
-                    out.print("{\"mensaje\": \"Obra social eliminada correctamente\"}");
-                } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print("{\"error\": \"No se pudo eliminar la obra social\"}");
-                }
-                
-            } catch (NumberFormatException e) {
+    	
+    	request.setCharacterEncoding("UTF-8");
+    	response.setContentType("application/json;charset=UTF-8");
+    	PrintWriter out = response.getWriter();
+    	
+    	BufferedReader reader = request.getReader();
+    	try {
+    		// Leemos la petición como un JSON genérico
+            JsonObject jsonBody = gson.fromJson(reader, JsonObject.class);
+            
+            // Validamos que vengan los datos mínimos obligatorios
+            if (!jsonBody.has("idObraSocial") || !jsonBody.has("flagBorrado")) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\": \"El ID proporcionado debe ser un número entero válido.\"}");
+                out.print("{\"error\": \"Faltan parámetros requeridos en el JSON: idObraSocial y flagBorrado\"}");
+                out.flush();
+                return;
             }
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\": \"Falta el parámetro id\"}");
-        }
-        out.flush();
+            
+            int id = jsonBody.get("idUsuario").getAsInt();
+            boolean flagBorrado = jsonBody.get("flagBorrado").getAsBoolean();
+            
+            // Invocamos el método creado en el paso anterior en tu DAO
+            if (obraSocialDao.cambiarEstadoBorrado(id, flagBorrado)) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.print("{\"mensaje\": \"Estado de borrado actualizado correctamente\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print("{\"error\": \"No se pudo actualizar el estado de borrado de la obra socaial\"}");
+            }
+            
+        } catch (Exception e) {
+        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        	out.println("{\"error\": \"Error en el formato de los datos JSON enviados en el PATCH.\"}");
+        			
+    	}
+    	out.flush();
     }
 }

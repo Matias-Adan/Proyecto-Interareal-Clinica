@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IArticuloDao;
 import com.clinica.modelo.Articulo;
-import com.clinica.factory.ArticuloDaoFactory;
+import com.clinica.service.ArticuloService;
 
 import com.google.gson.Gson; // O la librería que usen para JSON (ej: Jackson o Gson)
 
@@ -19,7 +19,7 @@ import java.util.List;
 @WebServlet("/articulos")
 public class ArticuloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private IArticuloDao articuloDao = ArticuloDaoFactory.getArticuloDao();
+    private IArticuloDao articuloDao = new ArticuloService();
     private Gson gson = new Gson(); // Asegurate de tener Gson o Jackson en el pom.xml / libs
 
     // LISTAR (GET)
@@ -65,13 +65,6 @@ public class ArticuloServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-    	jakarta.servlet.http.HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED); // 401
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return; // Detiene la petición aquí
-        }
         
     	request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -94,13 +87,6 @@ public class ArticuloServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-    	jakarta.servlet.http.HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED); // 401
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return; // Detiene la petición aquí
-        }
     	
     	request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -122,13 +108,6 @@ public class ArticuloServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-    	jakarta.servlet.http.HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED); // 401
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return; // Detiene la petición aquí
-        }
     	
     	String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");

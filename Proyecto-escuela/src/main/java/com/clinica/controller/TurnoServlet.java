@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.ITurnoDao;
 import com.clinica.modelo.Turno;
-import com.clinica.factory.TurnoDaoFactory; 
+import com.clinica.service.TurnosService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,7 +33,7 @@ import java.util.List;
 public class TurnoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private ITurnoDao turnoDao = TurnoDaoFactory.getTurnoDao();
+    private ITurnoDao turnoDao = new TurnosService();
   
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) -> 
@@ -45,6 +45,17 @@ public class TurnoServlet extends HttpServlet {
             .registerTypeAdapter(LocalTime.class, (JsonDeserializer<LocalTime>) (json, typeOfT, context) -> 
                 json == null ? null : LocalTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_TIME))
             .create();
+
+    // Permite que el método PATCH llegue realmente a doPatch().
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if ("PATCH".equalsIgnoreCase(request.getMethod())) {
+            doPatch(request, response);
+        } else {
+            super.service(request, response);
+        }
+    }
 
     // LISTAR O BUSCAR POR ID (GET)
     @Override
@@ -82,13 +93,13 @@ public class TurnoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
+        /*HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
             return;
-        }
+        }*/
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -111,14 +122,14 @@ public class TurnoServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
+       /* HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
             return;
         }
-        
+        */
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
         Turno modificado = gson.fromJson(reader, Turno.class);
@@ -137,13 +148,13 @@ public class TurnoServlet extends HttpServlet {
     
     protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        HttpSession session = request.getSession(false);
+        /*HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print("{\"error\": \"No autorizado. Debe iniciar sesión.\"}");
             return; // Corta la ejecución de inmediato
-        }
+        }*/
         
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
@@ -174,6 +185,8 @@ public class TurnoServlet extends HttpServlet {
                 out.print("{\"error\": \"No se pudo actualizar el estado del turno\"}");
             }
             
+        } catch (SecurityException e) {
+            throw e;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.println("{\"error\": \"Error en el formato de los datos JSON enviados en el PATCH.\"}");
@@ -186,13 +199,13 @@ public class TurnoServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
+       /* HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuarioLogueado") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
             return;
-        }
+        }*/
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();

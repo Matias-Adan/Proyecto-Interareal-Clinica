@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IHistoriaClinicaDao;
 import com.clinica.modelo.HistoriaClinica;
-import com.clinica.factory.HistoriaClinicaDaoFactory; 
+import com.clinica.service.HistoriaClinicaService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,7 +27,7 @@ import java.util.List;
 public class HistoriaClinicaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IHistoriaClinicaDao historiaClinicaDao = HistoriaClinicaDaoFactory.getHistoriaClinicaDao();
+    private IHistoriaClinicaDao historiaClinicaDao = new HistoriaClinicaService();
     
    
     private Gson gson = new GsonBuilder()
@@ -101,15 +101,7 @@ public class HistoriaClinicaServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-    	HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
-        
+    	
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
         HistoriaClinica modificada = gson.fromJson(reader, HistoriaClinica.class);
@@ -129,14 +121,6 @@ public class HistoriaClinicaServlet extends HttpServlet {
  // ELIMINAR (DELETE)
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
-        
         String idStr = request.getParameter("id");
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();

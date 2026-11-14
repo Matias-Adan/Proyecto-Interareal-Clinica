@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IUbicacionPacienteDao;
 import com.clinica.modelo.UbicacionPaciente;
-import com.clinica.factory.UbicacionPacienteDaoFactory; 
+import com.clinica.service.UbicacionPacienteService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,9 +28,9 @@ import java.util.List;
 public class UbicacionPacienteServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private IUbicacionPacienteDao ubicacionPacienteDao = UbicacionPacienteDaoFactory.getUbicacionPacienteDao();
+    private IUbicacionPacienteDao ubicacionPacienteDao = new UbicacionPacienteService();
     
-    // SE ADAPTÓ LA CONFIGURACIÓN PARA PROCESAR LOCALDATE Y LOCALDATETIME
+   
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) -> 
                 src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE)))
@@ -42,7 +42,7 @@ public class UbicacionPacienteServlet extends HttpServlet {
                 json == null ? null : LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .create();
 
-    // ENRUTADOR PARA ADMITIR EL MÉTODO PATCH NATIVAMENTE
+  
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getMethod().equalsIgnoreCase("PATCH")) {
@@ -90,13 +90,6 @@ public class UbicacionPacienteServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -119,13 +112,6 @@ public class UbicacionPacienteServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -185,6 +171,8 @@ public class UbicacionPacienteServlet extends HttpServlet {
         } catch (com.google.gson.JsonSyntaxException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.print("{\"error\": \"Error en el formato JSON enviado o formato de fecha inválido.\"}");
+        } catch (SecurityException e) {
+            throw e;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print("{\"error\": \"Ocurrió un error inesperado: " + e.getMessage() + "\"}");
@@ -197,13 +185,6 @@ public class UbicacionPacienteServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();

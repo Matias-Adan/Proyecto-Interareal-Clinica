@@ -2,7 +2,7 @@ package com.clinica.controller;
 
 import com.clinica.dao.IConsultorioDao;
 import com.clinica.modelo.Consultorio;
-import com.clinica.factory.ConsultorioDaoFactory; // Ajusta según el patrón Factory o inyección que utilices
+import com.clinica.service.ConsultorioService; // Ajusta según el patrón Factory o inyección que utilices
 
 import com.google.gson.Gson;
 
@@ -22,7 +22,7 @@ public class ConsultorioServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
    
-    private IConsultorioDao consultorioDao = ConsultorioDaoFactory.getConsultorioDao();
+    private IConsultorioDao consultorioDao = new ConsultorioService();
     private Gson gson = new Gson();
 
     // LISTAR O BUSCAR POR ID (GET)
@@ -61,13 +61,6 @@ public class ConsultorioServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -89,13 +82,6 @@ public class ConsultorioServlet extends HttpServlet {
     // ACTUALIZAR (PUT)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         request.setCharacterEncoding("UTF-8");
         BufferedReader reader = request.getReader();
@@ -117,13 +103,6 @@ public class ConsultorioServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().print("{\"error\": \"Acceso denegado. Debe iniciar sesión.\"}");
-            return;
-        }
         
         
         String idStr = request.getParameter("id");
