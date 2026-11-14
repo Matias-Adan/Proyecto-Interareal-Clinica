@@ -39,6 +39,7 @@ public class AlergiaDaoImplTest {
 	@BeforeEach
 	void setUp() throws SQLException{
 		// Inicializa las anotaciones de Mockito antes de cada prueba 
+		
 		MockitoAnnotations.openMocks(this);
 		alergiaDao = new AlergiaDaoImpl();
 		

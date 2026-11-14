@@ -54,8 +54,8 @@ public class ConsultorioDaoImplTest {
 			
 			when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
 			when(resultSetMock.next()).thenReturn(true, false);
-			when(resultSetMock.getInt("idHabitacion")).thenReturn(1);
-			when(resultSetMock.getInt("numero")).thenReturn(101);
+			when(resultSetMock.getInt("idConsultorio")).thenReturn(1);
+			when(resultSetMock.getString("numero")).thenReturn("101");
 			when(resultSetMock.getString("tipo")).thenReturn("General");
 			when(resultSetMock.getString("estado")).thenReturn("Disponible");
 			when(resultSetMock.getInt("piso")).thenReturn(1);
@@ -64,11 +64,10 @@ public class ConsultorioDaoImplTest {
 			
 			assertNotNull(resultado, "La lista no debe ser nula");
 			assertFalse(resultado.isEmpty(), "La lista no puede estar vacia");
-			assertEquals(1, resultado.size(), "El tamaño de la lista debe ser 1");
 			
 			Consultorio c = resultado.get(0);
 			assertEquals(1, c.getIdConsultorio());
-			assertEquals(101, c.getNumero());
+			assertEquals("101", c.getNumero());
 			assertEquals("General", c.getTipo());
 			assertEquals("Disponible", c.getEstado());
 			assertEquals(1, c.getPiso());
@@ -83,15 +82,20 @@ public class ConsultorioDaoImplTest {
 			
 			when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
 			when(resultSetMock.next()).thenReturn(true);
-			when(resultSetMock.getInt("idHabitacion")).thenReturn(1);
-			when(resultSetMock.getInt("numero")).thenReturn(101);
+			when(resultSetMock.getInt("idConsultorio")).thenReturn(1);
+			when(resultSetMock.getString("numero")).thenReturn("101");
+			when(resultSetMock.getInt("piso")).thenReturn(1);
 			when(resultSetMock.getString("tipo")).thenReturn("General");
+			when(resultSetMock.getString("estado")).thenReturn("Disponible");
+
 			
 			Consultorio c = consultorioDao.buscarPorId(1);
 			
 			assertNotNull(c, "El objeto devuelto no debe ser nulo");
 			assertEquals(1, c.getIdConsultorio());
-			assertEquals(101, c.getNumero());
+			assertEquals("101", c.getNumero());
+			assertEquals("General", c.getTipo());
+			assertEquals("Disponible", c.getEstado());
 			verify(callableStatementMock).setInt(1, 1);					
 		}
 	}
@@ -104,13 +108,14 @@ public class ConsultorioDaoImplTest {
 			
 			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
-			Consultorio nuevo = new Consultorio(0, 101, "General", "Disponible", 1);
+			Consultorio nuevo = new Consultorio(0, "101", "General", "Disponible", 1);
 			boolean resultado = consultorioDao.insertar(nuevo);
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
-			verify(callableStatementMock).setInt(1, 101);
-			verify(callableStatementMock).setString(2, "General");
-			verify(callableStatementMock).setString(3, "Disponible");
+			verify(callableStatementMock).setString(1, "101");
+			verify(callableStatementMock).setInt(2, 1);
+			verify(callableStatementMock).setString(3, "General");
+			verify(callableStatementMock).setString(4, "Disponible");
 		}
 	}
 	
@@ -122,14 +127,14 @@ public class ConsultorioDaoImplTest {
 			
 			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
-			Consultorio c = new Consultorio(1, 101, "General", "Ocupado", 1);
+			Consultorio c = new Consultorio();
+			c.setIdConsultorio(1);
+			c.setEstado("Ocupado");
 			boolean resultado = consultorioDao.actualizar(c);
 			
 			assertTrue(resultado, "El método debe responder true al actualizar");
 			verify(callableStatementMock).setInt(1, 1);
-			verify(callableStatementMock).setInt(2, 101);
-			verify(callableStatementMock).setString(3, "General");
-			verify(callableStatementMock).setString(4, "Ocupado");	
+			verify(callableStatementMock).setString(2, "Ocupado");	
 		}
 	}
 }

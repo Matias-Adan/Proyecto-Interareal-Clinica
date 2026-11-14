@@ -112,7 +112,7 @@ public class FacturaDaoImplTest {
 			boolean resultado = facturaDao.insertar(nuevo);
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
-			verify(callableStatementMock).setDate(eq(1), any(java.sql.Date.class));
+			verify(callableStatementMock).setTimestamp(eq(1), any(java.sql.Timestamp.class));
 			verify(callableStatementMock).setDouble(2, 1500.50);
 			verify(callableStatementMock).setString(3, "Emitida");
 			verify(callableStatementMock).setInt(4, 10);
@@ -134,11 +134,7 @@ public class FacturaDaoImplTest {
 			
 			assertTrue(resultado, "El método debe responder true al actualizar");
 			verify(callableStatementMock).setInt(1, 1);
-			verify(callableStatementMock).setDate(eq(2), any(java.sql.Date.class)); // Cambiado a setDate
-			verify(callableStatementMock).setDouble(3, 1500.50);
-			verify(callableStatementMock).setString(4, "Pagado");
-			verify(callableStatementMock).setInt(5, 10);
-			verify(callableStatementMock).setInt(6, 2);
+			verify(callableStatementMock).setString(2, "Pagado");
 		}
 	}
 }

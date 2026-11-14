@@ -60,7 +60,7 @@ public class HistoriaClinicaDaoImplTest {
 			when(resultSetMock.getInt("idHistoria")).thenReturn(1);
 			when(resultSetMock.getString("fechaApertura")).thenReturn("2026-06-06");
 			when(resultSetMock.getString("antecedentes")).thenReturn("Ninguno de importancia");
-			when(resultSetMock.getString("obvservacion")).thenReturn("Paciente estable");
+			when(resultSetMock.getString("observacion")).thenReturn("Paciente estable");
 			when(resultSetMock.getInt("pacienteId")).thenReturn(5);
 			when(resultSetMock.getBoolean("flagBorrado")).thenReturn(false);
 
@@ -119,7 +119,6 @@ public class HistoriaClinicaDaoImplTest {
 			verify(callableStatementMock).setString(2, "Sin antecedentes");
 			verify(callableStatementMock).setString(3, "Ninguna");
 			verify(callableStatementMock).setInt(4, 5);
-			verify(callableStatementMock).setBoolean(5, false);
 		}
 	}
 	
@@ -137,11 +136,9 @@ public class HistoriaClinicaDaoImplTest {
 			
 			assertTrue(resultado, "El método debe responder true al actualizar");
 			verify(callableStatementMock).setInt(1, 1);
-			verify(callableStatementMock).setDate(eq(2), any(java.sql.Date.class));
-			verify(callableStatementMock).setString(3, "Asma leve");
-			verify(callableStatementMock).setString(4, "Control periódico");
-			verify(callableStatementMock).setInt(5, 5);
-			verify(callableStatementMock).setBoolean(6, false);
+			verify(callableStatementMock).setString(2, "Asma leve");
+			verify(callableStatementMock).setString(3, "Control periódico");
+			verify(callableStatementMock).setBoolean(4, false);
 		}
 	}
 }

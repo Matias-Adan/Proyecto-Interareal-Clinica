@@ -56,7 +56,7 @@ public class ObraSocialDaoImplTest {
 			when(resultSetMock.next()).thenReturn(true, false);
 			when(resultSetMock.getInt("idObraSocial")).thenReturn(1);
 			when(resultSetMock.getString("nombre")).thenReturn("Swiss Medical");
-			when(resultSetMock.getInt("numeroConvenio")).thenReturn(4589);
+			when(resultSetMock.getString("numeroConvenio")).thenReturn("4589");
 			when(resultSetMock.getString("beneficios")).thenReturn("Descuentos en farmacia");
 			when(resultSetMock.getString("cobertura")).thenReturn("Plan Total");
 			when(resultSetMock.getBoolean("flagBorrado")).thenReturn(false);
@@ -70,7 +70,7 @@ public class ObraSocialDaoImplTest {
 			ObraSocial os = resultado.get(0);
 			assertEquals(1, os.getIdObraSocial());
 			assertEquals("Swiss Medical", os.getNombre());
-			assertEquals(4589, os.getNumeroConvenio());
+			assertEquals("4589", os.getNumeroConvenio());
 			assertEquals("Descuentos en farmacia", os.getBeneficios());
 			assertEquals("Plan Total", os.getCobertura());
 			assertFalse(os.isFlagBorrado());
@@ -87,14 +87,14 @@ public class ObraSocialDaoImplTest {
 			when(resultSetMock.next()).thenReturn(true);
 			when(resultSetMock.getInt("idObraSocial")).thenReturn(1);
 			when(resultSetMock.getString("nombre")).thenReturn("Swiss Medical");
-			when(resultSetMock.getInt("numeroConvenio")).thenReturn(4589);
+			when(resultSetMock.getString("numeroConvenio")).thenReturn("4589");
 			
 			ObraSocial os = obraSocialDao.buscarPorId(1);
 			
 			assertNotNull(os, "El objeto devuelto no debe ser nulo");
 			assertEquals(1, os.getIdObraSocial());
 			assertEquals("Swiss Medical", os.getNombre());
-			assertEquals(4589, os.getNumeroConvenio());
+			assertEquals("4589", os.getNumeroConvenio());
 			verify(callableStatementMock).setInt(1, 1);					
 		}
 	}
@@ -112,10 +112,9 @@ public class ObraSocialDaoImplTest {
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
 			verify(callableStatementMock).setString(1, "OSDE");
-			verify(callableStatementMock).setInt(2, 1234);
+			verify(callableStatementMock).setString(2, "1234");
 			verify(callableStatementMock).setString(3, "Cobertura nacional");
 			verify(callableStatementMock).setString(4, "Plan 210");
-			verify(callableStatementMock).setBoolean(5, false);
 		}
 	}
 	
@@ -133,10 +132,9 @@ public class ObraSocialDaoImplTest {
 			assertTrue(resultado, "El método debe responder true al actualizar");
 			verify(callableStatementMock).setInt(1, 1);
 			verify(callableStatementMock).setString(2, "OSDE Modificado");
-			verify(callableStatementMock).setInt(3, 1234);
+			verify(callableStatementMock).setString(3, "1234");
 			verify(callableStatementMock).setString(4, "Cobertura total");
 			verify(callableStatementMock).setString(5, "Plan 310");
-			verify(callableStatementMock).setBoolean(6, false);
 		}
 	}
 }

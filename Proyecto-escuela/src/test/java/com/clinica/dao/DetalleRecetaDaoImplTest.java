@@ -56,11 +56,11 @@ public class DetalleRecetaDaoImplTest {
 			when(resultSetMock.next()).thenReturn(true, false);
 			when(resultSetMock.getInt("idDetalle")).thenReturn(1);
 			when(resultSetMock.getInt("cantidad")).thenReturn(2);
-			when(resultSetMock.getInt("dosis")).thenReturn(1); 
+			when(resultSetMock.getString("dosis")).thenReturn("1"); 
 			when(resultSetMock.getString("frecuencia")).thenReturn("Cada 8 horas");
 			when(resultSetMock.getString("duracion")).thenReturn("5 días");
 			when(resultSetMock.getInt("recetaId")).thenReturn(10);
-			when(resultSetMock.getInt("medicamentoId")).thenReturn(4);
+			when(resultSetMock.getInt("articuloId")).thenReturn(4);
 
 			List<DetalleReceta> resultado = detalleRecetaDao.listar();
 			
@@ -71,7 +71,7 @@ public class DetalleRecetaDaoImplTest {
 			DetalleReceta dr = resultado.get(0);
 			assertEquals(1, dr.getIdReceta());
 			assertEquals(2, dr.getCantidad());
-			assertEquals(1, dr.getDosis());
+			assertEquals("1", dr.getDosis());
 			assertEquals("Cada 8 horas", dr.getFrecuencia());
 			assertEquals("5 días", dr.getDuracion());
 			assertEquals(10, dr.getRecetaId());
@@ -89,17 +89,17 @@ public class DetalleRecetaDaoImplTest {
 			when(resultSetMock.next()).thenReturn(true);
 			when(resultSetMock.getInt("idDetalle")).thenReturn(1);
 			when(resultSetMock.getInt("cantidad")).thenReturn(2);
-			when(resultSetMock.getInt("dosis")).thenReturn(1);
+			when(resultSetMock.getString("dosis")).thenReturn("1");
 			when(resultSetMock.getString("frecuencia")).thenReturn("Cada 8 horas");
 			when(resultSetMock.getString("duracion")).thenReturn("5 días");
 			when(resultSetMock.getInt("recetaId")).thenReturn(10);
-			when(resultSetMock.getInt("medicamentoId")).thenReturn(4);
+			when(resultSetMock.getInt("articuloId")).thenReturn(4);
 			
 			DetalleReceta dr = detalleRecetaDao.buscarPorId(1);
 			
 			assertNotNull(dr, "El objeto devuelto no debe ser nulo");
 			assertEquals(1, dr.getIdReceta());
-			assertEquals(1, dr.getDosis());
+			assertEquals("1", dr.getDosis());
 			assertEquals(4, dr.getArticuloId());
 			verify(callableStatementMock).setInt(1, 1);					
 		}
@@ -117,12 +117,12 @@ public class DetalleRecetaDaoImplTest {
 			boolean resultado = detalleRecetaDao.insertar(nuevo);
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
-			verify(callableStatementMock).setInt(1, 2);
-			verify(callableStatementMock).setInt(2, 1);
-			verify(callableStatementMock).setString(3, "Cada 8 horas");
-			verify(callableStatementMock).setString(4, "5 días");
-			verify(callableStatementMock).setInt(5, 10);
-			verify(callableStatementMock).setInt(6, 4);
+			verify(callableStatementMock).setInt(1, 2);      
+			verify(callableStatementMock).setString(2, "1"); 
+			verify(callableStatementMock).setString(3, "Cada 8 horas"); 
+			verify(callableStatementMock).setString(4, "5 días");     
+			verify(callableStatementMock).setInt(5, 10);     
+			verify(callableStatementMock).setInt(6, 4);      
 		}
 	}
 }

@@ -58,7 +58,7 @@ public class MovimientoStockDaoImplTest {
 			
 			when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
 			when(resultSetMock.next()).thenReturn(true, false);
-			when(resultSetMock.getInt("movimientoStock")).thenReturn(1);
+			when(resultSetMock.getInt("idMovimiento")).thenReturn(1);
 			when(resultSetMock.getInt("idArticulo")).thenReturn(3);
 			when(resultSetMock.getString("tipoMovimiento")).thenReturn("ENTRADA");
 			when(resultSetMock.getInt("cantidad")).thenReturn(50);
@@ -90,7 +90,7 @@ public class MovimientoStockDaoImplTest {
 			
 			when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
 			when(resultSetMock.next()).thenReturn(true);
-			when(resultSetMock.getInt("movimientoStock")).thenReturn(1);
+			when(resultSetMock.getInt("idMovimiento")).thenReturn(1);
 			when(resultSetMock.getInt("idArticulo")).thenReturn(3);
 			when(resultSetMock.getString("tipoMovimiento")).thenReturn("ENTRADA");
 			

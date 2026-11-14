@@ -2,6 +2,8 @@ package com.clinica.dao;
 
 import com.clinica.config.Conexion;
 import com.clinica.modelo.PermisoRol;
+import com.mysql.cj.jdbc.CallableStatement;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +32,7 @@ public class PermisoRolDaoImplTest {
 	private Connection connectionMock;
 	
 	@Mock
-	private PreparedStatement preparedStatementMock; // Cambiado a PreparedStatement
+	private CallableStatement callableStatementMock; // Cambiado a PreparedStatement
 	
 	@Mock
 	private ResultSet resultSetMock;
@@ -43,7 +45,7 @@ public class PermisoRolDaoImplTest {
 		
 		// Encadena comportamientos por defecto para simular JDBC con PreparedStatement
 		when(conexionMock.getConexion()).thenReturn(connectionMock);
-		when(connectionMock.prepareStatement(anyString())).thenReturn(preparedStatementMock);
+		when(connectionMock.prepareStatement(anyString())).thenReturn(callableStatementMock);
 	}
 	
 	@Test
@@ -52,9 +54,9 @@ public class PermisoRolDaoImplTest {
 		try (MockedStatic<Conexion> conexionStatic = mockStatic(Conexion.class)) {
 			conexionStatic.when(Conexion::getInstancia).thenReturn(conexionMock);
 			
-			when(preparedStatementMock.executeQuery()).thenReturn(resultSetMock);
+			when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
 			when(resultSetMock.next()).thenReturn(true, false);
-			when(resultSetMock.getInt("idUsuario")).thenReturn(1);
+			when(resultSetMock.getInt("idPermisoRol")).thenReturn(1);
 			when(resultSetMock.getInt("rolId")).thenReturn(2);
 			when(resultSetMock.getInt("permisoId")).thenReturn(5);
 
@@ -77,12 +79,19 @@ public class PermisoRolDaoImplTest {
 		try (MockedStatic<Conexion> conexionStatic = mockStatic(Conexion.class)) {
 			conexionStatic.when(Conexion::getInstancia).thenReturn(conexionMock);
 			
-			when(preparedStatementMock.executeUpdate()).thenReturn(1);
+			when(conexionMock.getConexion()).thenReturn(connectionMock);
+			
+			when(connectionMock.prepareCall(anyString())).thenReturn(callableStatementMock);
+			
+			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
 			PermisoRol nuevo = new PermisoRol(1, 2, 5);
 			boolean resultado = permisoRolDao.insertar(nuevo);
 			
 			assertTrue(resultado, "El método debe responder true al insertar");
+			verify(callableStatementMock).setInt(1, 2);
+			verify(callableStatementMock).setInt(2, 5);
+			
 		}
 	}
 	
@@ -93,12 +102,16 @@ public class PermisoRolDaoImplTest {
 		try (MockedStatic<Conexion> conexionStatic = mockStatic(Conexion.class)) {
 			conexionStatic.when(Conexion::getInstancia).thenReturn(conexionMock);
 			
-			when(preparedStatementMock.executeUpdate()).thenReturn(1);
+			when(conexionMock.getConexion()).thenReturn(connectionMock);
+			
+			when(connectionMock.prepareCall(anyString())).thenReturn(callableStatementMock);
+			
+			when(callableStatementMock.executeUpdate()).thenReturn(1);
 			
 			boolean resultado = permisoRolDao.eliminar(1);
 			
 			assertTrue(resultado, "El método debe responder true al eliminar");
-			verify(preparedStatementMock).setInt(1, 1);
+			verify(callableStatementMock).setInt(1, 1);
 		}
 	}
 }

@@ -52,6 +52,7 @@ public class ConsultaDaoImplTest {
 	void testListar() throws SQLException {
 		try (MockedStatic<Conexion> conexionStatic = mockStatic(Conexion.class)) {
 			conexionStatic.when(Conexion::getInstancia).thenReturn(conexionMock);
+
 			
 			when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
 			when(resultSetMock.next()).thenReturn(true, false);
@@ -60,7 +61,7 @@ public class ConsultaDaoImplTest {
 			when(resultSetMock.getString("motivo")).thenReturn("Control general");
 			when(resultSetMock.getString("diagnostico")).thenReturn("Paciente estable");
 			when(resultSetMock.getString("obvservacion")).thenReturn("Sin observaciones relevantes");
-			when(resultSetMock.getInt("historialId")).thenReturn(3);
+			when(resultSetMock.getInt("historiaId")).thenReturn(3);
 			when(resultSetMock.getInt("medicoId")).thenReturn(2);
 
 			List<Consulta> resultado = consultaDao.listar();
