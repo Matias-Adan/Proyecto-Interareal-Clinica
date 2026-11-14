@@ -2,7 +2,7 @@ package com.clinica.modelo;
 
 public class Consultorio {
 	private int idConsultorio;
-	private int numero;
+	private String numero;
 	private int piso;
 	private String tipo;
 	private String estado;
@@ -11,7 +11,7 @@ public class Consultorio {
 		
 	}
 	
-	public Consultorio(int idConsultorio, int numero, String tipo, String estado, int piso) {
+	public Consultorio(int idConsultorio, String numero, String tipo, String estado, int piso) {
 		this.idConsultorio = idConsultorio;
 		this.numero = numero;
 		this.tipo = tipo;
@@ -27,11 +27,11 @@ public class Consultorio {
 		this.idConsultorio = idConsultorio;
 	}
 
-	public int getNumero() {
+	public String getNumero() {
 		return numero;
 	}
 
-	public void setNumero(int numero) {
+	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 
@@ -58,8 +58,5 @@ public class Consultorio {
 	public void setPiso(int piso) {
 		this.piso = piso;
 	}
-	
-	
-	
 	
 }
