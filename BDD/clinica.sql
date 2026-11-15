@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-11-2026 a las 01:08:37
+-- Tiempo de generación: 15-11-2026 a las 21:03:49
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -687,7 +687,9 @@ CREATE TABLE `alergiapaciente` (
 --
 
 INSERT INTO `alergiapaciente` (`idAlergiaPaciente`, `pacienteId`, `alergiaId`) VALUES
-(1, 2, 1);
+(1, 2, 1),
+(4, 4, 1),
+(5, 6, 2);
 
 -- --------------------------------------------------------
 
@@ -706,8 +708,9 @@ CREATE TABLE `alergias` (
 --
 
 INSERT INTO `alergias` (`idAlergia`, `nombre`, `descripcion`) VALUES
-(1, 'Alergia al mani', 'Es alérgico al maní y derivados. Provoca hinchazón y picazón'),
-(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta');
+(1, 'Alergia al manti', 'Es alérgico al maní y derivados. Provoca hinchazón y picazón'),
+(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta'),
+(6, 'Alergia al mati', 'Es alérgico al matí y derivados. Provoca hinchazón y picazón');
 
 -- --------------------------------------------------------
 
@@ -732,15 +735,41 @@ CREATE TABLE `articulos` (
 
 INSERT INTO `articulos` (`idArticulo`, `nombre`, `descripcion`, `presentacion`, `tipoArticulo`, `stockActual`, `stockMinimo`, `temperaturaIdealEnCelcius`) VALUES
 (1, 'Ibuprofeno 600mg', 'Analgésico y antiinflamatorio', 'Comprimidos x 20', 'MEDICAMENTO', 150, 30, 10),
-(2, 'Amoxicilina 500mg', 'Antibiótico de amplio espectro', 'Cápsulas x 16', 'MEDICAMENTO', 336, 20, 7),
+(2, 'Amoxicilina 500mg', 'Cápsulas x 16', 'Antibiótico de amplio espectro', 'MEDICAMENTO', 338, 20, 7),
 (3, 'Paracetamol 1g', 'Antipirético y analgésico', 'Comprimidos x 40', 'MEDICAMENTO', 210, 45, 10),
-(4, 'Losartán 50mg', 'Antihipertensivo crónico', 'Comprimidos x 30', 'MEDICAMENTO', 67, 25, 0),
-(5, 'Clonazepam 0.5mg', 'Ansiolítico bajo receta archivada', 'Comprimidos x 30', 'MEDICAMENTO', 45, 15, -2),
+(4, 'Losartán 50mg', 'Comprimidos x 30', 'Antihipertensivo crónico', 'MEDICAMENTO', 65, 25, 0),
+(5, 'Clonazepam 0.5mg', 'Ansiolítico bajo receta archivada', 'Comprimidos x 30', 'MEDICAMENTO', 14, 15, -2),
 (6, 'Gasa estéril 10x10', 'Paquetes de gasas hidrófilas', 'Descartable', 'INSUMO', 450, 100, NULL),
 (7, 'Jeringas 5ml', 'Jeringas con aguja descartable', 'Descartable', 'INSUMO', 320, 50, NULL),
 (8, 'Guantes de látex M', 'Cajas de 100 unidades', 'Protección', 'INSUMO', 85, 20, NULL),
 (9, 'Alcohol en gel 500ml', 'Dispensador desinfectante', 'Sanitizante', 'INSUMO', 40, 15, NULL),
 (10, 'Barbijos quirúrgicos', 'Cajas de 50 unidades tricapa', 'Protección', 'INSUMO', 120, 30, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auditoria_clinica`
+--
+
+CREATE TABLE `auditoria_clinica` (
+  `idAuditoria` int(11) NOT NULL,
+  `tabla` varchar(60) NOT NULL,
+  `registroId` int(11) NOT NULL,
+  `accion` varchar(30) NOT NULL,
+  `datosAnteriores` longtext DEFAULT NULL,
+  `usuarioId` int(11) NOT NULL,
+  `fechaCambio` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `auditoria_clinica`
+--
+
+INSERT INTO `auditoria_clinica` (`idAuditoria`, `tabla`, `registroId`, `accion`, `datosAnteriores`, `usuarioId`, `fechaCambio`) VALUES
+(1, 'alergia_paciente', 4, 'CORRECCION', '{\"idAlergiaPaciente\":4,\"pacienteId\":4,\"alergiaId\":2}', 0, '2026-11-14 12:05:58'),
+(2, 'consulta', 9, 'CORRECCION', '{\"idConsulta\":9,\"fechaHora\":\"2019-09-14T09:30:00\",\"motivo\":\"Palpitaciones ocasionales\",\"diagnostico\":\"Hipertensión arterial controlada\",\"observacion\":\"Se ajusta medicación diaria.\",\"historiaId\":1,\"medicoId\":2}', 0, '2026-11-14 12:31:08'),
+(3, 'historia_clinica', 15, 'CORRECCION', '{\"idHistoria\":15,\"fechaApertura\":\"2021-03-15\",\"antecedentes\":\"Hipertenso crónico, padre con antecedentes cardíacos.\",\"observacion\":\"Paciente regular\",\"pacienteId\":4,\"flagBorrado\":false}', 0, '2026-11-14 13:01:56'),
+(4, 'triage', 5, 'CORRECCION', '{\"idTriage\":5,\"fecha\":\"2000-10-10T10:10:10\",\"prioridad\":\"3\",\"estado\":\"Enfermo\",\"observacion\":\"Gripe comun, pecho con moco, garganta y nariz obstruida\",\"pacienteId\":1,\"consultorioId\":2,\"enfermeroId\":4}', 0, '2026-11-14 15:34:26');
 
 -- --------------------------------------------------------
 
@@ -763,7 +792,8 @@ CREATE TABLE `consultas` (
 --
 
 INSERT INTO `consultas` (`idConsulta`, `fechaHora`, `motivo`, `diagnostico`, `observacion`, `historiaId`, `medicoId`) VALUES
-(1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2);
+(1, '2026-09-14 09:30:00', 'Palpitaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2),
+(9, '2019-09-14 09:30:00', 'Palniggaciones ocasionales', 'Hipertensión arterial controlada', 'Se ajusta medicación diaria.', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -788,7 +818,8 @@ INSERT INTO `consultorio` (`idConsultorio`, `numero`, `piso`, `tipo`, `estado`) 
 (2, '102', 1, 'Consultas Generales', 'Disponible'),
 (3, '201', 2, 'Cardiología', 'En mantenimiento'),
 (4, '202', 2, 'Ecografías y Rayos', 'Ocupado'),
-(5, 'G-01', 0, 'Shockroom Guardia', 'Disponible');
+(5, 'G-01', 0, 'Shockroom Guardia', 'Disponible'),
+(7, '912', 1, 'Pediatría', 'En mantenimiento');
 
 -- --------------------------------------------------------
 
@@ -811,7 +842,8 @@ CREATE TABLE `detallesreceta` (
 --
 
 INSERT INTO `detallesreceta` (`idDetalle`, `cantidad`, `dosis`, `frecuencia`, `duracion`, `recetaId`, `articuloId`) VALUES
-(1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4);
+(1, 2, '50mg', 'Cada 24 horas', '30 días', 1, 4),
+(8, 2, '50mg', 'Cada 2 horas', '90 días', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -834,7 +866,8 @@ CREATE TABLE `facturas` (
 
 INSERT INTO `facturas` (`idFactura`, `fecha`, `importeTotal`, `estado`, `pacienteId`, `obraSocialId`) VALUES
 (1, '2000-10-10 10:00:00', 12.00, 'Pagada', 1, 2),
-(5, '2026-11-03 11:42:18', 2000.00, 'Pendiente', 3, 4);
+(5, '2026-11-03 11:42:18', 2000.00, 'Pendiente', 3, 4),
+(7, '2010-10-10 10:00:00', 12.00, 'Pagada', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -858,7 +891,8 @@ CREATE TABLE `historiasclinicas` (
 INSERT INTO `historiasclinicas` (`idHistoria`, `fechaApertura`, `antecedentes`, `observacion`, `pacienteId`, `flagBorrado`) VALUES
 (1, '2020-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 1, 0),
 (2, '2024-01-10', 'Cirugía de apéndice en 2018.', 'Ninguna', 3, 0),
-(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0);
+(3, '2025-06-22', 'Asma infantil controlado.', 'Fumador social', 5, 0),
+(15, '2021-03-15', 'Hipertenso crónico, padre con antecedentes cardíacos.', 'Paciente regular', 4, 0);
 
 -- --------------------------------------------------------
 
@@ -881,7 +915,8 @@ CREATE TABLE `movimientos_stock` (
 --
 
 INSERT INTO `movimientos_stock` (`idMovimiento`, `idArticulo`, `tipoMovimiento`, `cantidad`, `motivo`, `fechaHora`, `usuarioId`) VALUES
-(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2);
+(1, 2, 'ENTRADA', 123, 'probando', '2026-10-19 21:30:59', 2),
+(4, 2, 'ENTRADA', 1, 'probando', '2026-10-19 21:30:59', 2);
 
 --
 -- Disparadores `movimientos_stock`
@@ -949,7 +984,8 @@ INSERT INTO `obrassociales` (`idObraSocial`, `nombre`, `numeroConvenio`, `benefi
 (2, 'Swiss Medical', 'CO-99312', 'Guardia libre, odontología preventiva', '100%', 0),
 (3, 'Galeno Silver', 'CO-55214', 'Kinesiología hasta 20 sesiones/año', '70%', 0),
 (4, 'PAMI', 'CO-11200', 'Medicamentos gratis crónicos, prótesis', '100%', 0),
-(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0);
+(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0),
+(12, 'LEONEL PLANOoS', 'CO-88421', 'Consultas ilimitadas, 40% en medicamentos', '80%', 0);
 
 -- --------------------------------------------------------
 
@@ -998,7 +1034,8 @@ CREATE TABLE `permisos` (
 INSERT INTO `permisos` (`idPermiso`, `nombre`, `descripcion`) VALUES
 (3, 'Vista de paciente', 'Te permite ver la interfaz del paciente'),
 (6, 'Vista de medico', 'Te permite ver la interfaz del medico y utilizar sus funciones'),
-(7, 'Vista de Admin', 'Te permite ver la interfaz de Administrador y utilizar sus funciones');
+(7, 'Vista de Admin', 'Te permite ver la interfaz de Administrador y utilizar sus funciones'),
+(8, 'Vista de LAura', 'Te permite ver el aura y farmearla');
 
 -- --------------------------------------------------------
 
@@ -1018,7 +1055,8 @@ CREATE TABLE `recetas` (
 --
 
 INSERT INTO `recetas` (`idReceta`, `fecha`, `indicacion`, `consultaId`) VALUES
-(1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1);
+(1, '2026-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1),
+(7, '2020-09-14', 'Tomar por la mañana en ayunas de forma crónica.', 1);
 
 -- --------------------------------------------------------
 
@@ -1045,7 +1083,12 @@ INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
 (6, 5, 5),
 (7, 2, 3),
 (10, 12, 5),
-(11, 13, 5);
+(11, 13, 5),
+(19, 16, 5),
+(20, 17, 5),
+(21, 18, 5),
+(22, 19, 2),
+(23, 20, 1);
 
 -- --------------------------------------------------------
 
@@ -1069,7 +1112,8 @@ INSERT INTO `roles` (`idRol`, `nombre`, `descripcion`) VALUES
 (3, 'Enfermero', 'Asistencia e ingresos'),
 (4, 'Recepcionista', 'Gestión de turnos y caja'),
 (5, 'Paciente', 'Usuario consumidor final'),
-(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios');
+(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios'),
+(9, 'Jeffry Adan', 'Control total del sistema');
 
 -- --------------------------------------------------------
 
@@ -1093,7 +1137,8 @@ CREATE TABLE `triage` (
 --
 
 INSERT INTO `triage` (`idTriage`, `fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`) VALUES
-(1, '1000-10-10 10:10:10', 3, 'Enfermo', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4);
+(1, '1000-10-10 10:10:10', 3, 'Enfermo', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4),
+(5, '2000-10-10 10:10:10', 3, 'Nigga', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4);
 
 --
 -- Disparadores `triage`
@@ -1139,7 +1184,8 @@ CREATE TABLE `turnos` (
 
 INSERT INTO `turnos` (`idTurno`, `fecha`, `horaInicio`, `horaFin`, `estado`, `motivo`, `pacienteId`, `medicoId`, `especialidadId`, `consultorioId`) VALUES
 (1, '2026-09-14', '09:30:00', '10:00:00', 'Atendido', 'Control de rutina por presión', 1, 2, 1, 3),
-(2, '2016-09-14', '21:30:00', '22:00:00', 'Pendiente', 'Control de rutina por presión', 3, 2, 1, 2);
+(2, '2016-09-14', '21:30:00', '22:00:00', 'Pendiente', 'Control de rutina por presión', 3, 2, 1, 2),
+(4, '2026-12-14', '09:30:00', '10:00:00', 'Atendido', 'Control de rutina por presión', 1, 2, 1, 3);
 
 --
 -- Disparadores `turnos`
@@ -1291,7 +1337,8 @@ CREATE TABLE `ubicacionpaciente` (
 INSERT INTO `ubicacionpaciente` (`idUbicacion`, `tipoAtencion`, `fechaIngreso`, `fechaSalida`, `pacienteId`, `medicoId`, `consultorioId`) VALUES
 (1, 'TURNO_SIMPLE', '2026-09-14 09:20:00', '2026-09-14 09:50:00', 1, 2, 2),
 (2, 'INTERNACION', '2026-09-14 10:05:00', '2026-11-03 11:42:18', 3, 2, 5),
-(3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4);
+(3, 'EMERGENCIA', '2026-09-14 13:45:00', '2026-09-14 14:15:00', 5, 2, 4),
+(9, 'TURNO_SIMPLE', '2023-09-14 09:20:00', '2024-10-14 09:50:00', 1, 2, 2);
 
 --
 -- Disparadores `ubicacionpaciente`
@@ -1374,7 +1421,12 @@ INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimien
 (5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 'aa12', 5, 0),
 (6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0),
 (12, 'Federico', 'Tamburelli', '80323454', '2008-12-19', '1143560922', 'fede@gmail.com', '123', 2, 0),
-(13, 'Santiago', 'Montenegro', '30800545', '2011-06-26', '1190436555', 'monte@gmail.com', '$2a$10$va2ce6f1lAr7MQCgZcBQs.WktJNttJthw', 2, 0);
+(13, 'Santiago', 'Montenegro', '30800545', '2011-06-26', '1190436555', 'monte@gmail.com', '$2a$10$va2ce6f1lAr7MQCgZcBQs.WktJNttJthw', 2, 0),
+(16, 'Santiago', 'Montedanza', '31800545', '2011-06-26', '1191436555', 'monted@gmail.com', 'niga', 2, 1),
+(17, 'Emilio', 'Fernandez', '49086851', '2008-10-31', '1164931824', 'emiliofernandezet32@gmail.com', '$2a$10$U3om7ZtG8jT9N3dWrC2WEeLP1EXxune7FOy9KcTiZiCBjBBPHhqFa', 1, 1),
+(18, 'Paciente', 'Paciente', '88888888', '2000-05-16', '88888888', 'paciente@mail.com', '$2a$10$eTyBSu/ZBlNrS7eVLQqN5O2rGv00Fpq.9W8DOEi.U9JIS6uo9ekh2', 1, 0),
+(19, 'medico', 'doctor', '77777777', '2000-06-21', '77777777', 'medico@mail.com', '$2a$10$L5yurYVv9rSH/twYjhrppexYORpmX9a/lo59UUA3By8VPe9n9Mw92', 2, 0),
+(20, 'admin', 'administrador', '66666666', '2000-12-14', '66666666', 'admin@gmail.com', '$2a$10$iD1Zh/Ol4NikNqpRFc7WSexrOzwLZ1wMjq85u32idnrDwvXzgNKSy', 3, 0);
 
 -- --------------------------------------------------------
 
@@ -1460,6 +1512,19 @@ CREATE TABLE `v_reporte_facturacion_obras_sociales` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `v_stock_critico_medicamentos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_stock_critico_medicamentos` (
+`idArticulo` int(11)
+,`nombre` varchar(100)
+,`presentacion` varchar(100)
+,`stockActual` int(11)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `v_agenda_turnos_medicos`
 --
 DROP TABLE IF EXISTS `v_agenda_turnos_medicos`;
@@ -1502,6 +1567,15 @@ DROP TABLE IF EXISTS `v_reporte_facturacion_obras_sociales`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_reporte_facturacion_obras_sociales`  AS SELECT year(`f`.`fecha`) AS `anio`, month(`f`.`fecha`) AS `mes`, `os`.`nombre` AS `obra_social`, `f`.`estado` AS `estado_pago`, count(`f`.`idFactura`) AS `total_facturas`, sum(`f`.`importeTotal`) AS `monto_total_facturado` FROM (`facturas` `f` join `obrassociales` `os` on(`f`.`obraSocialId` = `os`.`idObraSocial`)) GROUP BY year(`f`.`fecha`), month(`f`.`fecha`), `os`.`nombre`, `f`.`estado` ORDER BY year(`f`.`fecha`) DESC, month(`f`.`fecha`) DESC, sum(`f`.`importeTotal`) DESC ;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_stock_critico_medicamentos`
+--
+DROP TABLE IF EXISTS `v_stock_critico_medicamentos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_stock_critico_medicamentos`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `nombre`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual` FROM `articulos` WHERE `articulos`.`tipoArticulo` = 'MEDICAMENTO' AND `articulos`.`stockActual` <= `articulos`.`stockMinimo` ;
+
 --
 -- Índices para tablas volcadas
 --
@@ -1524,6 +1598,14 @@ ALTER TABLE `alergias`
 --
 ALTER TABLE `articulos`
   ADD PRIMARY KEY (`idArticulo`);
+
+--
+-- Indices de la tabla `auditoria_clinica`
+--
+ALTER TABLE `auditoria_clinica`
+  ADD PRIMARY KEY (`idAuditoria`),
+  ADD KEY `idx_auditoria_tabla` (`tabla`,`registroId`),
+  ADD KEY `idx_auditoria_usuario` (`usuarioId`);
 
 --
 -- Indices de la tabla `consultas`
@@ -1659,115 +1741,121 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `alergiapaciente`
 --
 ALTER TABLE `alergiapaciente`
-  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idAlergiaPaciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `alergias`
 --
 ALTER TABLE `alergias`
-  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idAlergia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `articulos`
 --
 ALTER TABLE `articulos`
-  MODIFY `idArticulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `idArticulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de la tabla `auditoria_clinica`
+--
+ALTER TABLE `auditoria_clinica`
+  MODIFY `idAuditoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `consultas`
 --
 ALTER TABLE `consultas`
-  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idConsulta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorio`
 --
 ALTER TABLE `consultorio`
-  MODIFY `idConsultorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idConsultorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `detallesreceta`
 --
 ALTER TABLE `detallesreceta`
-  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
-  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idFactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `historiasclinicas`
 --
 ALTER TABLE `historiasclinicas`
-  MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `idHistoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos_stock`
 --
 ALTER TABLE `movimientos_stock`
-  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `obrassociales`
 --
 ALTER TABLE `obrassociales`
-  MODIFY `idObraSocial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idObraSocial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `permisorol`
 --
 ALTER TABLE `permisorol`
-  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `idPermisoRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `recetas`
 --
 ALTER TABLE `recetas`
-  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idReceta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `triage`
 --
 ALTER TABLE `triage`
-  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idTriage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `idTurno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idTurno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `ubicacionpaciente`
 --
 ALTER TABLE `ubicacionpaciente`
-  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idUbicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Restricciones para tablas volcadas
