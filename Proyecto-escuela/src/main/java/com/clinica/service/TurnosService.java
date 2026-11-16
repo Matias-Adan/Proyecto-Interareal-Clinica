@@ -1,7 +1,10 @@
 package com.clinica.service;
 
+import com.clinica.dao.IConsultorioDao;
 import com.clinica.dao.ITurnoDao;
+import com.clinica.factory.ConsultorioDaoFactory;
 import com.clinica.factory.TurnoDaoFactory;
+import com.clinica.modelo.Consultorio;
 import com.clinica.modelo.Turno;
 import com.clinica.security.UsuarioActual;
 import java.time.LocalDate;
@@ -16,6 +19,7 @@ import java.util.Objects;
  *  - Sólo se piden para fecha y hora futuras.
  *  - No puede haber dos turnos activos en el mismo horario con el mismo médico.
  *  - Un paciente no puede tener más de un turno activo a la misma hora.
+ *  - Si no se indica consultorio, se asigna automáticamente uno libre.
  *
  * Si quien crea el turno es un paciente, se fuerza pacienteId al usuario
  * logueado para que no pueda pedir turnos a nombre de otro.
@@ -25,16 +29,27 @@ public class TurnosService implements ITurnoDao {
     private static final List<String> ESTADOS_VALIDOS = Arrays.asList(
             "Pendiente", "Confirmado", "Cancelado", "Atendido", "Ausente");
 
+    private static final String CONSULTORIO_DISPONIBLE = "Disponible";
+    private static final String CONSULTORIO_MANTENIMIENTO = "En mantenimiento";
+
     private final ITurnoDao turnoDao;
     private final AutorizacionService autorizacion;
+    private final IConsultorioDao consultorioDao;
 
     public TurnosService() {
-        this(TurnoDaoFactory.getTurnoDao(), new AutorizacionService());
+        this(TurnoDaoFactory.getTurnoDao(), new AutorizacionService(),
+                ConsultorioDaoFactory.getConsultorioDao());
     }
 
     public TurnosService(ITurnoDao turnoDao, AutorizacionService autorizacion) {
+        this(turnoDao, autorizacion, ConsultorioDaoFactory.getConsultorioDao());
+    }
+
+    public TurnosService(ITurnoDao turnoDao, AutorizacionService autorizacion,
+            IConsultorioDao consultorioDao) {
         this.turnoDao = turnoDao;
         this.autorizacion = autorizacion;
+        this.consultorioDao = consultorioDao;
     }
 
     // ------------------------------------------------------------------
@@ -77,6 +92,7 @@ public class TurnosService implements ITurnoDao {
 
         validarTurno(turno, null);
         validarDisponibilidad(turno, 0);
+        asignarConsultorioDisponible(turno);
 
         return turnoDao.insertar(turno);
     }
@@ -138,6 +154,109 @@ public class TurnosService implements ITurnoDao {
         }
 
         return turnoDao.cambiarEstado(id, estado);
+    }
+
+    // ------------------------------------------------------------------
+    // ASIGNACIÓN AUTOMÁTICA DE CONSULTORIO
+    // ------------------------------------------------------------------
+
+    /**
+     * Si el turno no trae consultorio, busca uno que esté libre en la fecha y
+     * rango horario del turno. Primero prueba los consultorios con estado
+     * "Disponible" y, si no hay, cualquier otro que no esté en mantenimiento.
+     *
+     * Un consultorio se considera ocupado si tiene un turno no cancelado que
+     * se superpone con el horario solicitado (misma lógica que el trigger de
+     * la base de datos).
+     */
+    private void asignarConsultorioDisponible(Turno turno) {
+        if (turno.getConsultorioId() > 0) {
+            return;
+        }
+
+        List<Consultorio> consultorios = consultorioDao.listar();
+        if (consultorios == null || consultorios.isEmpty()) {
+            throw new IllegalStateException(
+                    "No hay consultorios cargados para asignar el turno.");
+        }
+
+        List<Turno> turnosExistentes = turnoDao.listar();
+
+        Consultorio elegido = buscarConsultorioLibre(consultorios, turnosExistentes, turno, true);
+        if (elegido == null) {
+            elegido = buscarConsultorioLibre(consultorios, turnosExistentes, turno, false);
+        }
+
+        if (elegido == null) {
+            throw new IllegalStateException(
+                    "No hay consultorios disponibles para la fecha y hora elegidas.");
+        }
+
+        turno.setConsultorioId(elegido.getIdConsultorio());
+    }
+
+    private Consultorio buscarConsultorioLibre(List<Consultorio> consultorios,
+            List<Turno> turnosExistentes, Turno turno, boolean soloDisponibles) {
+
+        for (Consultorio consultorio : consultorios) {
+            String estado = consultorio.getEstado();
+
+            if (estado != null && CONSULTORIO_MANTENIMIENTO.equalsIgnoreCase(estado.trim())) {
+                continue;
+            }
+            if (soloDisponibles
+                    && (estado == null || !CONSULTORIO_DISPONIBLE.equalsIgnoreCase(estado.trim()))) {
+                continue;
+            }
+            if (!consultorioTieneTurnoEnHorario(consultorio.getIdConsultorio(),
+                    turno, turnosExistentes)) {
+                return consultorio;
+            }
+        }
+        return null;
+    }
+
+    private boolean consultorioTieneTurnoEnHorario(int consultorioId, Turno nuevo,
+            List<Turno> turnosExistentes) {
+
+        if (turnosExistentes == null || turnosExistentes.isEmpty()) {
+            return false;
+        }
+
+        LocalTime inicioNuevo = nuevo.getHoraInicio();
+        LocalTime finNuevo = nuevo.getHoraFin() != null
+                ? nuevo.getHoraFin()
+                : inicioNuevo.plusMinutes(30);
+
+        for (Turno existente : turnosExistentes) {
+            if (existente.getConsultorioId() != consultorioId) {
+                continue;
+            }
+            if (existente.getFecha() == null || existente.getHoraInicio() == null) {
+                continue;
+            }
+            // Cancelado y Anulado liberan el consultorio (igual que el trigger).
+            if ("Cancelado".equalsIgnoreCase(existente.getEstado())
+                    || "Anulado".equalsIgnoreCase(existente.getEstado())) {
+                continue;
+            }
+            if (!existente.getFecha().isEqual(nuevo.getFecha())) {
+                continue;
+            }
+
+            LocalTime inicioExistente = existente.getHoraInicio();
+            LocalTime finExistente = existente.getHoraFin() != null
+                    ? existente.getHoraFin()
+                    : existente.getHoraInicio().plusMinutes(30);
+
+            boolean seSolapan = inicioExistente.isBefore(finNuevo)
+                    && inicioNuevo.isBefore(finExistente);
+
+            if (seSolapan) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ------------------------------------------------------------------
