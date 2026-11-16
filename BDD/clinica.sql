@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2026 a las 02:01:02
--- Versión del servidor: 10.11.16-MariaDB
--- Versión de PHP: 8.3.36
+-- Tiempo de generación: 16-11-2026 a las 03:23:16
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -1574,8 +1574,8 @@ CREATE TABLE `v_mi_cuenta` (
 -- (Véase abajo para la vista actual)
 --
 CREATE TABLE `v_reporte_facturacion_obras_sociales` (
-`anio` int(5)
-,`mes` int(3)
+`anio` int(4)
+,`mes` int(2)
 ,`obra_social` varchar(100)
 ,`estado_pago` enum('Pendiente','Pagada','Anulada')
 ,`total_facturas` bigint(21)
@@ -1594,6 +1594,147 @@ CREATE TABLE `v_stock_critico_medicamentos` (
 ,`presentacion` varchar(100)
 ,`stockActual` int(11)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_triage_actual`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_triage_actual` (
+`idTriage` int(11)
+,`fecha` datetime
+,`prioridad` int(11)
+,`estado` varchar(50)
+,`observacion` text
+,`paciente_id` int(11)
+,`paciente_nombre` varchar(201)
+,`paciente_dni` varchar(20)
+,`consultorio_id` int(11)
+,`consultorio_numero` varchar(20)
+,`enfermero_id` int(11)
+,`enfermero_nombre` varchar(201)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_turnos_medico`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_turnos_medico` (
+`idTurno` int(11)
+,`medico_id` int(11)
+,`fecha` date
+,`horaInicio` time
+,`horaFin` time
+,`estado_turno` enum('Pendiente','Atendido','Ausente','Cancelado','Anulado')
+,`motivo` text
+,`medico_nombre` varchar(201)
+,`paciente_id` int(11)
+,`paciente_nombre` varchar(201)
+,`paciente_dni` varchar(20)
+,`consultorio_numero` varchar(20)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_agenda_turnos_medicos`
+--
+DROP TABLE IF EXISTS `v_agenda_turnos_medicos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_agenda_turnos_medicos`  AS SELECT `t`.`idTurno` AS `idTurno`, `t`.`fecha` AS `fecha`, `t`.`horaInicio` AS `horaInicio`, `t`.`horaFin` AS `horaFin`, `t`.`estado` AS `estado_turno`, `t`.`motivo` AS `motivo`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_nombre`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, `c`.`numero` AS `consultorio_numero` FROM (((`turnos` `t` join `usuarios` `md` on(`t`.`medicoId` = `md`.`idUsuario`)) join `usuarios` `us` on(`t`.`pacienteId` = `us`.`idUsuario`)) left join `consultorio` `c` on(`t`.`consultorioId` = `c`.`idConsultorio`)) ORDER BY `t`.`fecha` DESC, `t`.`horaInicio` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_alergias_pacientes_criticos`
+--
+DROP TABLE IF EXISTS `v_alergias_pacientes_criticos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_alergias_pacientes_criticos`  AS SELECT `u`.`idUsuario` AS `paciente_id`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `u`.`dni` AS `paciente_dni`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`ap`.`pacienteId` = `u`.`idUsuario`)) join `alergias` `a` on(`ap`.`alergiaId` = `a`.`idAlergia`)) ORDER BY `u`.`apellido` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_articulos_bajo_stock_minimo`
+--
+DROP TABLE IF EXISTS `v_articulos_bajo_stock_minimo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_articulos_bajo_stock_minimo`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `articulo_nombre`, `articulos`.`tipoArticulo` AS `tipoArticulo`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual`, `articulos`.`stockMinimo` AS `stockMinimo`, `articulos`.`stockMinimo`- `articulos`.`stockActual` AS `cantidad_a_reponer` FROM `articulos` WHERE `articulos`.`stockActual` <= `articulos`.`stockMinimo` ORDER BY `articulos`.`stockMinimo`- `articulos`.`stockActual` DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_consultorios_ocupados_actuales`
+--
+DROP TABLE IF EXISTS `v_consultorios_ocupados_actuales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_consultorios_ocupados_actuales`  AS SELECT `c`.`idConsultorio` AS `idConsultorio`, `c`.`numero` AS `consultorio_numero`, `c`.`tipo` AS `especialidad_sala`, `up`.`tipoAtencion` AS `tipoAtencion`, `up`.`fechaIngreso` AS `fechaIngreso`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_atendiendo` FROM (((`consultorio` `c` join `ubicacionpaciente` `up` on(`c`.`idConsultorio` = `up`.`consultorioId`)) join `usuarios` `us` on(`up`.`pacienteId` = `us`.`idUsuario`)) left join `usuarios` `md` on(`up`.`medicoId` = `md`.`idUsuario`)) WHERE `up`.`fechaSalida` is null AND `c`.`estado` = 'Ocupado' ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_mis_alergias`
+--
+DROP TABLE IF EXISTS `v_mis_alergias`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_mis_alergias`  AS SELECT `u`.`idUsuario` AS `paciente_id`, `u`.`dni` AS `paciente_dni`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `ap`.`idAlergiaPaciente` AS `id_alergia_paciente`, `a`.`idAlergia` AS `id_alergia`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`u`.`idUsuario` = `ap`.`pacienteId`)) join `alergias` `a` on(`a`.`idAlergia` = `ap`.`alergiaId`)) ORDER BY `a`.`nombre` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_mis_recetas_detalle`
+--
+DROP TABLE IF EXISTS `v_mis_recetas_detalle`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_mis_recetas_detalle`  AS SELECT `u`.`idUsuario` AS `paciente_id`, `u`.`dni` AS `paciente_dni`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `r`.`idReceta` AS `id_receta`, `r`.`fecha` AS `fecha`, `r`.`indicacion` AS `indicacion`, `d`.`idDetalle` AS `id_detalle`, `d`.`cantidad` AS `cantidad`, `d`.`dosis` AS `dosis`, `d`.`frecuencia` AS `frecuencia`, `d`.`duracion` AS `duracion`, `a`.`idArticulo` AS `id_articulo`, `a`.`nombre` AS `articulo_nombre`, `a`.`presentacion` AS `presentacion`, `c`.`idConsulta` AS `id_consulta`, `c`.`fechaHora` AS `fecha_consulta`, `c`.`diagnostico` AS `diagnostico`, concat(`m`.`nombre`,' ',`m`.`apellido`) AS `medico_nombre` FROM ((((((`recetas` `r` join `detallesreceta` `d` on(`d`.`recetaId` = `r`.`idReceta`)) join `articulos` `a` on(`a`.`idArticulo` = `d`.`articuloId`)) join `consultas` `c` on(`c`.`idConsulta` = `r`.`consultaId`)) join `historiasclinicas` `h` on(`h`.`idHistoria` = `c`.`historiaId`)) join `usuarios` `u` on(`u`.`idUsuario` = `h`.`pacienteId`)) left join `usuarios` `m` on(`m`.`idUsuario` = `c`.`medicoId`)) ORDER BY `r`.`fecha` DESC, `r`.`idReceta` DESC, `d`.`idDetalle` ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_mi_cuenta`
+--
+DROP TABLE IF EXISTS `v_mi_cuenta`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_mi_cuenta`  AS SELECT `u`.`idUsuario` AS `usuario_id`, `u`.`dni` AS `dni`, `u`.`nombre` AS `nombre`, `u`.`apellido` AS `apellido`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `nombre_completo`, `u`.`email` AS `email`, `u`.`telefono` AS `telefono`, `u`.`obraSocialId` AS `obra_social_id`, coalesce(`o`.`nombre`,'Sin obra social') AS `obra_social`, `o`.`numeroConvenio` AS `numero_convenio`, `o`.`cobertura` AS `cobertura`, `rr`.`idRol` AS `rol_id`, coalesce(`rr`.`nombre`,'Sin rol') AS `rol`, `u`.`fechaAlta` AS `fecha_alta` FROM ((`usuarios` `u` left join `obrassociales` `o` on(`o`.`idObraSocial` = `u`.`obraSocialId`)) left join (select `asignacion`.`usuarioId` AS `usuarioId`,`r`.`idRol` AS `idRol`,`r`.`nombre` AS `nombre`,row_number() over ( partition by `asignacion`.`usuarioId` order by case `r`.`idRol` when 1 then 1 when 2 then 2 when 3 then 3 when 4 then 4 when 5 then 5 else 99 end,`r`.`idRol`) AS `orden` from (`roldeusuario` `asignacion` join `roles` `r` on(`r`.`idRol` = `asignacion`.`rolId`))) `rr` on(`rr`.`usuarioId` = `u`.`idUsuario` and `rr`.`orden` = 1)) WHERE `u`.`flagBorrado` = 0 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_reporte_facturacion_obras_sociales`
+--
+DROP TABLE IF EXISTS `v_reporte_facturacion_obras_sociales`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_reporte_facturacion_obras_sociales`  AS SELECT year(`f`.`fecha`) AS `anio`, month(`f`.`fecha`) AS `mes`, `os`.`nombre` AS `obra_social`, `f`.`estado` AS `estado_pago`, count(`f`.`idFactura`) AS `total_facturas`, sum(`f`.`importeTotal`) AS `monto_total_facturado` FROM (`facturas` `f` join `obrassociales` `os` on(`f`.`obraSocialId` = `os`.`idObraSocial`)) GROUP BY year(`f`.`fecha`), month(`f`.`fecha`), `os`.`nombre`, `f`.`estado` ORDER BY year(`f`.`fecha`) DESC, month(`f`.`fecha`) DESC, sum(`f`.`importeTotal`) DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_stock_critico_medicamentos`
+--
+DROP TABLE IF EXISTS `v_stock_critico_medicamentos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_stock_critico_medicamentos`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `nombre`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual` FROM `articulos` WHERE `articulos`.`tipoArticulo` = 'MEDICAMENTO' AND `articulos`.`stockActual` <= `articulos`.`stockMinimo` ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_triage_actual`
+--
+DROP TABLE IF EXISTS `v_triage_actual`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_triage_actual`  AS SELECT `tr`.`idTriage` AS `idTriage`, `tr`.`fecha` AS `fecha`, `tr`.`prioridad` AS `prioridad`, `tr`.`estado` AS `estado`, `tr`.`observacion` AS `observacion`, `tr`.`pacienteId` AS `paciente_id`, concat(`p`.`nombre`,' ',`p`.`apellido`) AS `paciente_nombre`, `p`.`dni` AS `paciente_dni`, `tr`.`consultorioId` AS `consultorio_id`, `c`.`numero` AS `consultorio_numero`, `tr`.`enfermeroId` AS `enfermero_id`, concat(`e`.`nombre`,' ',`e`.`apellido`) AS `enfermero_nombre` FROM (((`triage` `tr` join `usuarios` `p` on(`p`.`idUsuario` = `tr`.`pacienteId`)) left join `consultorio` `c` on(`c`.`idConsultorio` = `tr`.`consultorioId`)) left join `usuarios` `e` on(`e`.`idUsuario` = `tr`.`enfermeroId`)) WHERE `tr`.`estado` is null OR ucase(trim(`tr`.`estado`)) not in ('ATENDIDO','ALTA','FINALIZADO','EGRESADO','DERIVADO','RESUELTO','ANULADO') ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_turnos_medico`
+--
+DROP TABLE IF EXISTS `v_turnos_medico`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_turnos_medico`  AS SELECT `t`.`idTurno` AS `idTurno`, `t`.`medicoId` AS `medico_id`, `t`.`fecha` AS `fecha`, `t`.`horaInicio` AS `horaInicio`, `t`.`horaFin` AS `horaFin`, `t`.`estado` AS `estado_turno`, `t`.`motivo` AS `motivo`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_nombre`, `p`.`idUsuario` AS `paciente_id`, concat(`p`.`nombre`,' ',`p`.`apellido`) AS `paciente_nombre`, `p`.`dni` AS `paciente_dni`, `c`.`numero` AS `consultorio_numero` FROM (((`turnos` `t` join `usuarios` `md` on(`md`.`idUsuario` = `t`.`medicoId`)) join `usuarios` `p` on(`p`.`idUsuario` = `t`.`pacienteId`)) left join `consultorio` `c` on(`c`.`idConsultorio` = `t`.`consultorioId`)) ;
 
 --
 -- Índices para tablas volcadas
@@ -1875,87 +2016,6 @@ ALTER TABLE `ubicacionpaciente`
 --
 ALTER TABLE `usuarios`
   MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_agenda_turnos_medicos`
---
-DROP TABLE IF EXISTS `v_agenda_turnos_medicos`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_agenda_turnos_medicos`  AS SELECT `t`.`idTurno` AS `idTurno`, `t`.`fecha` AS `fecha`, `t`.`horaInicio` AS `horaInicio`, `t`.`horaFin` AS `horaFin`, `t`.`estado` AS `estado_turno`, `t`.`motivo` AS `motivo`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_nombre`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, `c`.`numero` AS `consultorio_numero` FROM (((`turnos` `t` join `usuarios` `md` on(`t`.`medicoId` = `md`.`idUsuario`)) join `usuarios` `us` on(`t`.`pacienteId` = `us`.`idUsuario`)) left join `consultorio` `c` on(`t`.`consultorioId` = `c`.`idConsultorio`)) ORDER BY `t`.`fecha` DESC, `t`.`horaInicio` ASC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_alergias_pacientes_criticos`
---
-DROP TABLE IF EXISTS `v_alergias_pacientes_criticos`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_alergias_pacientes_criticos`  AS SELECT `u`.`idUsuario` AS `paciente_id`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `u`.`dni` AS `paciente_dni`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`ap`.`pacienteId` = `u`.`idUsuario`)) join `alergias` `a` on(`ap`.`alergiaId` = `a`.`idAlergia`)) ORDER BY `u`.`apellido` ASC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_articulos_bajo_stock_minimo`
---
-DROP TABLE IF EXISTS `v_articulos_bajo_stock_minimo`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_articulos_bajo_stock_minimo`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `articulo_nombre`, `articulos`.`tipoArticulo` AS `tipoArticulo`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual`, `articulos`.`stockMinimo` AS `stockMinimo`, `articulos`.`stockMinimo`- `articulos`.`stockActual` AS `cantidad_a_reponer` FROM `articulos` WHERE `articulos`.`stockActual` <= `articulos`.`stockMinimo` ORDER BY `articulos`.`stockMinimo`- `articulos`.`stockActual` DESC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_consultorios_ocupados_actuales`
---
-DROP TABLE IF EXISTS `v_consultorios_ocupados_actuales`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_consultorios_ocupados_actuales`  AS SELECT `c`.`idConsultorio` AS `idConsultorio`, `c`.`numero` AS `consultorio_numero`, `c`.`tipo` AS `especialidad_sala`, `up`.`tipoAtencion` AS `tipoAtencion`, `up`.`fechaIngreso` AS `fechaIngreso`, concat(`us`.`nombre`,' ',`us`.`apellido`) AS `paciente_nombre`, `us`.`dni` AS `paciente_dni`, concat(`md`.`nombre`,' ',`md`.`apellido`) AS `medico_atendiendo` FROM (((`consultorio` `c` join `ubicacionpaciente` `up` on(`c`.`idConsultorio` = `up`.`consultorioId`)) join `usuarios` `us` on(`up`.`pacienteId` = `us`.`idUsuario`)) left join `usuarios` `md` on(`up`.`medicoId` = `md`.`idUsuario`)) WHERE `up`.`fechaSalida` is null AND `c`.`estado` = 'Ocupado' ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_mis_alergias`
---
-DROP TABLE IF EXISTS `v_mis_alergias`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_mis_alergias`  AS SELECT `u`.`idUsuario` AS `paciente_id`, `u`.`dni` AS `paciente_dni`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `ap`.`idAlergiaPaciente` AS `id_alergia_paciente`, `a`.`idAlergia` AS `id_alergia`, `a`.`nombre` AS `alergia_nombre`, `a`.`descripcion` AS `alergia_descripcion` FROM ((`alergiapaciente` `ap` join `usuarios` `u` on(`u`.`idUsuario` = `ap`.`pacienteId`)) join `alergias` `a` on(`a`.`idAlergia` = `ap`.`alergiaId`)) ORDER BY `a`.`nombre` ASC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_mis_recetas_detalle`
---
-DROP TABLE IF EXISTS `v_mis_recetas_detalle`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_mis_recetas_detalle`  AS SELECT `u`.`idUsuario` AS `paciente_id`, `u`.`dni` AS `paciente_dni`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `paciente_nombre`, `r`.`idReceta` AS `id_receta`, `r`.`fecha` AS `fecha`, `r`.`indicacion` AS `indicacion`, `d`.`idDetalle` AS `id_detalle`, `d`.`cantidad` AS `cantidad`, `d`.`dosis` AS `dosis`, `d`.`frecuencia` AS `frecuencia`, `d`.`duracion` AS `duracion`, `a`.`idArticulo` AS `id_articulo`, `a`.`nombre` AS `articulo_nombre`, `a`.`presentacion` AS `presentacion`, `c`.`idConsulta` AS `id_consulta`, `c`.`fechaHora` AS `fecha_consulta`, `c`.`diagnostico` AS `diagnostico`, concat(`m`.`nombre`,' ',`m`.`apellido`) AS `medico_nombre` FROM ((((((`recetas` `r` join `detallesreceta` `d` on(`d`.`recetaId` = `r`.`idReceta`)) join `articulos` `a` on(`a`.`idArticulo` = `d`.`articuloId`)) join `consultas` `c` on(`c`.`idConsulta` = `r`.`consultaId`)) join `historiasclinicas` `h` on(`h`.`idHistoria` = `c`.`historiaId`)) join `usuarios` `u` on(`u`.`idUsuario` = `h`.`pacienteId`)) left join `usuarios` `m` on(`m`.`idUsuario` = `c`.`medicoId`)) ORDER BY `r`.`fecha` DESC, `r`.`idReceta` DESC, `d`.`idDetalle` ASC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_mi_cuenta`
---
-DROP TABLE IF EXISTS `v_mi_cuenta`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_mi_cuenta`  AS SELECT `u`.`idUsuario` AS `usuario_id`, `u`.`dni` AS `dni`, `u`.`nombre` AS `nombre`, `u`.`apellido` AS `apellido`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `nombre_completo`, `u`.`email` AS `email`, `u`.`telefono` AS `telefono`, `u`.`obraSocialId` AS `obra_social_id`, coalesce(`o`.`nombre`,'Sin obra social') AS `obra_social`, `o`.`numeroConvenio` AS `numero_convenio`, `o`.`cobertura` AS `cobertura`, `rr`.`idRol` AS `rol_id`, coalesce(`rr`.`nombre`,'Sin rol') AS `rol`, `u`.`fechaAlta` AS `fecha_alta` FROM ((`usuarios` `u` left join `obrassociales` `o` on(`o`.`idObraSocial` = `u`.`obraSocialId`)) left join (select `asignacion`.`usuarioId` AS `usuarioId`,`r`.`idRol` AS `idRol`,`r`.`nombre` AS `nombre`,row_number() over ( partition by `asignacion`.`usuarioId` order by case `r`.`idRol` when 1 then 1 when 2 then 2 when 3 then 3 when 4 then 4 when 5 then 5 else 99 end,`r`.`idRol`) AS `orden` from (`roldeusuario` `asignacion` join `roles` `r` on(`r`.`idRol` = `asignacion`.`rolId`))) `rr` on(`rr`.`usuarioId` = `u`.`idUsuario` and `rr`.`orden` = 1)) WHERE `u`.`flagBorrado` = 0 ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_reporte_facturacion_obras_sociales`
---
-DROP TABLE IF EXISTS `v_reporte_facturacion_obras_sociales`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_reporte_facturacion_obras_sociales`  AS SELECT year(`f`.`fecha`) AS `anio`, month(`f`.`fecha`) AS `mes`, `os`.`nombre` AS `obra_social`, `f`.`estado` AS `estado_pago`, count(`f`.`idFactura`) AS `total_facturas`, sum(`f`.`importeTotal`) AS `monto_total_facturado` FROM (`facturas` `f` join `obrassociales` `os` on(`f`.`obraSocialId` = `os`.`idObraSocial`)) GROUP BY year(`f`.`fecha`), month(`f`.`fecha`), `os`.`nombre`, `f`.`estado` ORDER BY year(`f`.`fecha`) DESC, month(`f`.`fecha`) DESC, sum(`f`.`importeTotal`) DESC ;
-
--- --------------------------------------------------------
-
---
--- Estructura para la vista `v_stock_critico_medicamentos`
---
-DROP TABLE IF EXISTS `v_stock_critico_medicamentos`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_stock_critico_medicamentos`  AS SELECT `articulos`.`idArticulo` AS `idArticulo`, `articulos`.`nombre` AS `nombre`, `articulos`.`presentacion` AS `presentacion`, `articulos`.`stockActual` AS `stockActual` FROM `articulos` WHERE `articulos`.`tipoArticulo` = 'MEDICAMENTO' AND `articulos`.`stockActual` <= `articulos`.`stockMinimo` ;
 
 --
 -- Restricciones para tablas volcadas
