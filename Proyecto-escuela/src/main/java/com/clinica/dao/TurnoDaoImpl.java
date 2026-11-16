@@ -8,6 +8,8 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,15 +91,32 @@ public class TurnoDaoImpl implements ITurnoDao {
         try (Connection con = Conexion.getInstancia().getConexion();
              CallableStatement cs = con.prepareCall(sql)) {
             
+            // Si no se indica hora de fin, el turno dura 30 minutos.
+            LocalTime horaFin = t.getHoraFin();
+            if (horaFin == null && t.getHoraInicio() != null) {
+                horaFin = t.getHoraInicio().plusMinutes(30);
+            }
+
             cs.setDate(1, t.getFecha() != null ? Date.valueOf(t.getFecha()) : null);
             cs.setTime(2, t.getHoraInicio() != null ? Time.valueOf(t.getHoraInicio()) : null);
-            cs.setTime(3, t.getHoraFin() != null ? Time.valueOf(t.getHoraFin()) : null);
-            cs.setString(4, t.getEstado());
+            cs.setTime(3, horaFin != null ? Time.valueOf(horaFin) : null);
+            cs.setString(4, t.getEstado() != null ? t.getEstado() : "Pendiente");
             cs.setString(5, t.getMotivo());
             cs.setInt(6, t.getPacienteId());
             cs.setInt(7, t.getMedicoId());
-            cs.setInt(8, t.getEspecialidadId());
-            cs.setInt(9, t.getConsultorioId());
+
+            // especialidadId y consultorioId son opcionales: si no vienen,
+            // se envían como NULL para no violar las claves foráneas.
+            if (t.getEspecialidadId() > 0) {
+                cs.setInt(8, t.getEspecialidadId());
+            } else {
+                cs.setNull(8, Types.INTEGER);
+            }
+            if (t.getConsultorioId() > 0) {
+                cs.setInt(9, t.getConsultorioId());
+            } else {
+                cs.setNull(9, Types.INTEGER);
+            }
 
             return cs.executeUpdate() > 0;
         } catch (SQLException e) {

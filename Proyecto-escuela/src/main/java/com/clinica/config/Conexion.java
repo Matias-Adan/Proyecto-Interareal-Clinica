@@ -41,4 +41,22 @@ public class Conexion {
 	public Connection getConexion() {
 		return conexion;
 	}
+
+	/**
+	 * Abre una conexión nueva e independiente.
+	 *
+	 * La conexión compartida del singleton no soporta bien dos consultas
+	 * simultáneas: un DAO puede cerrarla mientras otro está leyendo su
+	 * ResultSet. Las lecturas que pueden ejecutarse en paralelo con otras
+	 * (por ejemplo, las de "Mi salud" o la lista de médicos) usan esta
+	 * conexión propia y la cierran al terminar.
+	 */
+	public Connection nuevaConexion() {
+		try {
+			return DriverManager.getConnection(URL, USER, PASS);
+		} catch (SQLException e) {
+			System.err.println("❌ Error al abrir una conexión a la BD -> " + e.getMessage());
+			return null;
+		}
+	}
 }

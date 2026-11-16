@@ -46,17 +46,11 @@ public class VistaTurnosServlet extends HttpServlet {
         
         String dniStr = request.getParameter("paciente_dni");
 
-        if (dniStr != null && !dniStr.isEmpty()) {
+        if (dniStr != null && !dniStr.trim().isEmpty()) {
             try {
-                // Como tu método DAO recibe String, pasamos directamente dniStr (o Integer.parseInt si prefieres)
-                VistaTurnos vt = vistaTurnosDao.buscarPorDni(dniStr);
-
-                if (vt != null) {
-                    out.print(gson.toJson(vt));
-                } else {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    out.print("{\"error\": \"VistaTurno no encontrado con el DNI: " + dniStr + "\"}");
-                }
+                // Devuelve TODOS los turnos del paciente (la vista puede tener varias filas).
+                List<VistaTurnos> turnos = vistaTurnosDao.listarPorDni(dniStr.trim());
+                out.print(gson.toJson(turnos));
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print("{\"error\": \"Error al procesar la búsqueda por DNI: " + e.getMessage() + "\"}");
@@ -68,15 +62,3 @@ public class VistaTurnosServlet extends HttpServlet {
         out.flush();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

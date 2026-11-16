@@ -30,7 +30,7 @@ public class UbicacionPacienteServlet extends HttpServlet {
     
     private IUbicacionPacienteDao ubicacionPacienteDao = new UbicacionPacienteService();
     
-   
+    // SE ADAPTÓ LA CONFIGURACIÓN PARA PROCESAR LOCALDATE Y LOCALDATETIME
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) -> 
                 src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE)))
@@ -42,7 +42,7 @@ public class UbicacionPacienteServlet extends HttpServlet {
                 json == null ? null : LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .create();
 
-  
+    // ENRUTADOR PARA ADMITIR EL MÉTODO PATCH NATIVAMENTE
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getMethod().equalsIgnoreCase("PATCH")) {
