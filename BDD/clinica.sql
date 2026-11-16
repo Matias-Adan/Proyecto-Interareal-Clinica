@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2026 a las 03:23:16
+-- Tiempo de generación: 16-11-2026 a las 04:15:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -1438,6 +1438,43 @@ INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimien
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `v_admin_articulos`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_admin_articulos` (
+`idArticulo` int(11)
+,`nombre` varchar(100)
+,`descripcion` text
+,`presentacion` varchar(100)
+,`tipoArticulo` enum('MEDICAMENTO','INSUMO')
+,`stockActual` int(11)
+,`stockMinimo` int(11)
+,`stock_bajo` int(1)
+,`cantidad_a_reponer` bigint(20)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `v_admin_usuarios`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `v_admin_usuarios` (
+`usuario_id` int(11)
+,`nombre` varchar(100)
+,`apellido` varchar(100)
+,`nombre_completo` varchar(201)
+,`dni` varchar(20)
+,`email` varchar(100)
+,`telefono` varchar(30)
+,`obra_social_id` int(11)
+,`obra_social` varchar(100)
+,`fecha_alta` datetime
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura Stand-in para la vista `v_agenda_turnos_medicos`
 -- (Véase abajo para la vista actual)
 --
@@ -1636,6 +1673,24 @@ CREATE TABLE `v_turnos_medico` (
 ,`paciente_dni` varchar(20)
 ,`consultorio_numero` varchar(20)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_admin_articulos`
+--
+DROP TABLE IF EXISTS `v_admin_articulos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_admin_articulos`  AS SELECT `a`.`idArticulo` AS `idArticulo`, `a`.`nombre` AS `nombre`, `a`.`descripcion` AS `descripcion`, `a`.`presentacion` AS `presentacion`, `a`.`tipoArticulo` AS `tipoArticulo`, `a`.`stockActual` AS `stockActual`, `a`.`stockMinimo` AS `stockMinimo`, CASE WHEN `s`.`idArticulo` is not null THEN 1 ELSE 0 END AS `stock_bajo`, coalesce(`s`.`cantidad_a_reponer`,0) AS `cantidad_a_reponer` FROM (`articulos` `a` left join `v_articulos_bajo_stock_minimo` `s` on(`s`.`idArticulo` = `a`.`idArticulo`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `v_admin_usuarios`
+--
+DROP TABLE IF EXISTS `v_admin_usuarios`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_admin_usuarios`  AS SELECT `u`.`idUsuario` AS `usuario_id`, `u`.`nombre` AS `nombre`, `u`.`apellido` AS `apellido`, concat(`u`.`nombre`,' ',`u`.`apellido`) AS `nombre_completo`, `u`.`dni` AS `dni`, `u`.`email` AS `email`, `u`.`telefono` AS `telefono`, `u`.`obraSocialId` AS `obra_social_id`, coalesce(`o`.`nombre`,'Sin obra social') AS `obra_social`, `u`.`fechaAlta` AS `fecha_alta` FROM (`usuarios` `u` left join `obrassociales` `o` on(`o`.`idObraSocial` = `u`.`obraSocialId`)) WHERE `u`.`flagBorrado` = 0 ;
 
 -- --------------------------------------------------------
 
@@ -1985,7 +2040,7 @@ ALTER TABLE `recetas`
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
