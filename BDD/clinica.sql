@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2026 a las 04:15:43
+-- Tiempo de generación: 16-11-2026 a las 04:30:12
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -710,8 +710,7 @@ CREATE TABLE `alergias` (
 
 INSERT INTO `alergias` (`idAlergia`, `nombre`, `descripcion`) VALUES
 (1, 'Alergia al manti', 'Es alérgico al maní y derivados. Provoca hinchazón y picazón'),
-(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta'),
-(6, 'Alergia al mati', 'Es alérgico al matí y derivados. Provoca hinchazón y picazón');
+(2, 'Alergia al polem', 'Es alérgico al polem. Provoca tos, mocos y picazón de garganta');
 
 -- --------------------------------------------------------
 
@@ -988,8 +987,7 @@ INSERT INTO `obrassociales` (`idObraSocial`, `nombre`, `numeroConvenio`, `benefi
 (2, 'Swiss Medical', 'CO-99312', 'Guardia libre, odontología preventiva', '100%', 0),
 (3, 'Galeno Silver', 'CO-55214', 'Kinesiología hasta 20 sesiones/año', '70%', 0),
 (4, 'PAMI', 'CO-11200', 'Medicamentos gratis crónicos, prótesis', '100%', 0),
-(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0),
-(12, 'LEONEL PLANOoS', 'CO-88421', 'Consultas ilimitadas, 40% en medicamentos', '80%', 0);
+(5, 'OSECAC', 'CO-44122', 'Plan materno infantil, médicos de cartilla', '60%', 0);
 
 -- --------------------------------------------------------
 
@@ -1038,8 +1036,7 @@ CREATE TABLE `permisos` (
 INSERT INTO `permisos` (`idPermiso`, `nombre`, `descripcion`) VALUES
 (3, 'Vista de paciente', 'Te permite ver la interfaz del paciente'),
 (6, 'Vista de medico', 'Te permite ver la interfaz del medico y utilizar sus funciones'),
-(7, 'Vista de Admin', 'Te permite ver la interfaz de Administrador y utilizar sus funciones'),
-(8, 'Vista de LAura', 'Te permite ver el aura y farmearla');
+(7, 'Vista de Admin', 'Te permite ver la interfaz de Administrador y utilizar sus funciones');
 
 -- --------------------------------------------------------
 
@@ -1080,7 +1077,6 @@ CREATE TABLE `roldeusuario` (
 --
 
 INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
-(1, 6, 6),
 (2, 4, 3),
 (3, 2, 2),
 (4, 3, 5),
@@ -1093,7 +1089,8 @@ INSERT INTO `roldeusuario` (`idRolUsuario`, `usuarioId`, `rolId`) VALUES
 (20, 17, 5),
 (21, 18, 5),
 (22, 19, 2),
-(23, 20, 1);
+(23, 20, 1),
+(29, 6, 6);
 
 -- --------------------------------------------------------
 
@@ -1117,8 +1114,7 @@ INSERT INTO `roles` (`idRol`, `nombre`, `descripcion`) VALUES
 (3, 'Enfermero', 'Asistencia e ingresos'),
 (4, 'Recepcionista', 'Gestión de turnos y caja'),
 (5, 'Paciente', 'Usuario consumidor final'),
-(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios'),
-(9, 'Jeffry Adan', 'Control total del sistema');
+(6, 'Personal de Limpieza', 'Mantenimiento e higiene de consultorios');
 
 -- --------------------------------------------------------
 
@@ -1143,7 +1139,7 @@ CREATE TABLE `triage` (
 
 INSERT INTO `triage` (`idTriage`, `fecha`, `prioridad`, `estado`, `observacion`, `pacienteId`, `consultorioId`, `enfermeroId`) VALUES
 (1, '1000-10-10 10:10:10', 3, 'Enfermo', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4),
-(5, '2000-10-10 10:10:10', 3, 'Nigga', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4);
+(5, '2000-10-10 10:10:10', 1, 'Muy enfermo', 'Gripe comun, pecho con moco, garganta y nariz obstruida', 1, 2, 4);
 
 --
 -- Disparadores `triage`
@@ -1426,10 +1422,10 @@ INSERT INTO `usuarios` (`idUsuario`, `nombre`, `apellido`, `dni`, `fechaNacimien
 (3, 'Andrés Luis', 'Fernández', '14258963', '1955-11-02', '1130251478', 'andres.fer@email.com', 'fernandez', 4, 1, '2026-11-15 21:31:13'),
 (4, 'Laura Inés', 'López', '32145874', '1986-02-14', '1158741254', 'laura.enfermera@clinica.com', 'hello', NULL, 0, '2026-11-15 21:31:13'),
 (5, 'Carlos Javier', 'Pérez', '42154879', '2000-01-30', '1121548796', 'carlos.perez@email.com', 'aa12', 5, 0, '2026-11-15 21:31:13'),
-(6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 0, '2026-11-15 21:31:13'),
+(6, 'Roberto', 'Sánchez', '28999111', '1980-04-10', '1122334455', 'roberto.limpieza@clinica.com', '912', NULL, 1, '2026-11-15 21:31:13'),
 (12, 'Federico', 'Tamburelli', '80323454', '2008-12-19', '1143560922', 'fede@gmail.com', '123', 2, 0, '2026-11-15 21:31:13'),
 (13, 'Santiago', 'Montenegro', '30800545', '2011-06-26', '1190436555', 'monte@gmail.com', '$2a$10$va2ce6f1lAr7MQCgZcBQs.WktJNttJthw', 2, 0, '2026-11-15 21:31:13'),
-(16, 'Santiago', 'Montedanza', '31800545', '2011-06-26', '1191436555', 'monted@gmail.com', 'niga', 2, 1, '2026-11-15 21:31:13'),
+(16, 'Santiago', 'Montedanza', '31800545', '2011-06-26', '1191436555', 'monted@gmail.com', 'danza', 2, 1, '2026-11-15 21:31:13'),
 (17, 'Emilio', 'Fernandez', '49086851', '2008-10-31', '1164931824', 'emiliofernandezet32@gmail.com', '$2a$10$U3om7ZtG8jT9N3dWrC2WEeLP1EXxune7FOy9KcTiZiCBjBBPHhqFa', 1, 1, '2026-11-15 21:31:13'),
 (18, 'Paciente', 'Paciente', '88888888', '2000-05-16', '88888888', 'paciente@mail.com', '$2a$10$eTyBSu/ZBlNrS7eVLQqN5O2rGv00Fpq.9W8DOEi.U9JIS6uo9ekh2', 1, 0, '2026-11-15 21:31:13'),
 (19, 'medico', 'doctor', '77777777', '2000-06-21', '77777777', 'medico@mail.com', '$2a$10$L5yurYVv9rSH/twYjhrppexYORpmX9a/lo59UUA3By8VPe9n9Mw92', 2, 0, '2026-11-15 21:31:13'),
@@ -2040,7 +2036,7 @@ ALTER TABLE `recetas`
 -- AUTO_INCREMENT de la tabla `roldeusuario`
 --
 ALTER TABLE `roldeusuario`
-  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `idRolUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -2058,7 +2054,7 @@ ALTER TABLE `triage`
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `idTurno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idTurno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `ubicacionpaciente`
