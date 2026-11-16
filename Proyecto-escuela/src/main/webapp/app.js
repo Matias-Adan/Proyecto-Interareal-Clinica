@@ -196,7 +196,57 @@ async function borradoFisico(id, servlet) {
     location.reload();
 }
 
+/**
+ * Muestra la sección indicada por el hash (#turnos, #salud, ...) y marca el
+ * enlace activo del menú lateral. Si no hay hash, muestra la primera sección.
+ */
+function iniciarNavegacion() {
+    const vistas = document.querySelectorAll('.vista');
+    if (!vistas.length) {
+        return;
+    }
+
+    const enlaces = document.querySelectorAll('.side nav a[href^="#"]');
+
+    function mostrar(id) {
+        let encontrada = false;
+
+        vistas.forEach(vista => {
+            const activa = vista.id === id;
+            vista.classList.toggle('activa', activa);
+            if (activa) {
+                encontrada = true;
+            }
+        });
+
+        if (!encontrada) {
+            vistas[0].classList.add('activa');
+            id = vistas[0].id;
+        }
+
+        enlaces.forEach(enlace => {
+            enlace.classList.toggle('activa', enlace.getAttribute('href') === '#' + id);
+        });
+    }
+
+    enlaces.forEach(enlace => {
+        enlace.addEventListener('click', evento => {
+            evento.preventDefault();
+            const id = enlace.getAttribute('href').slice(1);
+            mostrar(id);
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, '', '#' + id);
+            }
+        });
+    });
+
+    mostrar(window.location.hash ? window.location.hash.slice(1) : vistas[0].id);
+}
+
 function iniciarPagina() {
+    // Muestra la sección pedida por el hash y da comportamiento al menú.
+    iniciarNavegacion();
+
     // Los enlaces "Salir" cierran la sesión en el servidor antes de ir al login.
     document.querySelectorAll('a.out').forEach(enlace => {
         enlace.addEventListener('click', evento => {

@@ -1,0 +1,48 @@
+/* =====================================================================
+   Sección "Mi cuenta" reutilizable (paciente, médico y admin).
+   Se incluye junto con cuenta.js en cada vista.
+   ===================================================================== */
+
+.cuenta-datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0 28px;
+    margin: 0;
+}
+
+.cuenta-dato {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borde, #d3e5ec);
+}
+
+.cuenta-dato dt {
+    margin: 0;
+    font-size: .82rem;
+    font-weight: bold;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--gris, #5b7684);
+}
+
+.cuenta-dato dd {
+    margin: 4px 0 0;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.cuenta-dato .tag {
+    margin-top: 2px;
+}
+
+.cuenta-nota {
+    display: block;
+    margin-top: 2px;
+    font-size: .85rem;
+    font-weight: normal;
+    color: var(--gris, #5b7684);
+}
+
+.cuenta-cargando {
+    margin: 0;
+    color: var(--gris, #5b7684);
+}

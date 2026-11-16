@@ -101,6 +101,81 @@ tr:hover td { background: var(--suave); }
 .tag.warn { background: #fbefd2; color: #8a5d00; }
 .tag.alert { background: #f8dedb; color: #9b2f27; }
 
+/* ===== Mensajes de estado ===== */
+.mensaje { margin: 10px 0 0; min-height: 1.2em; font-weight: bold; }
+.mensaje.error { color: #9b2f27; }
+.mensaje.ok { color: #1f6b41; }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ===== Cabecera de panel con buscador ===== */
+.panel-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.panel-cabecera h2 { margin: 0; }
+.panel-cabecera .buscar { margin: 0; width: min(340px, 100%); }
+
+/* ===== Roles en la tabla de usuarios ===== */
+.tag.rol {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 6px 4px 0;
+  white-space: nowrap;
+}
+.quitar-rol {
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: #9b2f27;
+  font: inherit;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+}
+.quitar-rol:hover { text-decoration: underline; }
+.asignar-rol { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.rol-select { width: auto; min-width: 150px; padding: 8px 10px; }
+
+/* ===== Botones chicos dentro de las tablas ===== */
+.btn-mini {
+  padding: 8px 14px;
+  border: 2px solid var(--principal);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--principal);
+  font: inherit;
+  font-size: .9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-mini:hover { background: var(--suave); }
+.btn-mini.alerta { border-color: #9b2f27; color: #9b2f27; }
+.btn-mini.alerta:hover { background: #f8dedb; }
+.btn-mini:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ===== Alerta de stock bajo ===== */
+.aviso-stock {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  border-left: 6px solid #9b2f27;
+  border-radius: 12px;
+  background: #f8dedb;
+  color: #7a241e;
+}
+.aviso-stock[hidden] { display: none; }
+.aviso-stock strong { white-space: nowrap; }
+tr.fila-stock-bajo td { background: #fdf1ef; }
+tr.fila-stock-bajo:hover td { background: #fbe4e1; }
+.num { text-align: right; }
+
 /* ===== Celular ===== */
 @media (max-width: 800px) {
   .app { flex-direction: column; }
